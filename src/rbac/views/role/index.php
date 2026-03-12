@@ -6,14 +6,20 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 
 $this->title = 'Роли';
+$this->params['breadcrumbs'] = [
+    ['label' => 'Администрирование'],
+    ['label' => 'RBAC', 'url' => ['/rbac/default/index']],
+    ['label' => $this->title],
+];
+$this->params['topbarActions'] = [
+    Html::a('Создать роль', ['create'], ['class' => 'btn btn-success']),
+];
 ?>
 <?php
 echo AdminPage::widget([
     'title' => $this->title,
     'tabs' => $this->params['rbacTabs'] ?? [],
-    'actions' => [
-        Html::a('Создать роль', ['create'], ['class' => 'btn btn-success']),
-    ],
+    'showHeader' => false,
     'content' => GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -30,7 +36,19 @@ echo AdminPage::widget([
             [
                 'class' => ActionColumn::class,
                 'template' => '{update} {delete}',
+                'contentOptions' => ['class' => 'action-column'],
+                'buttonOptions' => ['class' => 'sz-row-action'],
                 'urlCreator' => static fn($action, $model) => [$action, 'name' => $model['name']],
+                'buttons' => [
+                    'update' => static fn($url) => Html::a('<span class="material-symbols-rounded">edit</span>', $url, ['class' => 'sz-row-action', 'title' => 'Редактировать', 'aria-label' => 'Редактировать']),
+                    'delete' => static fn($url) => Html::a('<span class="material-symbols-rounded">delete</span>', $url, [
+                        'class' => 'sz-row-action',
+                        'title' => 'Удалить',
+                        'aria-label' => 'Удалить',
+                        'data-confirm' => 'Удалить роль?',
+                        'data-method' => 'post',
+                    ]),
+                ],
             ],
         ],
     ]),

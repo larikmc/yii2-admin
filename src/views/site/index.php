@@ -8,19 +8,27 @@
 
 use yii\helpers\Html;
 
-$this->title = 'Панель управления';
+$this->title = 'Добро пожаловать, ' . ($summary['email'] ?? 'Администратор') . '.';
 ?>
 
 <div class="home-dashboard">
     <section class="home-dashboard__hero home-surface">
         <div class="home-dashboard__hero-top">
-            <div class="home-dashboard__hero-content">
-                <h1 class="home-dashboard__title">
-                    Вы вошли как <?= Html::encode($summary['email']) ?>.
-                </h1>
-            </div>
-            <div class="home-dashboard__hero-actions">
-                <a class="home-btn home-btn--ghost" href="/" target="_blank" rel="noopener">Открыть сайт</a>
+            <div class="home-dashboard__hero-content home-dashboard__hero-content--metrics">
+                <div class="home-dashboard__hero-badges">
+                    <div class="home-hero-chip">
+                        <span class="home-hero-chip__label">PHP</span>
+                        <strong class="home-hero-chip__value"><?= Html::encode($summary['phpVersion']) ?></strong>
+                    </div>
+                    <div class="home-hero-chip">
+                        <span class="home-hero-chip__label">Yii</span>
+                        <strong class="home-hero-chip__value"><?= Html::encode($summary['yiiVersion']) ?></strong>
+                    </div>
+                    <div class="home-hero-chip">
+                        <span class="home-hero-chip__label">Timezone</span>
+                        <strong class="home-hero-chip__value"><?= Html::encode($summary['timeZone']) ?></strong>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -35,51 +43,10 @@ $this->title = 'Панель управления';
                 </span>
             </article>
         <?php endforeach; ?>
-    </section>
-
-    <section class="home-panels">
-        <article class="home-panel home-panel--span-2 home-surface">
-            <h2 class="home-panel__title">Система</h2>
-
-            <table class="home-table">
-                <tbody>
-                <tr>
-                    <th>Версия PHP</th>
-                    <td><?= Html::encode($summary['phpVersion']) ?></td>
-                </tr>
-                <tr>
-                    <th>Версия Yii</th>
-                    <td><?= Html::encode($summary['yiiVersion']) ?></td>
-                </tr>
-                <tr>
-                    <th>Пользователь</th>
-                    <td><?= Html::encode($summary['email']) ?></td>
-                </tr>
-                <tr>
-                    <th>Часовой пояс</th>
-                    <td><?= Html::encode($summary['timeZone']) ?></td>
-                </tr>
-                </tbody>
-            </table>
-        </article>
-
         <article class="home-panel home-surface">
-            <h2 class="home-panel__title">Пользователи</h2>
-
-            <div class="home-metrics">
-                <div class="home-metrics__row">
-                    <span class="home-metrics__label">Всего</span>
-                    <span class="home-metrics__value"><?= $usersTotal === null ? 'н/д' : Html::encode((string) $usersTotal) ?></span>
-                </div>
-                <div class="home-metrics__row">
-                    <span class="home-metrics__label">Активных</span>
-                    <span class="home-metrics__value"><?= $usersActive === null ? 'н/д' : Html::encode((string) $usersActive) ?></span>
-                </div>
-            </div>
-
-            <p class="home-note">
-                Если видите "н/д", проверьте настройки пользователей и доступность сервисов.
-            </p>
+            <p class="home-stat-card__label">Пользователи</p>
+            <p class="home-stat-card__value"><?= $usersTotal === null ? 'н/д' : Html::encode((string) $usersTotal) ?></p>
+            <span class="home-status home-status--ok">Всего</span>
         </article>
     </section>
 </div>

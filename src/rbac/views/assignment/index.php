@@ -7,12 +7,17 @@ use yii\grid\GridView;
 
 $config = $module->getConfig();
 $this->title = 'Назначения';
+$this->params['breadcrumbs'] = [
+    ['label' => 'Администрирование'],
+    ['label' => 'RBAC', 'url' => ['/rbac/default/index']],
+    ['label' => $this->title],
+];
 ?>
 <?php
 echo AdminPage::widget([
     'title' => $this->title,
     'tabs' => $this->params['rbacTabs'] ?? [],
-    'subtitle' => 'Быстрый переход к управлению назначениями пользователей.',
+    'showHeader' => false,
     'content' => GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [

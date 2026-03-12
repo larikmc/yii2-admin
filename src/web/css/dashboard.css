@@ -1,16 +1,12 @@
-/* Importing Google Fonts - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+    font-family: "Manrope", sans-serif;
 }
 
 body {
     min-height: 100vh;
-    background: linear-gradient(#F1F3FF, #CBD4FF);
 }
 
 /* ===== Sidebar ===== */
@@ -18,22 +14,28 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 10;
-    width: 270px;
-    height: 100vh;
-    background: #151A2D;
+    z-index: 30;
+    width: 296px;
+    height: calc(100vh - 28px);
+    margin: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 28px;
+    background:
+        linear-gradient(180deg, rgba(18, 24, 39, 0.98) 0%, rgba(31, 41, 65, 0.98) 100%);
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.32);
+    backdrop-filter: blur(18px);
     transition: all 0.4s ease;
 }
 
 .sz-sidebar.sz-sidebar--collapsed {
-    width: 85px;
+    width: 94px;
 }
 
 /* Header */
 .sz-sidebar__header {
     display: flex;
     position: relative;
-    padding: 25px 20px;
+    padding: 28px 22px 18px;
     align-items: center;
     justify-content: space-between;
 }
@@ -45,11 +47,12 @@ body {
 }
 
 .sz-sidebar__logo img {
-    width: 46px;
-    height: 46px;
+    width: 52px;
+    height: 52px;
     display: block;
     object-fit: contain;
-    border-radius: 50%;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(66, 108, 255, 0.24);
 }
 
 /* Buttons */
@@ -57,21 +60,21 @@ body {
 .sz-sidebar-menu-btn {
     position: absolute;
     right: 20px;
-    height: 35px;
-    width: 35px;
-    color: #151A2D;
+    height: 42px;
+    width: 42px;
+    color: #fff;
     border: none;
     cursor: pointer;
     display: flex;
-    background: #EEF2FF;
+    background: rgba(255, 255, 255, 0.1);
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 14px;
     transition: 0.4s ease;
 }
 
 .sz-sidebar.sz-sidebar--collapsed .sz-sidebar__header .sz-sidebar__toggler {
-    transform: translate(-4px, 65px);
+    transform: translate(-1px, 72px);
 }
 
 .sz-sidebar__toggler span,
@@ -85,7 +88,7 @@ body {
 }
 
 .sz-sidebar__toggler:hover {
-    background: #d9e1fd;
+    background: rgba(255, 255, 255, 0.18);
 }
 
 /* Nav lists */
@@ -104,7 +107,7 @@ body {
     overflow-y: auto;
     scrollbar-width: thin;
     padding-bottom: 20px;
-    height: calc(100vh - 227px);
+    height: calc(100vh - 258px);
     scrollbar-color: transparent transparent;
 }
 
@@ -120,9 +123,9 @@ body {
 /* Secondary */
 .sz-sidebar__nav .sz-nav--secondary {
     position: absolute;
-    bottom: 35px;
+    bottom: 28px;
     width: 100%;
-    background: #151A2D;
+    background: transparent;
 }
 
 .sz-nav__item {
@@ -131,22 +134,30 @@ body {
 
 /* Links */
 .sz-nav__link {
-    color: #fff;
+    color: rgba(244, 247, 255, 0.88);
     display: flex;
-    gap: 12px;
+    gap: 14px;
     white-space: nowrap;
-    border-radius: 8px;
-    padding: 11px 15px;
+    border-radius: 16px;
+    padding: 13px 15px;
     align-items: center;
     text-decoration: none;
-    border: 1px solid #151A2D;
+    border: 1px solid transparent;
     transition: 0.4s ease;
 }
 
 /* hover/open state (main items) */
 .sz-nav__item:is(:hover, .sz-dd--open) > .sz-nav__link {
-    color: #151A2D;
-    background: #EEF2FF;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(66, 108, 255, 0.3), rgba(255, 255, 255, 0.08));
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.sz-nav__item--active > .sz-nav__link {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(79, 107, 154, 0.5), rgba(86, 115, 176, 0.26));
+    border-color: rgba(133, 158, 214, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 22px rgba(20, 29, 52, 0.22);
 }
 
 /* Label fade when collapsed */
@@ -192,10 +203,11 @@ body {
     padding-right: 10px;
     overflow-y: unset;
     pointer-events: none;
-    border-radius: 0 10px 10px 0;
-    background: #151A2D;
+    border-radius: 0 20px 20px 0;
+    background: #141b2e;
     transition: 0s;
     width: max-content; /* растягивается по контенту */
+    box-shadow: 0 20px 40px rgba(10, 15, 28, 0.38);
 }
 
 .sz-sidebar.sz-sidebar--collapsed .sz-submenu:has(.sz-submenu__link) {
@@ -217,11 +229,11 @@ body {
 
 /* Submenu links */
 .sz-submenu__item .sz-submenu__link {
-    color: #F1F4FF;
-    padding: 9px 15px;
+    color: #f1f4ff;
+    padding: 10px 15px;
     display: block;
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: 12px;
     transition: 0.4s ease;
 
     /* ✅ чтобы Cloud Solutions был в 1 строку */
@@ -230,8 +242,8 @@ body {
 
 /* HOVER для IT Consulting / Cloud Solutions / Mobile Apps */
 .sz-submenu__item .sz-submenu__link:hover {
-    color: #151A2D;
-    background: #EEF2FF;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Title hidden by default (expanded sidebar) */
@@ -267,13 +279,15 @@ body {
 
 /* Optional content wrapper (чтобы контент не залезал под сайдбар) */
 .sz-content {
-    margin-left: 270px;
-    padding: 20px;
+    position: relative;
+    z-index: 1;
+    margin-left: 324px;
+    padding: 16px 20px 22px 2px;
     transition: margin-left 0.4s ease;
 }
 
 .sz-sidebar.sz-sidebar--collapsed ~ .sz-content {
-    margin-left: 85px;
+    margin-left: 122px;
 }
 
 /* Logout button as menu item (POST form) */
@@ -284,7 +298,7 @@ body {
 .sz-logout__btn {
     width: 100%;
     background: transparent;
-    border: 1px solid #151A2D;
+    border: 1px solid transparent;
     cursor: pointer;
     text-align: left;
     font: inherit;
@@ -296,8 +310,8 @@ body {
 
 /* Hover like other nav links */
 .sz-nav__item:is(:hover, .sz-dd--open) .sz-logout__btn {
-    color: #151A2D;
-    background: #EEF2FF;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(66, 108, 255, 0.3), rgba(255, 255, 255, 0.08));
 }
 
 .sz-logout__btn:focus {
@@ -312,16 +326,17 @@ body {
         position: fixed;
         left: 20px;
         top: 20px;
-        height: 40px;
-        width: 42px;
+        z-index: 40;
+        height: 46px;
+        width: 46px;
         display: flex;
-        color: #F1F4FF;
-        background: #151A2D;
+        color: #f1f4ff;
+        background: #141b2e;
     }
 
     .sz-sidebar.sz-sidebar--collapsed {
-        width: 270px;
-        left: -270px;
+        width: 296px;
+        left: -310px;
     }
 
     .sz-sidebar.sz-sidebar--collapsed .sz-sidebar__header .sz-sidebar__toggler {
@@ -335,7 +350,7 @@ body {
     /* on mobile, content should take full width */
     .sz-content {
         margin-left: 0;
-        padding-top: 80px;
+        padding: 86px 16px 22px;
     }
 
     .sz-sidebar.sz-sidebar--collapsed ~ .sz-content {

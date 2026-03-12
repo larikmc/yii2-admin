@@ -4,6 +4,10 @@ use larikmc\admin\widgets\AdminPage;
 use yii\bootstrap5\Html;
 
 $this->title = 'Обзор RBAC';
+$this->params['breadcrumbs'] = [
+    ['label' => 'Администрирование'],
+    ['label' => 'RBAC'],
+];
 
 $content = '<div class="sz-stat-grid">'
     . '<div class="sz-stat-card"><div class="sz-stat-card__label">Роли</div><div class="sz-stat-card__value">' . (int) $report['counts']['roles'] . '</div></div>'
@@ -15,6 +19,7 @@ $content = '<div class="sz-stat-grid">'
 echo AdminPage::widget([
     'title' => $this->title,
     'tabs' => $this->params['rbacTabs'] ?? [],
+    'showHeader' => false,
     'boxed' => false,
     'content' => $content,
 ]);
