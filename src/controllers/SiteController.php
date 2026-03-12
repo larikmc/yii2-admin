@@ -27,7 +27,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['logout', 'index', 'clear-cache', 'flush-cache'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['admin'],
                     ],
                 ],
             ],
@@ -229,7 +229,7 @@ class SiteController extends Controller
 
     public function actionLogin()
     {
-        return $this->redirect(['/auth/auth/login']);
+        return $this->redirect(['/auth/login']);
     }
 
     public function actionLogout()
@@ -238,7 +238,7 @@ class SiteController extends Controller
             Yii::$app->user->logout();
         }
 
-        return $this->redirect(['/auth/auth/login']);
+        return $this->redirect(['/auth/login']);
     }
 
     public function actionClearCache()

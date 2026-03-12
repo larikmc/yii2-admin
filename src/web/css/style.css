@@ -3,21 +3,102 @@
     font-size: 14px;
 }
 
-.sz-content form:not(.d-inline):not(.tax-form--plain):not(.sz-logout__form),
-.grid-view {
+.sz-panel {
     padding: 40px;
     border-radius: 20px;
     background-color: #fff;
     box-shadow: 0 8px 24px rgba(16, 34, 74, 0.08);
 }
 
-.sz-content form.d-inline,
-.sz-content form.tax-form--plain,
-.sz-content form.sz-logout__form {
+.sz-panel--rbac-overview {
+    border-radius: 12px;
+}
+
+.sz-panel .grid-view,
+.sz-panel form:not(.d-inline):not(.tax-form--plain):not(.sz-logout__form) {
     padding: 0;
     border-radius: 0;
     background: transparent;
     box-shadow: none;
+}
+
+.sz-panel .table-responsive:last-child,
+.sz-panel .grid-view:last-child,
+.sz-panel form:last-child,
+.sz-panel .detail-view:last-child {
+    margin-bottom: 0;
+}
+
+.sz-panel--flat {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.sz-page .nav-tabs {
+    border-bottom: 1px solid #d8dfef;
+    gap: 8px;
+}
+
+.sz-page .nav-tabs .nav-link {
+    border: 0;
+    border-radius: 12px 12px 0 0;
+    padding: 12px 20px;
+    color: #2d6df6;
+    font-size: 1rem;
+    font-weight: 500;
+    background: transparent;
+}
+
+.sz-page .nav-tabs .nav-link:hover {
+    color: #173f9f;
+    background: rgba(45, 109, 246, 0.08);
+}
+
+.sz-page .nav-tabs .nav-link.active {
+    color: #1b2433;
+    background: #fff;
+    box-shadow: 0 -1px 0 #d8dfef, 1px 0 0 #d8dfef, -1px 0 0 #d8dfef;
+}
+
+.sz-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.sz-stat-card {
+    min-height: 132px;
+    padding: 24px 22px;
+    border: 1px solid #d5dcea;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+}
+
+.sz-stat-card__label {
+    margin-bottom: 14px;
+    color: #4f5f7b;
+    font-size: 1rem;
+}
+
+.sz-stat-card__value {
+    color: #17305f;
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+@media (max-width: 1199px) {
+    .sz-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .sz-stat-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .form-control {

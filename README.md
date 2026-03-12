@@ -1,176 +1,200 @@
 # larikmc/yii2-admin
 
-Админский модуль для Yii2 с боковым меню, вложенными разделами и готовым dashboard.
+Готовое расширение для `Yii2 backend`: одна установка, один модуль `admin`, внутри уже есть:
 
-## Возможности
+- dashboard и общий layout админки
+- авторизация и страница входа
+- RBAC: роли, действия и назначения
+- security log
+- очистка кеша
+- системный bootstrap для `admin`, `adminPanel` и пользователя `ID=1`
 
-- модуль `admin` для `backend`
-- боковое меню с вложенными пунктами
-- компактный layout для админки
-- готовая главная страница `/admin`
-- поддержка `GET` и `POST` пунктов меню
-- локальное подключение через Composer `path`
+Пакет рассчитан на сценарий, где админка, auth и RBAC живут вместе как единая backend-платформа.
 
 ## Требования
 
-- PHP `>=7.4`
-- Yii2 `~2.0`
+- PHP 8.1+
+- Yii2 2.0.x
 - `yiisoft/yii2-bootstrap5`
+- `authManager` = `yii\rbac\DbManager`
+
+## Что дает пакет
+
+После подключения у вас есть:
+
+- `/admin`
+- `/admin/login`
+- `/admin/auth/security-log`
+- `/admin/rbac`
+- `/admin/rbac/user`
+- `/admin/rbac/role`
+- `/admin/rbac/permission`
+- `/admin/rbac/assignment`
+
+Внутри RBAC уже поддержана схема:
+
+- `действия -> роли -> пользователи`
+
+То есть:
+
+1. создаете действия
+2. включаете действия в роль
+3. назначаете роль пользователю
 
 ## Установка
 
-### 1. Добавьте пакет в `composer.json`
+### Composer
+
+```bash
+composer require larikmc/yii2-admin
+```
+
+Для локального path-пакета:
 
 ```json
 {
-    "require": {
-        "larikmc/yii2-admin": "@dev"
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../yii2-admin",
-            "options": {
-                "symlink": true,
-                "relative": true
-            }
-        }
-    ]
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../yii2-admin",
+      "options": {
+        "symlink": true,
+        "relative": true
+      }
+    }
+  ],
+  "require": {
+    "larikmc/yii2-admin": "@dev"
+  }
 }
 ```
 
-### 2. Установите зависимость
+## Базовая конфигурация backend
 
-```bash
-php composer.phar update larikmc/yii2-admin
-```
-
-### 3. Подключите модуль в `backend/config/main.php`
+Пример для `backend/config/main.php`:
 
 ```php
 'defaultRoute' => 'admin/site/index',
+'layout' => '@larikmc/admin/views/layouts/main',
 'modules' => [
     'admin' => [
         'class' => larikmc\admin\Module::class,
+        'userClass' => common\models\User::class,
+        'userModel' => common\models\User::class,
+        'userIdField' => 'id',
+        'usernameField' => 'username',
+        'emailField' => 'email',
+        'statusField' => 'status',
+        'rbacAccessRoles' => [],
+
+        // Настройки авторизации
+        'maxUserAttempts' => 5,
+        'captchaAfterAttempts' => 3,
+        'lockDuration' => 120,
+        'userAttemptsTtl' => 120,
+        'maxDelaySeconds' => 10,
     ],
 ],
 'components' => [
+    'request' => [
+        'baseUrl' => '/admin',
+    ],
+    'user' => [
+        'identityClass' => common\models\User::class,
+        'enableAutoLogin' => true,
+        'loginUrl' => ['/auth/login'],
+    ],
+    'authManager' => [
+        'class' => yii\rbac\DbManager::class,
+    ],
     'urlManager' => [
         'enablePrettyUrl' => true,
         'showScriptName' => false,
         'rules' => [
             '' => 'admin/site/index',
+            'login' => 'admin/auth/auth/login',
+            'auth/login' => 'admin/auth/auth/login',
+            'auth/logout' => 'admin/auth/auth/logout',
+            'auth/captcha' => 'admin/auth/auth/captcha',
+            'auth/security-log' => 'admin/auth/auth/security-log',
+            'auth/clear-security-log' => 'admin/auth/auth/clear-security-log',
+            'rbac' => 'admin/rbac/default/index',
+            'rbac/<controller:[\w-]+>' => 'admin/rbac/<controller>/index',
+            'rbac/<controller:[\w-]+>/<action:[\w-]+>' => 'admin/rbac/<controller>/<action>',
         ],
     ],
 ],
 ```
 
-## Быстрый старт
+### Схема доступа
 
-По умолчанию модуль уже содержит базовое меню:
+Рекомендуемая схема разделения доступа:
 
-- Панель управления
-- На сайт
-- Очистить кеш
-- Выйти
+- `adminPanel` дает право войти в админку
+- `admin` дает доступ к рабочим backend-контроллерам и административным разделам
 
-Главная страница доступна по маршруту:
+То есть:
 
-```php
-/admin/site/index
-```
+1. пользователь без `adminPanel` не должен попадать в `/admin`
+2. пользователь с `adminPanel`, но без `admin`, может пройти только уровень входа в админку
+3. backend-контроллеры, dashboard, RBAC и security log должны быть закрыты ролью `admin`
 
-Если в `backend` root перенаправлен на модуль, то просто:
+### Security Model
 
-```php
-/admin
-```
+Матрица доступа по умолчанию:
 
-## Настройка меню
+- `adminPanel` — право пройти в `/admin`
+- `admin` — право работать с backend-контроллерами
+- `admin` — право видеть dashboard и внутренние admin-страницы
+- `admin` — право работать с RBAC
+- `admin` — право просматривать и очищать security log
 
-Меню задается через свойства модуля:
+Коротко:
 
-- `$menu` для основного меню
-- `$secondaryMenu` для нижнего меню
+- `adminPanel` = вход в админку
+- `admin` = вся рабочая часть админки
 
-Если их не передать, используются значения по умолчанию из [`src/config/menu.php`](./src/config/menu.php).
+## Меню
 
-### Пример простого меню
+Основное меню и нижнее меню задаются через:
 
-```php
-'modules' => [
-    'admin' => [
-        'class' => larikmc\admin\Module::class,
-        'menu' => [
-            [
-                'icon' => 'dashboard',
-                'label' => 'Главная',
-                'url' => ['/admin/site/index'],
-            ],
-            [
-                'icon' => 'inventory_2',
-                'label' => 'Товары',
-                'url' => ['/products/index'],
-            ],
-        ],
-    ],
-],
-```
+- `menu`
+- `secondaryMenu`
 
-### Пример вложенного меню
+Пример:
 
 ```php
 'modules' => [
     'admin' => [
         'class' => larikmc\admin\Module::class,
+        'userClass' => common\models\User::class,
+        'userModel' => common\models\User::class,
         'menu' => [
             [
                 'icon' => 'dashboard',
-                'label' => 'Главная',
+                'label' => 'Панель управления',
                 'url' => ['/admin/site/index'],
             ],
             [
-                'icon' => 'settings',
-                'label' => 'Каталог',
+                'icon' => 'admin_panel_settings',
+                'label' => 'Администрирование',
                 'items' => [
-                    [
-                        'label' => 'Категории',
-                        'url' => ['/category/index'],
-                    ],
-                    [
-                        'label' => 'Товары',
-                        'url' => ['/products/index'],
-                    ],
-                    [
-                        'label' => 'История цен',
-                        'url' => ['/price-history/index'],
-                    ],
+                    ['label' => 'RBAC', 'url' => ['/rbac/default/index']],
+                    ['label' => 'Security Log', 'url' => ['/auth/security-log']],
                 ],
             ],
         ],
-    ],
-],
-```
-
-### Пример нижнего меню
-
-```php
-'modules' => [
-    'admin' => [
-        'class' => larikmc\admin\Module::class,
         'secondaryMenu' => [
             [
-                'icon' => 'language',
-                'label' => 'На сайт',
-                'url' => '/',
-                'linkOptions' => [
-                    'target' => '_blank',
-                ],
+                'icon' => 'restart_alt',
+                'label' => 'Очистить кеш',
+                'url' => ['/admin/site/clear-cache'],
+                'method' => 'post',
             ],
             [
                 'icon' => 'logout',
                 'label' => 'Выйти',
-                'url' => ['/admin/site/logout'],
+                'url' => ['/auth/logout'],
                 'method' => 'post',
             ],
         ],
@@ -178,53 +202,151 @@ php composer.phar update larikmc/yii2-admin
 ],
 ```
 
-## Формат пункта меню
+## Авторизация
 
-### Обычная ссылка
+В пакет уже встроен модуль авторизации:
+
+- форма входа
+- brute-force защита
+- CAPTCHA после нескольких попыток
+- lock по IP и email
+- security log
+
+Маршруты:
+
+- `GET/POST /admin/auth/login`
+- `POST /admin/auth/logout`
+- `GET /admin/auth/captcha`
+- `GET /admin/auth/security-log`
+- `POST /admin/auth/clear-security-log`
+
+Внутри пакета используются короткие маршруты `/auth/*`, поэтому их нужно пробросить через `urlManager`.
+
+## RBAC
+
+В пакет уже встроен RBAC-раздел:
+
+- роли
+- действия
+- назначения ролей пользователям
+
+Маршруты:
+
+- `/admin/rbac`
+- `/admin/rbac/user`
+- `/admin/rbac/role`
+- `/admin/rbac/permission`
+- `/admin/rbac/assignment`
+
+### Системные элементы
+
+При установке RBAC автоматически создаются:
+
+- роль `admin`
+- действие `adminPanel`
+- связь `admin -> adminPanel`
+- назначение роли `admin` пользователю `ID=1`
+
+Системные инварианты:
+
+- пользователь с `ID=1` является системным администратором и не может быть лишен роли `admin`
+- роль `admin` является системной и не может быть удалена
+- действие `adminPanel` является системным и не может быть удалено
+- связь `admin -> adminPanel` должна существовать всегда
+- у пользователя с `ID=1` роль `admin` должна сохраняться всегда
+
+Связь системных прав:
+
+- `adminPanel` считается системным permission для входа в админку
+- роль `admin` должна включать `adminPanel`
+- назначение только `adminPanel` без роли `admin` можно использовать как технический допуск на уровень входа, но не как доступ к backend-разделам
+
+## Общий контейнер страниц
+
+В пакет встроен виджет:
 
 ```php
-[
-    'icon' => 'dashboard',
-    'label' => 'Главная',
-    'url' => ['/admin/site/index'],
-]
+larikmc\admin\widgets\AdminPage
 ```
 
-### Вложенный раздел
+Он нужен для единообразных внутренних страниц модулей. Его можно использовать и в собственных admin-разделах.
+
+Пример:
 
 ```php
-[
-    'icon' => 'settings',
-    'label' => 'Настройки',
-    'items' => [
-        ['label' => 'Общие', 'url' => ['/settings/index']],
-        ['label' => 'Пользователи', 'url' => ['/user/index']],
+echo \larikmc\admin\widgets\AdminPage::widget([
+    'title' => 'Моя страница',
+    'subtitle' => 'Короткое описание раздела',
+    'actions' => [
+        \yii\bootstrap5\Html::a('Создать', ['create'], ['class' => 'btn btn-success']),
     ],
-]
+    'content' => '<div>Контент страницы</div>',
+]);
 ```
 
-### POST-действие
+### sz-panel
+
+Базовый визуальный контейнер админки:
+
+```css
+.sz-panel
+```
+
+Он задает:
+
+- белый фон
+- внутренние отступы
+- скругление
+- тень карточки
+
+Используйте его для списков, форм, таблиц и detail-экранов, если нужен единый стиль панели.
+
+Пример ручного использования:
 
 ```php
-[
-    'icon' => 'restart_alt',
-    'label' => 'Очистить кеш',
-    'url' => ['/admin/site/clear-cache'],
-    'method' => 'post',
-    'linkOptions' => [
-        'data-confirm' => 'Очистить кеш?',
-    ],
-]
+<div class="sz-panel">
+    <?= \yii\grid\GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => $columns,
+    ]) ?>
+</div>
 ```
 
-### Поддерживаемые ключи
+Или для формы:
 
-- `icon` - имя иконки Material Symbols
-- `label` - текст пункта
-- `url` - маршрут Yii2 или строковый URL
-- `items` - вложенные пункты
-- `method` - `get` или `post`
-- `linkOptions` - HTML-атрибуты ссылки или кнопки
+```php
+<div class="sz-panel">
+    <?= $this->render('_form', ['model' => $model]) ?>
+</div>
+```
+
+Если страница строится через `AdminPage`, панель можно получить автоматически:
+
+```php
+echo \larikmc\admin\widgets\AdminPage::widget([
+    'title' => 'Список товаров',
+    'content' => \yii\grid\GridView::widget([...]),
+]);
+```
+
+По умолчанию `AdminPage` оборачивает контент в `.sz-panel`.
+
+Если панель нужна вручную в самом шаблоне, отключите автообертку:
+
+```php
+echo \larikmc\admin\widgets\AdminPage::widget([
+    'title' => 'Журнал безопасности',
+    'boxed' => false,
+    'content' => '<div class="sz-panel">...</div>',
+]);
+```
+
+Плоский вариант без карточки:
+
+```css
+.sz-panel--flat
+```
 
 ## Структура пакета
 
@@ -232,42 +354,27 @@ php composer.phar update larikmc/yii2-admin
 yii2-admin/
 ├─ src/
 │  ├─ assets/
+│  ├─ auth/
 │  ├─ config/
 │  ├─ controllers/
+│  ├─ rbac/
 │  ├─ views/
 │  ├─ web/
+│  ├─ widgets/
 │  └─ Module.php
 ├─ composer.json
 └─ README.md
 ```
 
-## Статика
+## Идея пакета
 
-Пакет публикует ресурсы из:
+Это не набор из трех независимых расширений, а одна backend-платформа:
 
-```php
-@larikmc/admin/web
-```
+- `admin shell`
+- `auth`
+- `rbac`
 
-Там лежат:
-
-- `css/dashboard.css`
-- `css/home.css`
-- `css/style.css`
-- `js/dashboard.js`
-- `js/lazyloader.js`
-- `img/logo.png`
-
-## Расширение
-
-Если нужно:
-
-- добавить активные состояния по маскам маршрутов
-- вынести меню в отдельный PHP-конфиг проекта
-- добавить бейджи, счетчики и разделители
-- скрывать пункты по ролям
-
-это лучше делать на уровне массива меню, не меняя layout.
+Именно поэтому пакет удобнее ставить и поддерживать как одно расширение.
 
 ## Лицензия
 
