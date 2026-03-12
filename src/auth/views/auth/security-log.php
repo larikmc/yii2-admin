@@ -5,6 +5,10 @@ use larikmc\admin\widgets\AdminPage;
 use yii\helpers\Html;
 
 $this->title = 'Журнал безопасности';
+$this->params['breadcrumbs'] = [
+    ['label' => 'Администрирование'],
+    ['label' => $this->title],
+];
 
 ob_start();
 ?>
@@ -43,19 +47,18 @@ ob_start();
 <?php
 $content = ob_get_clean();
 
-$clearLogForm = Html::beginForm(['/auth/clear-security-log'], 'post', ['class' => 'd-inline'])
+$this->params['topbarActions'] = [
+    Html::beginForm(['/auth/clear-security-log'], 'post', ['class' => 'd-inline'])
     . Html::submitButton('Очистить лог', [
         'class' => 'btn btn-danger',
         'data-confirm' => 'Очистить лог безопасности?',
     ])
-    . Html::endForm();
+    . Html::endForm(),
+];
 
 echo AdminPage::widget([
     'title' => $this->title,
     'boxed' => false,
-    'actionsPosition' => 'below_title',
-    'actions' => [
-        $clearLogForm,
-    ],
+    'showHeader' => false,
     'content' => $content,
 ]);

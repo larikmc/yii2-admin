@@ -5,6 +5,12 @@ use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
 $this->title = 'Назначения: ' . $userLabel;
+$this->params['breadcrumbs'] = [
+    ['label' => 'Администрирование'],
+    ['label' => 'RBAC', 'url' => ['/rbac/default/index']],
+    ['label' => 'Пользователи', 'url' => ['/rbac/user/index']],
+    ['label' => $this->title],
+];
 
 ob_start();
 ?>
@@ -25,5 +31,6 @@ $content = ob_get_clean();
 echo AdminPage::widget([
     'title' => $this->title,
     'tabs' => $this->params['rbacTabs'] ?? [],
+    'showHeader' => false,
     'content' => $content,
 ]);

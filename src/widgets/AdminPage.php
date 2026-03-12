@@ -15,6 +15,7 @@ class AdminPage extends Widget
     public bool $boxed = true;
     public string $panelClass = 'sz-panel';
     public string $actionsPosition = 'header';
+    public bool $showHeader = true;
 
     public function run(): string
     {
@@ -58,15 +59,18 @@ class AdminPage extends Widget
         $headerActions = $this->actionsPosition === 'header' ? $actions : '';
         $bodyActions = $this->actionsPosition === 'below_title' ? Html::tag('div', $actions, ['class' => 'mb-4']) : '';
 
-        $headerBlock = Html::tag(
-            'div',
-            Html::tag(
+        $headerBlock = '';
+        if ($this->showHeader) {
+            $headerBlock = Html::tag(
                 'div',
-                Html::tag('div', $header . $subtitle, ['class' => 'flex-grow-1']) . $headerActions,
-                ['class' => 'd-flex justify-content-between align-items-start gap-3 flex-wrap mb-4']
-            ) . $bodyActions,
-            ['class' => 'sz-page__header']
-        );
+                Html::tag(
+                    'div',
+                    Html::tag('div', $header . $subtitle, ['class' => 'flex-grow-1']) . $headerActions,
+                    ['class' => 'd-flex justify-content-between align-items-start gap-3 flex-wrap mb-4']
+                ) . $bodyActions,
+                ['class' => 'sz-page__header']
+            );
+        }
 
         $content = $this->boxed
             ? Html::tag('div', $this->content, ['class' => $this->panelClass])

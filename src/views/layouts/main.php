@@ -5,6 +5,7 @@
 
 use larikmc\admin\assets\AppAsset;
 use yii\bootstrap5\Html;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 $asset = AppAsset::register($this);
@@ -12,6 +13,31 @@ $module = Yii::$app->getModule('admin');
 $primaryMenu = $module->menu ?? [];
 $secondaryMenu = $module->secondaryMenu ?? [];
 $currentRoute = '/' . Yii::$app->controller->route;
+$identity = Yii::$app->user->identity;
+$pageTitle = $this->title ?: 'Админ-панель';
+$isDashboard = Yii::$app->controller->module->id === 'admin'
+    && Yii::$app->controller->id === 'site'
+    && Yii::$app->controller->action->id === 'index';
+$topbarActions = $this->params['topbarActions'] ?? [];
+$breadcrumbs = $this->params['breadcrumbs'] ?? [];
+$breadcrumbItems = [];
+
+foreach ($breadcrumbs as $breadcrumb) {
+    if (is_array($breadcrumb)) {
+        $label = ArrayHelper::getValue($breadcrumb, 'label', '');
+        $url = ArrayHelper::getValue($breadcrumb, 'url');
+        $breadcrumbItems[] = $url
+            ? Html::a(Html::encode((string) $label), $url, ['class' => 'sz-breadcrumbs__link'])
+            : Html::tag('span', Html::encode((string) $label), ['class' => 'sz-breadcrumbs__current']);
+        continue;
+    }
+
+    $breadcrumbItems[] = Html::tag('span', Html::encode((string) $breadcrumb), ['class' => 'sz-breadcrumbs__current']);
+}
+
+$breadcrumbTrail = implode('<span class="sz-breadcrumbs__sep">/</span>', $breadcrumbItems);
+$userName = $identity->username ?? $identity->email ?? 'Администратор';
+$userEmail = $identity->email ?? null;
 
 $isActive = static function (array $item) use ($currentRoute): bool {
     $url = $item['url'] ?? null;
@@ -38,8 +64,12 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
     $label = $item['label'] ?? 'Без названия';
     $items = $item['items'] ?? [];
     $isDropdown = !empty($items);
+    $isCurrent = $isActive($item);
     $isOpen = $hasActiveChild($item);
-    $itemClass = 'sz-nav__item' . ($isDropdown ? ' sz-dd' : '') . ($isOpen ? ' sz-dd--open' : '');
+    $itemClass = 'sz-nav__item'
+        . ($isDropdown ? ' sz-dd' : '')
+        . ($isOpen ? ' sz-dd--open' : '')
+        . ($isCurrent ? ' sz-nav__item--active' : '');
 
     echo '<li class="' . Html::encode($itemClass) . '"' . ($isDropdown ? ' data-sz-dd' : '') . '>';
 
@@ -114,8 +144,12 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
     <?php $this->head() ?>
 </head>
 
-<body class="d-flex flex-column h-100">
+<body class="sz-admin-body d-flex flex-column h-100">
 <?php $this->beginBody() ?>
+
+<div class="sz-shell-glow sz-shell-glow--violet"></div>
+<div class="sz-shell-glow sz-shell-glow--gold"></div>
+<div class="sz-mobile-backdrop"></div>
 
 <button type="button" class="sz-sidebar-menu-btn" aria-label="Открыть боковое меню">
     <span class="material-symbols-rounded">menu</span>
@@ -148,43 +182,127 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
 </aside>
 
 <main class="sz-content">
-    <?php
-    $flashes = Yii::$app->session->getAllFlashes(true);
-    $classMap = [
-        'error' => 'alert-danger',
-        'danger' => 'alert-danger',
-        'warning' => 'alert-warning',
-        'success' => 'alert-success',
-        'info' => 'alert-info',
-    ];
-    ?>
-    <?php if (!empty($flashes)): ?>
-        <div class="mb-3">
-            <?php foreach ($flashes as $type => $message): ?>
-                <?php $css = $classMap[$type] ?? 'alert-info'; ?>
-                <?php foreach ((array) $message as $m): ?>
-                    <div class="alert <?= Html::encode($css) ?> alert-dismissible fade show" role="alert">
-                        <?= Html::encode((string) $m) ?>
-                        <button type="button" class="btn-close js-flash-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+    <div class="sz-content__inner">
+        <header class="sz-topbar sz-topbar--compact">
+            <div class="sz-topbar__meta sz-topbar__meta--compact">
+                <?php if ($breadcrumbTrail !== ''): ?>
+                    <div class="sz-breadcrumbs"><?= $breadcrumbTrail ?></div>
+                <?php endif; ?>
+                <h1 class="sz-topbar__title sz-topbar__title--compact"><?= Html::encode($pageTitle) ?></h1>
+            </div>
+
+            <div class="sz-topbar__side">
+                <div class="sz-topbar__userbar">
+                <?= Html::a(
+                    '<span class="material-symbols-rounded">language</span>',
+                    '/',
+                    [
+                        'class' => 'sz-topbar__quicklink',
+                        'title' => 'Перейти на сайт',
+                        'aria-label' => 'Перейти на сайт',
+                        'target' => '_blank',
+                        'rel' => 'noopener',
+                    ]
+                ) ?>
+
+                <?= Html::beginForm(['/admin/site/clear-cache'], 'post', ['class' => 'sz-topbar__quickform']) ?>
+                <?= Html::submitButton(
+                    '<span class="material-symbols-rounded">restart_alt</span>',
+                    [
+                        'class' => 'sz-topbar__quicklink',
+                        'title' => 'Очистить кеш',
+                        'aria-label' => 'Очистить кеш',
+                    ]
+                ) ?>
+                <?= Html::endForm() ?>
+
+                <div class="sz-account-menu" data-sz-account>
+                    <button type="button" class="sz-topbar__user sz-account-menu__toggle" data-sz-account-toggle aria-expanded="false">
+                        <div class="sz-topbar__avatar">
+                            <?= Html::encode(mb_strtoupper(mb_substr((string) $userName, 0, 1))) ?>
+                        </div>
+                        <div class="sz-topbar__user-text">
+                            <strong><?= Html::encode($userName) ?></strong>
+                            <?php if ($userEmail): ?>
+                                <span><?= Html::encode($userEmail) ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <span class="material-symbols-rounded sz-account-menu__chevron">keyboard_arrow_down</span>
+                    </button>
+
+                    <div class="sz-account-menu__dropdown" data-sz-account-dropdown>
+                        <?= Html::beginForm(['/auth/logout'], 'post', ['class' => 'sz-account-menu__form']) ?>
+                        <?= Html::submitButton(
+                            '<span class="material-symbols-rounded">logout</span><span>Выйти</span>',
+                            ['class' => 'sz-account-menu__logout']
+                        ) ?>
+                        <?= Html::endForm() ?>
                     </div>
+                </div>
+                </div>
+            </div>
+        </header>
+
+        <?php if (!$isDashboard && $topbarActions !== []): ?>
+            <div class="sz-actions-bar">
+                <div class="sz-actions-bar__inner">
+                    <?= implode('', $topbarActions) ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php
+        $flashes = Yii::$app->session->getAllFlashes(true);
+        $typeMap = [
+            'error' => 'danger',
+            'danger' => 'danger',
+            'warning' => 'warning',
+            'success' => 'success',
+            'info' => 'info',
+        ];
+        ?>
+        <?php if (!empty($flashes)): ?>
+            <div class="sz-toast-stack" data-sz-toast-stack>
+                <?php foreach ($flashes as $type => $message): ?>
+                    <?php $toastType = $typeMap[$type] ?? 'info'; ?>
+                    <?php foreach ((array) $message as $m): ?>
+                        <div class="sz-toast sz-toast--<?= Html::encode($toastType) ?>" role="status" data-sz-toast data-duration="2000">
+                            <div class="sz-toast__icon">
+                                <span class="material-symbols-rounded">
+                                    <?php
+                                    echo match ($toastType) {
+                                        'success' => 'check_circle',
+                                        'warning' => 'warning',
+                                        'danger' => 'error',
+                                        default => 'info',
+                                    };
+                                    ?>
+                                </span>
+                            </div>
+                            <div class="sz-toast__body">
+                                <strong class="sz-toast__title">
+                                    <?= Html::encode(match ($toastType) {
+                                        'success' => 'Готово',
+                                        'warning' => 'Внимание',
+                                        'danger' => 'Ошибка',
+                                        default => 'Уведомление',
+                                    }) ?>
+                                </strong>
+                                <div class="sz-toast__message"><?= Html::encode((string) $m) ?></div>
+                                <div class="sz-toast__progress"><span class="sz-toast__progress-bar"></span></div>
+                            </div>
+                            <button type="button" class="sz-toast__close" data-sz-toast-close aria-label="Закрыть">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                    <?php endforeach; ?>
                 <?php endforeach; ?>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
-    <?= $content ?>
+        <?= $content ?>
+    </div>
 </main>
-
-<script>
-document.addEventListener('click', function (e) {
-    var btn = e.target.closest('.js-flash-close');
-    if (!btn) return;
-    var alert = btn.closest('.alert');
-    if (alert) {
-        alert.remove();
-    }
-});
-</script>
 
 <?php $this->endBody() ?>
 </body>
