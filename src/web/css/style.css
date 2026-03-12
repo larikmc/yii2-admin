@@ -1,0 +1,30 @@
+.help-block {
+    color: #d73038;
+    font-size: 14px;
+}
+
+.sz-content form:not(.d-inline):not(.tax-form--plain):not(.sz-logout__form),
+.grid-view {
+    padding: 40px;
+    border-radius: 20px;
+    background-color: #fff;
+    box-shadow: 0 8px 24px rgba(16, 34, 74, 0.08);
+}
+
+.sz-content form.d-inline,
+.sz-content form.tax-form--plain,
+.sz-content form.sz-logout__form {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.form-control {
+    background: #F1F5F9;
+    border: 1px solid #D8E7ED;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}

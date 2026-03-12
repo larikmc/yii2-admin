@@ -1,0 +1,16 @@
+{
+    "name": "larikmc/yii2-admin",
+    "description": "Admin dashboard module for Yii2 backend",
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "require": {
+        "php": ">=7.4.0",
+        "yiisoft/yii2": "~2.0",
+        "yiisoft/yii2-bootstrap5": "~2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "larikmc\\admin\\": "src/"
+        }
+    }
+}

@@ -1,0 +1,345 @@
+/* Importing Google Fonts - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(#F1F3FF, #CBD4FF);
+}
+
+/* ===== Sidebar ===== */
+.sz-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: 270px;
+    height: 100vh;
+    background: #151A2D;
+    transition: all 0.4s ease;
+}
+
+.sz-sidebar.sz-sidebar--collapsed {
+    width: 85px;
+}
+
+/* Header */
+.sz-sidebar__header {
+    display: flex;
+    position: relative;
+    padding: 25px 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sz-sidebar__logo {
+    display: block;
+    width: 46px;
+    height: 46px;
+}
+
+.sz-sidebar__logo img {
+    width: 46px;
+    height: 46px;
+    display: block;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+/* Buttons */
+.sz-sidebar__toggler,
+.sz-sidebar-menu-btn {
+    position: absolute;
+    right: 20px;
+    height: 35px;
+    width: 35px;
+    color: #151A2D;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    background: #EEF2FF;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: 0.4s ease;
+}
+
+.sz-sidebar.sz-sidebar--collapsed .sz-sidebar__header .sz-sidebar__toggler {
+    transform: translate(-4px, 65px);
+}
+
+.sz-sidebar__toggler span,
+.sz-sidebar-menu-btn span {
+    font-size: 1.75rem;
+    transition: 0.4s ease;
+}
+
+.sz-sidebar.sz-sidebar--collapsed .sz-sidebar__header .sz-sidebar__toggler span {
+    transform: rotate(180deg);
+}
+
+.sz-sidebar__toggler:hover {
+    background: #d9e1fd;
+}
+
+/* Nav lists */
+.sz-sidebar__nav .sz-nav {
+    list-style: none;
+    display: flex;
+    gap: 4px;
+    padding: 0 15px;
+    flex-direction: column;
+    transform: translateY(15px);
+    transition: 0.4s ease;
+}
+
+/* Primary */
+.sz-sidebar__nav .sz-nav--primary {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-bottom: 20px;
+    height: calc(100vh - 227px);
+    scrollbar-color: transparent transparent;
+}
+
+.sz-sidebar__nav .sz-nav--primary:hover {
+    scrollbar-color: #EEF2FF transparent;
+}
+
+.sz-sidebar.sz-sidebar--collapsed .sz-sidebar__nav .sz-nav--primary {
+    overflow: unset;
+    transform: translateY(65px);
+}
+
+/* Secondary */
+.sz-sidebar__nav .sz-nav--secondary {
+    position: absolute;
+    bottom: 35px;
+    width: 100%;
+    background: #151A2D;
+}
+
+.sz-nav__item {
+    position: relative;
+}
+
+/* Links */
+.sz-nav__link {
+    color: #fff;
+    display: flex;
+    gap: 12px;
+    white-space: nowrap;
+    border-radius: 8px;
+    padding: 11px 15px;
+    align-items: center;
+    text-decoration: none;
+    border: 1px solid #151A2D;
+    transition: 0.4s ease;
+}
+
+/* hover/open state (main items) */
+.sz-nav__item:is(:hover, .sz-dd--open) > .sz-nav__link {
+    color: #151A2D;
+    background: #EEF2FF;
+}
+
+/* Label fade when collapsed */
+.sz-nav__label {
+    transition: opacity 0.3s ease;
+}
+
+.sz-sidebar.sz-sidebar--collapsed .sz-nav__link :where(.sz-nav__label, .sz-dd__icon) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sz-sidebar.sz-sidebar--collapsed .sz-dd__icon {
+    transition: opacity 0.3s 0s ease;
+}
+
+/* ===== Dropdown ===== */
+.sz-dd__icon {
+    margin: 0 -4px 0 auto;
+    transition: transform 0.4s ease, opacity 0.3s 0.2s ease;
+}
+
+.sz-dd.sz-dd--open .sz-dd__icon {
+    transform: rotate(180deg);
+}
+
+/* submenu (instead of .dropdown-menu) */
+.sz-submenu {
+    height: 0;
+    overflow-y: hidden;
+    list-style: none;
+    padding-left: 15px;
+    transition: height 0.4s ease;
+}
+
+/* Collapsed sidebar: show submenu on hover as tooltip panel */
+.sz-sidebar.sz-sidebar--collapsed .sz-submenu {
+    position: absolute;
+    top: -10px;
+    left: 100%;
+    opacity: 0;
+    height: auto !important;
+    padding-right: 10px;
+    overflow-y: unset;
+    pointer-events: none;
+    border-radius: 0 10px 10px 0;
+    background: #151A2D;
+    transition: 0s;
+    width: max-content; /* растягивается по контенту */
+}
+
+.sz-sidebar.sz-sidebar--collapsed .sz-submenu:has(.sz-submenu__link) {
+    padding: 7px 10px 7px 24px;
+}
+
+.sz-sidebar.sz-sidebar--collapsed .sz-nav__item:hover > .sz-submenu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(12px);
+    transition: all 0.4s ease;
+}
+
+.sz-sidebar.sz-sidebar--collapsed .sz-nav__item:hover > .sz-submenu:has(.sz-submenu__link) {
+    transform: translateY(10px);
+}
+
+/* ===== Submenu items ===== */
+
+/* Submenu links */
+.sz-submenu__item .sz-submenu__link {
+    color: #F1F4FF;
+    padding: 9px 15px;
+    display: block;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.4s ease;
+
+    /* ✅ чтобы Cloud Solutions был в 1 строку */
+    white-space: nowrap;
+}
+
+/* HOVER для IT Consulting / Cloud Solutions / Mobile Apps */
+.sz-submenu__item .sz-submenu__link:hover {
+    color: #151A2D;
+    background: #EEF2FF;
+}
+
+/* Title hidden by default (expanded sidebar) */
+.sz-submenu__title {
+    display: none;
+    color: #fff;
+
+    /* ✅ чтобы заголовок тоже не переносился */
+    white-space: nowrap;
+}
+
+/* If submenu has links - style title like header (but still hidden in expanded) */
+.sz-submenu:has(.sz-submenu__link) .sz-submenu__title {
+    font-weight: 500;
+    padding: 9px 15px;
+}
+
+/* When sidebar collapsed - show title (in hover flyout) */
+.sz-sidebar.sz-sidebar--collapsed .sz-submenu__title {
+    display: block;
+}
+
+/* Slightly tighter when collapsed */
+.sz-sidebar.sz-sidebar--collapsed .sz-submenu__item .sz-submenu__link,
+.sz-sidebar.sz-sidebar--collapsed .sz-submenu__title {
+    padding: 9px 15px;
+}
+
+/* Mobile menu button hidden by default */
+.sz-sidebar-menu-btn {
+    display: none;
+}
+
+/* Optional content wrapper (чтобы контент не залезал под сайдбар) */
+.sz-content {
+    margin-left: 270px;
+    padding: 20px;
+    transition: margin-left 0.4s ease;
+}
+
+.sz-sidebar.sz-sidebar--collapsed ~ .sz-content {
+    margin-left: 85px;
+}
+
+/* Logout button as menu item (POST form) */
+.sz-logout__form {
+    margin: 0;
+}
+
+.sz-logout__btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #151A2D;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Hover like other nav links */
+.sz-nav__item:is(:hover, .sz-dd--open) .sz-logout__btn {
+    color: #151A2D;
+    background: #EEF2FF;
+}
+
+.sz-logout__btn:focus {
+    outline: none;
+}
+
+
+
+/* Responsive media query code for small screens */
+@media (max-width: 768px) {
+    .sz-sidebar-menu-btn {
+        position: fixed;
+        left: 20px;
+        top: 20px;
+        height: 40px;
+        width: 42px;
+        display: flex;
+        color: #F1F4FF;
+        background: #151A2D;
+    }
+
+    .sz-sidebar.sz-sidebar--collapsed {
+        width: 270px;
+        left: -270px;
+    }
+
+    .sz-sidebar.sz-sidebar--collapsed .sz-sidebar__header .sz-sidebar__toggler {
+        transform: none;
+    }
+
+    .sz-sidebar.sz-sidebar--collapsed .sz-sidebar__nav .sz-nav--primary {
+        transform: translateY(15px);
+    }
+
+    /* on mobile, content should take full width */
+    .sz-content {
+        margin-left: 0;
+        padding-top: 80px;
+    }
+
+    .sz-sidebar.sz-sidebar--collapsed ~ .sz-content {
+        margin-left: 0;
+    }
+}
+

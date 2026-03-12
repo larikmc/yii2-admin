@@ -1,0 +1,246 @@
+/* Dashboard home page */
+.home-dashboard {
+    color: #1d2430;
+}
+
+.home-surface {
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(16, 34, 74, 0.08);
+}
+
+.home-dashboard__hero {
+    display: block;
+    padding: 24px;
+    border: 1px solid #d9e3ff;
+}
+
+.home-dashboard__hero-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+}
+
+.home-dashboard__hero-content {
+    min-width: 0;
+}
+
+.home-dashboard__title {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 700;
+}
+
+.home-dashboard__lead {
+    margin: 0;
+    max-width: 660px;
+    color: #495a78;
+}
+
+.home-dashboard__hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    justify-content: flex-end;
+}
+
+.home-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.home-btn--primary {
+    color: #ffffff;
+    background: #2f56ff;
+}
+
+.home-btn--primary:hover {
+    color: #ffffff;
+    background: #2147ee;
+}
+
+.home-btn--ghost {
+    color: #2f56ff;
+    border: 1px solid #bdccff;
+    background: #eff3ff;
+}
+
+.home-btn--ghost:hover {
+    color: #1f3fc8;
+    background: #e4ebff;
+}
+
+.home-stats {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.home-stat-card {
+    padding: 16px;
+}
+
+.home-stat-card__label {
+    margin: 0;
+    font-size: 13px;
+    color: #667890;
+}
+
+.home-stat-card__value {
+    margin: 8px 0 0;
+    font-size: 19px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.home-status {
+    margin-top: 11px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.home-status--ok {
+    color: #0f7a3f;
+    background: #e9f8f0;
+}
+
+.home-status--warn {
+    color: #9a5a00;
+    background: #fff4e2;
+}
+
+.home-panels {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.home-panel {
+    padding: 18px;
+}
+
+.home-panel--span-2 {
+    grid-column: span 2;
+}
+
+.home-panel__title {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.home-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.home-table th,
+.home-table td {
+    text-align: left;
+    padding: 10px 0;
+    border-bottom: 1px solid #ecf1fb;
+}
+
+.home-table th {
+    width: 190px;
+    color: #62748e;
+    font-weight: 500;
+}
+
+.home-metrics {
+    margin-top: 8px;
+}
+
+.home-metrics__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid #ecf1fb;
+}
+
+.home-metrics__label {
+    color: #62748e;
+}
+
+.home-metrics__value {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.home-note {
+    margin-top: 12px;
+    color: #5f718e;
+    font-size: 13px;
+}
+
+@media (max-width: 1200px) {
+    .home-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-panels {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-panel--span-2 {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 900px) {
+    .home-panels {
+        grid-template-columns: 1fr;
+    }
+
+    .home-panel--span-2 {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 640px) {
+    .home-dashboard__hero {
+        padding: 18px;
+    }
+
+    .home-dashboard__hero-top {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
+    .home-dashboard__title {
+        font-size: 28px;
+    }
+
+    .home-dashboard__hero-actions {
+        margin-top: 0;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .home-btn {
+        width: 100%;
+    }
+
+    .home-stats {
+        grid-template-columns: 1fr;
+    }
+}
