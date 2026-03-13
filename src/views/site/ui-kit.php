@@ -67,10 +67,12 @@ $this->params['breadcrumbs'] = [
             <section class="sz-panel sz-ui-kit-panel">
                 <p class="sz-ui-kit-section-label">Action Column</p>
                 <h3 class="sz-ui-kit-section-title">Групповые actions</h3>
-                <div class="sz-ui-kit-action-demo">
-                    <?= Html::a('<span class="material-symbols-rounded">visibility</span>', '#', ['class' => 'sz-row-action', 'aria-label' => 'Просмотр']) ?>
-                    <?= Html::a('<span class="material-symbols-rounded">edit</span>', '#', ['class' => 'sz-row-action', 'aria-label' => 'Редактировать']) ?>
-                    <?= Html::a('<span class="material-symbols-rounded">delete</span>', '#', ['class' => 'sz-row-action', 'data-method' => 'post', 'aria-label' => 'Удалить']) ?>
+                <div class="grid-view sz-ui-kit-action-demo">
+                    <div class="action-column">
+                        <?= Html::a('<span class="material-symbols-rounded">visibility</span>', '#', ['class' => 'sz-row-action', 'aria-label' => 'Просмотр']) ?>
+                        <?= Html::a('<span class="material-symbols-rounded">edit</span>', '#', ['class' => 'sz-row-action', 'aria-label' => 'Редактировать']) ?>
+                        <?= Html::a('<span class="material-symbols-rounded">delete</span>', '#', ['class' => 'sz-row-action', 'data-method' => 'post', 'aria-label' => 'Удалить']) ?>
+                    </div>
                 </div>
             </section>
 

@@ -28,6 +28,7 @@
 
 - `/admin`
 - `/admin/login`
+- `/admin/site/ui-kit`
 - `/admin/auth/security-log`
 - `/admin/rbac`
 - `/admin/rbac/user`
@@ -358,8 +359,60 @@ echo \larikmc\admin\widgets\AdminPage::widget([
 
 - общий layout админки
 - базовые UI-стили
+- переопределённые bootstrap-кнопки `.btn-*`
+- стилизованные bootstrap-badges `.badge.text-bg-*`
 - стили таблиц
 - grouped action-кнопки в `GridView`
+- showcase-страница `ADMIN-UI-KIT`
+
+### Bootstrap-кнопки
+
+Расширение не требует заводить отдельные "новые" классы для основных кнопок.
+
+Вместо этого переопределяются стандартные bootstrap-классы:
+
+- `.btn-primary`
+- `.btn-secondary`
+- `.btn-success`
+- `.btn-danger`
+- `.btn-warning`
+- `.btn-info`
+- `.btn-light`
+- `.btn-outline-*`
+
+Это сделано специально, чтобы существующие view на `Yii2 + Bootstrap 5` автоматически подхватывали новый стиль без массового переименования классов.
+
+### Bootstrap badges
+
+Аналогично, для статусов и коротких меток используется стандартный bootstrap-формат:
+
+- `.badge`
+- `.text-bg-primary`
+- `.text-bg-secondary`
+- `.text-bg-success`
+- `.text-bg-danger`
+- `.text-bg-warning`
+- `.text-bg-info`
+- `.text-bg-light`
+- `.text-bg-dark`
+
+То есть статусы и label-метки теперь лучше строить именно через bootstrap badges, а не через отдельные кастомные status-компоненты.
+
+### ADMIN-UI-KIT
+
+Внутри пакета есть отдельная служебная страница:
+
+- `/admin/site/ui-kit`
+
+Она нужна как showcase текущего визуального языка:
+
+- solid buttons
+- outline buttons
+- badges
+- metric card
+- grouped action-column buttons
+
+Удобно использовать её как reference, когда нужно повторить стиль в собственных backend-разделах.
 
 То есть такие кнопки, как `view/edit/delete`, уже оформлены внутри пакета и не требуют ручного копирования CSS в проект, если используется штатный layout и asset bundle расширения.
 
