@@ -25,7 +25,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index', 'clear-cache', 'flush-cache'],
+                        'actions' => ['logout', 'index', 'ui-kit', 'clear-cache', 'flush-cache'],
                         'allow' => true,
                         'roles' => ['admin'],
                     ],
@@ -225,6 +225,11 @@ class SiteController extends Controller
             'usersTotal' => $usersTotal,
             'usersActive' => $usersActive,
         ]);
+    }
+
+    public function actionUiKit()
+    {
+        return $this->render('@larikmc/admin/views/site/ui-kit');
     }
 
     public function actionLogin()

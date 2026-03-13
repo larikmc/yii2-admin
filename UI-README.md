@@ -65,6 +65,151 @@
 
 Если править таблицы, лучше не полагаться только на `.action-column a`, а оставлять явный класс `sz-row-action`.
 
+### Как повторить такие grouped-кнопки в другом проекте
+
+Если нужно получить вот такой вид:
+
+- слева иконки `view/edit`
+- справа danger-сегмент `delete`
+- все кнопки стыкованы без промежутков
+- у группы скруглены только внешние углы
+
+Важно:
+
+- в самом расширении эти стили уже встроены в `src/web/css/style.css`
+- в текущем проекте их вручную дописывать не нужно
+- блок ниже нужен как техническое объяснение, из чего этот вид собирается
+- если в другом проекте кнопки выглядят не так, значит обычно проблема не в отсутствии этого куска README, а в том, что не совпали HTML, классы, иконки или подключение asset'ов
+
+То есть это не инструкция формата "обязательно вставь весь этот CSS руками", а шпаргалка "что именно должно быть уже подключено и почему оно работает".
+
+#### 1. В `ActionColumn` нужен явный класс и своя колонка
+
+Пример:
+
+```php
+[
+    'class' => ActionColumn::class,
+    'template' => '{view}{update}{delete}',
+    'contentOptions' => ['class' => 'action-column'],
+    'buttonOptions' => ['class' => 'sz-row-action'],
+    'buttons' => [
+        'view' => static fn($url) => Html::a(
+            '<span class="material-symbols-rounded">visibility</span>',
+            $url,
+            ['class' => 'sz-row-action', 'title' => 'Просмотр', 'aria-label' => 'Просмотр']
+        ),
+        'update' => static fn($url) => Html::a(
+            '<span class="material-symbols-rounded">edit</span>',
+            $url,
+            ['class' => 'sz-row-action', 'title' => 'Редактировать', 'aria-label' => 'Редактировать']
+        ),
+        'delete' => static fn($url) => Html::a(
+            '<span class="material-symbols-rounded">delete</span>',
+            $url,
+            [
+                'class' => 'sz-row-action',
+                'title' => 'Удалить',
+                'aria-label' => 'Удалить',
+                'data-confirm' => 'Удалить запись?',
+                'data-method' => 'post',
+            ]
+        ),
+    ],
+]
+```
+
+Важно:
+
+- шаблон лучше писать без пробелов: `'{view}{update}{delete}'`
+- если сделать `'{view} {update} {delete}'`, между кнопками могут появляться щели
+- `contentOptions => ['class' => 'action-column']` нужен обязательно
+- `class => 'sz-row-action'` лучше задавать каждой кнопке явно
+
+#### 2. Какие CSS-правила обеспечивают grouped-состояние
+
+В самом расширении эти правила уже есть.
+
+Ниже не обязательная ручная вставка "во все проекты", а минимальный набор правил, который должен присутствовать в подключённых стилях, если вы хотите повторить этот же вид вне расширения:
+
+```css
+.grid-view .action-column {
+    white-space: nowrap;
+    width: 132px;
+    min-width: 132px;
+    text-align: right;
+    font-size: 0;
+}
+
+.grid-view a.sz-row-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: top;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    text-decoration: none;
+    background: linear-gradient(180deg, #536b98, #34486e);
+    box-shadow: 0 10px 18px rgba(28, 40, 64, 0.2);
+}
+
+.grid-view a.sz-row-action:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.grid-view a.sz-row-action:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.grid-view a.sz-row-action:hover {
+    color: #fff;
+    background: linear-gradient(180deg, #627cab, #425983);
+}
+
+.grid-view a.sz-row-action[data-method="post"],
+.grid-view a.sz-row-action[data-confirm] {
+    background: linear-gradient(180deg, #536b98, #34486e);
+}
+
+.grid-view a.sz-row-action[data-method="post"]:hover,
+.grid-view a.sz-row-action[data-confirm]:hover {
+    background: linear-gradient(180deg, #b05f68, #8f4550);
+}
+
+.grid-view .action-column .material-symbols-rounded {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.grid-view tbody td.action-column {
+    display: table-cell;
+    white-space: nowrap;
+    text-align: right;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+```
+
+#### 3. Что чаще всего ломает такой вид
+
+- пробелы в `template` у `ActionColumn`
+- отсутствие `font-size: 0` у `.action-column`
+- попытка ставить `display: flex` на `td.action-column`
+- отсутствие явного класса `sz-row-action`
+- попытка стилизовать только `.action-column a`, когда Yii или тема добавляет другие классы
+
+#### 4. Иконки
+
+Сейчас используется `Material Symbols Rounded`.
+
+Если в проекте их нет, нужно подключить шрифт или заменить содержимое кнопок на свои SVG/иконки. Без этого grouped-стиль применится, но сами иконки не появятся как на текущем проекте.
+
 ## Что важно не сломать
 
 - `appendTimestamp` и `forceCopy` уже включались в приложении, чтобы assets обновлялись корректно

@@ -38,7 +38,7 @@ $this->title = 'Добро пожаловать, ' . ($summary['email'] ?? 'Ад
             <article class="home-stat-card home-surface">
                 <p class="home-stat-card__label"><?= Html::encode($item['title']) ?></p>
                 <p class="home-stat-card__value"><?= Html::encode($item['value']) ?></p>
-                <span class="home-status <?= $item['ok'] ? 'home-status--ok' : 'home-status--warn' ?>">
+                <span class="badge <?= $item['ok'] ? 'text-bg-success' : 'text-bg-warning' ?>">
                     <?= $item['ok'] ? 'OK' : 'Внимание' ?>
                 </span>
             </article>
@@ -46,7 +46,7 @@ $this->title = 'Добро пожаловать, ' . ($summary['email'] ?? 'Ад
         <article class="home-panel home-surface">
             <p class="home-stat-card__label">Пользователи</p>
             <p class="home-stat-card__value"><?= $usersTotal === null ? 'н/д' : Html::encode((string) $usersTotal) ?></p>
-            <span class="home-status home-status--ok">Всего</span>
+            <span class="badge text-bg-success">Всего</span>
         </article>
     </section>
 </div>
