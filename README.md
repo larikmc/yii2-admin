@@ -166,6 +166,17 @@ composer require larikmc/yii2-admin
 - `menu`
 - `secondaryMenu`
 
+По умолчанию пакет использует схему, совпадающую с текущим UI:
+
+- `menu`: dashboard + dropdown `Администрирование` с `RBAC` и `Security Log`
+- `secondaryMenu`: только `ADMIN-UI-KIT`
+
+Важно:
+
+- ссылки `На сайт`, `Очистить кеш`, `Выйти` не должны дублироваться в `secondaryMenu`
+- эти действия уже встроены в topbar layout и находятся справа в шапке
+- если добавить их ещё и в `secondaryMenu`, получится старый дублирующийся sidebar-паттерн, который больше не является эталонным для пакета
+
 Пример:
 
 ```php
@@ -191,16 +202,9 @@ composer require larikmc/yii2-admin
         ],
         'secondaryMenu' => [
             [
-                'icon' => 'restart_alt',
-                'label' => 'Очистить кеш',
-                'url' => ['/admin/site/clear-cache'],
-                'method' => 'post',
-            ],
-            [
-                'icon' => 'logout',
-                'label' => 'Выйти',
-                'url' => ['/auth/logout'],
-                'method' => 'post',
+                'icon' => 'palette',
+                'label' => 'ADMIN-UI-KIT',
+                'url' => ['/admin/site/ui-kit'],
             ],
         ],
     ],
@@ -353,6 +357,12 @@ echo \larikmc\admin\widgets\AdminPage::widget([
 .sz-panel--flat
 ```
 
+Важно:
+
+- `sz-panel` это базовый surface-контейнер для внутренних блоков админки
+- таблицы, формы, detail-view и типовые контентные секции должны жить внутри `sz-panel`, если не нужен осознанно плоский вариант
+- для ручных alert-блоков не нужно возвращаться к bootstrap-default рамкам и фонам, если экран уже собирается из `sz-panel` и toast-паттернов
+
 ## UI и grouped action-кнопки
 
 В расширение уже встроены:
@@ -415,6 +425,23 @@ echo \larikmc\admin\widgets\AdminPage::widget([
 Удобно использовать её как reference, когда нужно повторить стиль в собственных backend-разделах.
 
 То есть такие кнопки, как `view/edit/delete`, уже оформлены внутри пакета и не требуют ручного копирования CSS в проект, если используется штатный layout и asset bundle расширения.
+
+## Topbar и H1
+
+В текущем layout заголовок страницы показывается в topbar автоматически через `$this->title`.
+
+Это значит:
+
+- topbar `H1` приходит не из `AdminPage`, а из layout `src/views/layouts/main.php`
+- параметр `showHeader` в `AdminPage` управляет только внутренним заголовком внутри контента страницы
+- `showHeader => false` нужен как раз для того, чтобы не дублировать один и тот же заголовок и subtitle под topbar
+- для RBAC, security log и типовых CRUD-экранов `showHeader => false` является нормальным сценарием, если `title` уже выведен в topbar
+
+Важно:
+
+- в пакете нет рабочего параметра `showTopbarTitle`
+- попытка "чинить" отсутствие заголовка через `$this->params['showTopbarTitle'] = true` является неправильной, потому что layout этот параметр не использует
+- если topbar `H1` пропал, нужно проверять `layout`, `$this->title`, переопределённые view и фактическую версию пакета, а не размазывать по vendor-view несуществующий флаг
 
 Важно понимать:
 
