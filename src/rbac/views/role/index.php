@@ -27,19 +27,32 @@ echo AdminPage::widget([
             [
                 'attribute' => 'name',
                 'label' => 'Имя',
+                'format' => 'raw',
+                'value' => static fn($model) => '<div class="sz-grid-meta"><strong>' . Html::encode($model['name']) . '</strong>'
+                    . ($model['description'] ? '<span>' . Html::encode($model['description']) . '</span>' : '')
+                    . '</div>',
+                'filterInputOptions' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Поиск по имени',
+                ],
             ],
             [
                 'attribute' => 'description',
                 'format' => 'ntext',
                 'label' => 'Описание',
+                'filterInputOptions' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Поиск по описанию',
+                ],
             ],
             [
                 'class' => ActionColumn::class,
-                'template' => '{update} {delete}',
+                'template' => '{view}{update}{delete}',
                 'contentOptions' => ['class' => 'action-column'],
                 'buttonOptions' => ['class' => 'sz-row-action'],
                 'urlCreator' => static fn($action, $model) => [$action, 'name' => $model['name']],
                 'buttons' => [
+                    'view' => static fn($url) => Html::a('<span class="material-symbols-rounded">visibility</span>', $url, ['class' => 'sz-row-action', 'title' => 'Просмотр', 'aria-label' => 'Просмотр']),
                     'update' => static fn($url) => Html::a('<span class="material-symbols-rounded">edit</span>', $url, ['class' => 'sz-row-action', 'title' => 'Редактировать', 'aria-label' => 'Редактировать']),
                     'delete' => static fn($url) => Html::a('<span class="material-symbols-rounded">delete</span>', $url, [
                         'class' => 'sz-row-action',

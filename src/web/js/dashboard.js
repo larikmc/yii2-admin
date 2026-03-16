@@ -129,3 +129,39 @@ document.querySelectorAll("[data-sz-toast]").forEach((toast) => {
         closeButton.addEventListener("click", closeToast);
     }
 });
+
+document.querySelectorAll("[data-sz-role-picker]").forEach((picker) => {
+    const searchInput = picker.querySelector("[data-sz-role-search]");
+    const countBadge = picker.querySelector("[data-sz-role-count]");
+    const options = [...picker.querySelectorAll("[data-sz-role-option]")];
+
+    const syncCount = () => {
+        if (!countBadge) return;
+        countBadge.textContent = String(options.filter((option) => option.checked).length);
+    };
+
+    const applyFilter = () => {
+        const query = (searchInput?.value || "").trim().toLowerCase();
+
+        options.forEach((option) => {
+            const item = option.closest(".sz-role-picker__item");
+            const label = item?.querySelector("[data-sz-role-label]")?.textContent?.toLowerCase() || "";
+            const visible = query === "" || label.includes(query);
+
+            if (item) {
+                item.hidden = !visible;
+            }
+        });
+    };
+
+    options.forEach((option) => {
+        option.addEventListener("change", syncCount);
+    });
+
+    if (searchInput) {
+        searchInput.addEventListener("input", applyFilter);
+    }
+
+    syncCount();
+    applyFilter();
+});

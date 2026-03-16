@@ -41,6 +41,23 @@ class RoleController extends BaseController
         ]);
     }
 
+    public function actionView($name)
+    {
+        $role = Yii::$app->authManager->getRole($name);
+        if ($role === null) {
+            throw new NotFoundHttpException('Роль не найдена.');
+        }
+
+        $service = new RbacService();
+
+        return $this->render('view', [
+            'role' => $role,
+            'module' => $this->module,
+            'users' => $service->getUsersAssignedToRole($role->name, $this->module),
+            'children' => $service->getChildrenNames($role->name, $role->type),
+        ]);
+    }
+
     public function actionUpdate($name)
     {
         $service = new RbacService();

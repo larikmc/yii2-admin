@@ -4,6 +4,7 @@ namespace larikmc\admin\rbac\services;
 
 use larikmc\admin\rbac\forms\PermissionForm;
 use larikmc\admin\rbac\forms\RoleForm;
+use larikmc\admin\rbac\Module;
 use larikmc\admin\rbac\helpers\SystemRbacHelper;
 use Yii;
 use yii\base\InvalidArgumentException;
@@ -151,6 +152,38 @@ class RbacService
         }
 
         return array_keys(Yii::$app->authManager->getChildren($item->name));
+    }
+
+    public function getUsersAssignedToRole(string $roleName, Module $module): array
+    {
+        $config = $module->getConfig();
+        $class = $config->userModel;
+        $assignmentTable = Yii::$app->authManager->assignmentTable;
+
+        return $class::find()
+            ->alias('u')
+            ->innerJoin(['aa' => $assignmentTable], 'aa.user_id = [[u.' . $config->userIdField . ']]')
+            ->where(['aa.item_name' => $roleName])
+            ->orderBy(['u.' . $config->usernameField => SORT_ASC, 'u.' . $config->emailField => SORT_ASC])
+            ->all();
+    }
+
+    public function getRolesContainingPermission(string $permissionName): array
+    {
+        $auth = Yii::$app->authManager;
+        $roles = $auth->getRoles();
+        $result = [];
+
+        foreach ($roles as $role) {
+            $children = $auth->getChildren($role->name);
+            if (isset($children[$permissionName])) {
+                $result[] = $role;
+            }
+        }
+
+        usort($result, static fn($a, $b) => strcmp($a->name, $b->name));
+
+        return $result;
     }
 
     private function syncChildren(Item $item, array $childrenNames): void

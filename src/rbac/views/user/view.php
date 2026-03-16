@@ -47,6 +47,7 @@ $content = ob_get_clean();
 echo AdminPage::widget([
     'title' => $this->title,
     'tabs' => $this->params['rbacTabs'] ?? [],
+    'showHeader' => false,
     'actions' => [
         Html::a('Управлять назначениями', ['update', 'id' => $user->{$config->userIdField}], ['class' => 'btn btn-primary']),
     ],

@@ -1,8 +1,8 @@
 <?php
 
 use larikmc\admin\widgets\AdminPage;
-use larikmc\admin\rbac\helpers\UserModelHelper;
 use larikmc\admin\rbac\services\AssignmentService;
+use larikmc\admin\rbac\helpers\UserModelHelper;
 use yii\bootstrap5\Html;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
@@ -31,26 +31,59 @@ echo AdminPage::widget([
             ],
             [
                 'attribute' => $config->usernameField,
+                'filterAttribute' => 'username',
                 'label' => 'Логин',
                 'value' => static fn($model) => $model->{$config->usernameField},
+                'filterInputOptions' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Поиск по логину',
+                ],
             ],
             [
                 'attribute' => $config->emailField,
+                'filterAttribute' => 'email',
                 'label' => 'Email',
                 'value' => static fn($model) => $model->{$config->emailField},
+                'filterInputOptions' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Поиск по email',
+                ],
             ],
             [
                 'attribute' => $config->statusField,
                 'label' => 'Статус',
-                'value' => static fn($model) => $model->{$config->statusField},
-            ],
-            [
-                'label' => 'Отображение',
-                'value' => static fn($model) => UserModelHelper::label($model, $module),
+                'format' => 'raw',
+                'value' => static fn($model) => UserModelHelper::statusBadge($model, $module),
             ],
             [
                 'label' => 'Роли',
                 'value' => static fn($model) => $assignmentService->getAssignedRolesAsString($model->{$config->userIdField}),
+                'filterAttribute' => 'role',
+                'filter' => Html::activeDropDownList(
+                    $searchModel,
+                    'role',
+                    $searchModel->getRoleOptions(),
+                    [
+                        'class' => 'form-select',
+                        'prompt' => 'Все роли',
+                    ]
+                ),
+            ],
+            [
+                'label' => 'Назначения',
+                'value' => static fn($model) => $assignmentService->getAssignedRolesAsString($model->{$config->userIdField}) === 'Не назначены'
+                    ? 'Без ролей'
+                    : 'С ролями',
+                'filterAttribute' => 'hasAssignments',
+                'filter' => Html::activeDropDownList(
+                    $searchModel,
+                    'hasAssignments',
+                    $searchModel->getAssignmentStateOptions(),
+                    [
+                        'class' => 'form-select',
+                        'prompt' => 'Все',
+                    ]
+                ),
             ],
             [
                 'class' => ActionColumn::class,
