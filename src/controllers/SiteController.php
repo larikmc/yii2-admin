@@ -7,6 +7,7 @@ use Yii;
 use yii\caching\DummyCache;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\FileHelper;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -248,11 +249,32 @@ class SiteController extends Controller
 
     public function actionClearCache()
     {
+        $flushedComponents = [];
+        $clearedDirectories = [];
+
         try {
             if (Yii::$app->has('cache')) {
-                Yii::$app->cache->flush();
+                $cache = Yii::$app->cache;
+                if (!$cache instanceof DummyCache) {
+                    $cache->flush();
+                    $flushedComponents[] = 'app cache';
+                }
             }
-            Yii::$app->session->setFlash('success', 'Кеш очищен.');
+
+            foreach ($this->resolveRuntimeCacheDirectories() as $cacheDir) {
+                if (!is_dir($cacheDir)) {
+                    continue;
+                }
+
+                $this->clearDirectoryContents($cacheDir);
+                $clearedDirectories[] = $cacheDir;
+            }
+
+            if ($flushedComponents === [] && $clearedDirectories === []) {
+                Yii::$app->session->setFlash('warning', 'Кеш не найден: нет настроенного хранилища или каталогов runtime/cache.');
+            } else {
+                Yii::$app->session->setFlash('success', 'Кеш очищен.');
+            }
         } catch (\Throwable $e) {
             Yii::$app->session->setFlash('error', 'Не удалось очистить кеш: ' . $e->getMessage());
         }
@@ -263,5 +285,42 @@ class SiteController extends Controller
     public function actionFlushCache()
     {
         return $this->actionClearCache();
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function resolveRuntimeCacheDirectories(): array
+    {
+        $directories = [];
+        $aliases = ['@backend', '@frontend', '@common', '@runtime'];
+
+        foreach ($aliases as $alias) {
+            $basePath = Yii::getAlias($alias, false);
+            if (!is_string($basePath) || $basePath === '') {
+                continue;
+            }
+
+            $candidate = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'cache';
+            if ($alias === '@runtime') {
+                $candidate = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
+            }
+
+            $directories[] = $candidate;
+        }
+
+        return array_values(array_unique($directories));
+    }
+
+    protected function clearDirectoryContents(string $directory): void
+    {
+        $items = FileHelper::findDirectories($directory, ['recursive' => false]);
+        foreach ($items as $item) {
+            FileHelper::removeDirectory($item);
+        }
+
+        foreach (FileHelper::findFiles($directory, ['recursive' => false]) as $file) {
+            @unlink($file);
+        }
     }
 }
