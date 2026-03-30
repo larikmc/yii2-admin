@@ -76,6 +76,19 @@ $this->params['breadcrumbs'] = [
                 </div>
             </section>
 
+            <section class="sz-panel sz-ui-kit-panel">
+                <p class="sz-ui-kit-section-label">GridView</p>
+                <h3 class="sz-ui-kit-section-title">Pagination</h3>
+                <div class="sz-ui-kit-pagination-demo">
+                    <ul class="pagination"><li class="prev disabled"><span>«</span></li>
+<li class="active"><a href="/admin/product/index?page=1" data-page="0">1</a></li>
+<li><a href="/admin/product/index?page=2" data-page="1">2</a></li>
+<li><a href="/admin/product/index?page=3" data-page="2">3</a></li>
+<li><a href="/admin/product/index?page=4" data-page="3">4</a></li>
+<li class="next"><a href="/admin/product/index?page=2" data-page="1">»</a></li></ul>
+                </div>
+            </section>
+
             <section class="sz-panel sz-ui-kit-panel sz-ui-kit-panel--span-2">
                 <p class="sz-ui-kit-section-label">Surface</p>
                 <h3 class="sz-ui-kit-section-title">Типовая панель</h3>
