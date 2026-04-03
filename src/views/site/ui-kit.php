@@ -1,6 +1,7 @@
 <?php
 
 use yii\bootstrap5\Html;
+use yii\web\View;
 
 $this->title = 'ADMIN-UI-KIT';
 $this->params['breadcrumbs'] = [
@@ -76,6 +77,33 @@ $this->params['breadcrumbs'] = [
                 </div>
             </section>
 
+            <section class="sz-panel sz-ui-kit-panel sz-ui-kit-panel--span-2">
+                <p class="sz-ui-kit-section-label">Progress</p>
+                <h3 class="sz-ui-kit-section-title">Прогресс выполнения задачи</h3>
+                <p class="sz-ui-kit-subtitle">Готовый шаблон для long-running задач (как sitemap update): статус + бар + шаги.</p>
+                <div class="sz-progress-job" data-demo-progress data-total="5">
+                    <div class="sz-progress-job__status" data-demo-progress-status>
+                        <span class="sz-progress-job__icon">
+                            <span class="material-symbols-rounded is-spinning" data-demo-progress-icon>sync</span>
+                        </span>
+                        <span class="sz-progress-job__text" data-demo-progress-text>Ожидание запуска.</span>
+                    </div>
+                    <div class="sz-progress-job__track">
+                        <div class="sz-progress-job__bar-wrap" aria-hidden="true">
+                            <div class="sz-progress-job__bar" data-demo-progress-bar role="progressbar" style="width: 0%">0%</div>
+                        </div>
+                        <div class="sz-progress-job__meta">
+                            <span data-demo-progress-step>Шаг 0 из 5</span>
+                            <span data-demo-progress-meta>0%</span>
+                        </div>
+                    </div>
+                    <div class="sz-ui-kit-actions">
+                        <?= Html::button('Запустить демо', ['class' => 'btn btn-primary', 'type' => 'button', 'data-demo-progress-run' => true]) ?>
+                        <?= Html::button('Сбросить', ['class' => 'btn btn-outline-secondary', 'type' => 'button', 'data-demo-progress-reset' => true]) ?>
+                    </div>
+                </div>
+            </section>
+
             <section class="sz-panel sz-ui-kit-panel">
                 <p class="sz-ui-kit-section-label">GridView</p>
                 <h3 class="sz-ui-kit-section-title">Pagination</h3>
@@ -114,3 +142,105 @@ $this->params['breadcrumbs'] = [
         </div>
     </div>
 </section>
+
+<?php
+$this->registerJs(<<<JS
+(function () {
+    const root = document.querySelector('[data-demo-progress]');
+    if (!root) {
+        return;
+    }
+
+    const total = Number(root.getAttribute('data-total')) || 5;
+    const status = root.querySelector('[data-demo-progress-status]');
+    const icon = root.querySelector('[data-demo-progress-icon]');
+    const text = root.querySelector('[data-demo-progress-text]');
+    const bar = root.querySelector('[data-demo-progress-bar]');
+    const stepLabel = root.querySelector('[data-demo-progress-step]');
+    const meta = root.querySelector('[data-demo-progress-meta]');
+    const runButton = root.querySelector('[data-demo-progress-run]');
+    const resetButton = root.querySelector('[data-demo-progress-reset]');
+
+    let processed = 0;
+    let timer = null;
+    let inProgress = false;
+
+    function render(state) {
+        const percent = Math.max(0, Math.min(100, Math.round((processed / total) * 100)));
+
+        bar.style.width = percent + '%';
+        bar.textContent = percent + '%';
+        meta.textContent = percent + '%';
+        stepLabel.textContent = 'Шаг ' + processed + ' из ' + total;
+
+        status.className = 'sz-progress-job__status';
+        icon.classList.remove('is-spinning');
+
+        if (state === 'idle') {
+            text.textContent = 'Ожидание запуска.';
+            icon.textContent = 'sync';
+            icon.classList.add('is-spinning');
+        } else if (state === 'running') {
+            text.textContent = 'Выполняется задача. Не закрывайте вкладку.';
+            icon.textContent = 'sync';
+            icon.classList.add('is-spinning');
+        } else if (state === 'success') {
+            status.classList.add('sz-progress-job__status--success');
+            text.textContent = 'Задача выполнена успешно.';
+            icon.textContent = 'check_circle';
+        } else if (state === 'error') {
+            status.classList.add('sz-progress-job__status--error');
+            text.textContent = 'Ошибка выполнения задачи.';
+            icon.textContent = 'error';
+        }
+    }
+
+    function stop() {
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+        }
+        inProgress = false;
+    }
+
+    function run() {
+        if (inProgress) {
+            return;
+        }
+
+        inProgress = true;
+        processed = 0;
+        render('running');
+
+        const tick = function () {
+            if (!inProgress) {
+                return;
+            }
+
+            processed += 1;
+
+            if (processed >= total) {
+                processed = total;
+                render('success');
+                stop();
+                return;
+            }
+
+            render('running');
+            timer = setTimeout(tick, 350);
+        };
+
+        timer = setTimeout(tick, 350);
+    }
+
+    runButton.addEventListener('click', run);
+    resetButton.addEventListener('click', function () {
+        stop();
+        processed = 0;
+        render('idle');
+    });
+
+    render('idle');
+})();
+JS, View::POS_READY);
+?>
