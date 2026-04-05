@@ -108,7 +108,7 @@ composer require larikmc/yii2-admin
     'user' => [
         'identityClass' => common\models\User::class,
         'enableAutoLogin' => true,
-        'loginUrl' => ['/auth/login'],
+        'loginUrl' => ['/login'],
     ],
     'authManager' => [
         'class' => yii\rbac\DbManager::class,
@@ -131,6 +131,30 @@ composer require larikmc/yii2-admin
     ],
 ],
 ```
+
+### Важные пути для входа (рекомендуемый вариант)
+
+Чтобы страница входа открывалась по короткому URL:
+
+- `https://your-domain/admin/login`
+
+используйте такую связку:
+
+1. `request.baseUrl = '/admin'`
+2. `user.loginUrl = ['/login']`
+3. правило `urlManager`: `'login' => 'admin/auth/auth/login'`
+4. правило `urlManager`: `'auth/captcha' => 'admin/auth/auth/captcha'`
+
+Если у вас есть глобальная проверка доступа в `on beforeRequest`, обязательно добавьте в whitelist:
+
+- `login`
+- `auth/login`
+- `auth/captcha`
+- `admin/login`
+- `admin/auth/login`
+- `admin/auth/captcha`
+
+Иначе можно получить цикл редиректов (`ERR_TOO_MANY_REDIRECTS`) на странице входа.
 
 ### Схема доступа
 

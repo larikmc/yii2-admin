@@ -2,6 +2,12 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.1.8] - 2026-04-05
+
+### Changed
+- fixed CAPTCHA validator route in `LoginForm` to use module route `admin/auth/auth/captcha`, preventing `Invalid CAPTCHA action ID` in backend integration
+- updated README auth routing instructions with explicit `/admin/login` setup (`loginUrl`, url rules, and `beforeRequest` whitelist) to avoid redirect loops
+
 ## [1.1.6] - 2026-03-30
 
 ### Changed
