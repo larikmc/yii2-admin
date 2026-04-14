@@ -136,7 +136,7 @@ a {
 }
 
 .sz-topbar__title--compact {
-    font-size: clamp(22px, 2.2vw, 25px);
+    font-size: clamp(20px, 2.2vw, 25px);
     line-height: 1.02;
 }
 
@@ -165,9 +165,9 @@ a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    min-width: 60px;
-    min-height: 60px;
+    width: 50px;
+    min-width: 50px;
+    min-height: 50px;
     border: 1px solid rgba(24, 32, 51, 0.08);
     border-radius: 18px;
     color: #536b98;
@@ -345,9 +345,9 @@ a {
 .sz-topbar__avatar {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 14px;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
     background: linear-gradient(135deg, #1d4ed8, #7c8cf8);
     color: #fff;
     font-size: 16px;
@@ -1650,9 +1650,9 @@ label {
     }
 
     .sz-topbar__quicklink {
-        width: 52px;
-        min-width: 52px;
-        min-height: 52px;
+        width: 50px;
+        min-width: 50px;
+        min-height: 50px;
         border-radius: 16px;
     }
 
