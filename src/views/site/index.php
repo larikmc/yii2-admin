@@ -38,6 +38,14 @@ $this->title = 'Добро пожаловать, ' . ($summary['email'] ?? 'Ад
             <article class="home-stat-card home-surface">
                 <p class="home-stat-card__label"><?= Html::encode($item['title']) ?></p>
                 <p class="home-stat-card__value"><?= Html::encode($item['value']) ?></p>
+                <?php if (isset($item['progress'])): ?>
+                    <div class="home-stat-card__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?= Html::encode((string) round((float) $item['progress'], 1)) ?>">
+                        <span
+                            class="home-stat-card__progress-fill <?= $item['ok'] ? 'home-stat-card__progress-fill--ok' : 'home-stat-card__progress-fill--warning' ?>"
+                            style="width: <?= Html::encode((string) round((float) $item['progress'], 1)) ?>%;"
+                        ></span>
+                    </div>
+                <?php endif; ?>
                 <span class="badge <?= $item['ok'] ? 'text-bg-success' : 'text-bg-warning' ?>">
                     <?= $item['ok'] ? 'OK' : 'Внимание' ?>
                 </span>

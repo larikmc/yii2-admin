@@ -160,6 +160,7 @@ class SiteController extends Controller
 
             $health[3]['ok'] = $diskUsedPercent < 90;
             $health[3]['value'] = sprintf('занято %.1f%%', $diskUsedPercent);
+            $health[3]['progress'] = max(0, min(100, $diskUsedPercent));
         }
 
         $memoryUsage = (float) memory_get_usage(true);
@@ -174,6 +175,7 @@ class SiteController extends Controller
                 $formatBytes($memoryLimitBytes),
                 $memoryPercent
             );
+            $health[4]['progress'] = max(0, min(100, $memoryPercent));
         } else {
             $health[4]['ok'] = true;
             $health[4]['value'] = sprintf('%s (лимит не ограничен)', $formatBytes($memoryUsage));
