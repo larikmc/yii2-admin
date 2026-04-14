@@ -1623,11 +1623,20 @@ label {
 @media (max-width: 1024px) {
     .sz-topbar {
         flex-direction: column;
+        gap: 10px;
         padding: 24px;
     }
 
     .sz-topbar--compact {
         align-items: stretch;
+    }
+
+    .sz-topbar--compact .sz-topbar__side {
+        order: 1;
+    }
+
+    .sz-topbar--compact .sz-topbar__meta--compact {
+        order: 2;
     }
 
     .sz-topbar__side,

@@ -11,14 +11,15 @@ $this->params['breadcrumbs'] = [
     ['label' => 'RBAC', 'url' => ['/rbac/default/index']],
     ['label' => $this->title],
 ];
-$this->params['topbarActions'] = [
-    Html::a('Создать роль', ['create'], ['class' => 'btn btn-success']),
-];
 ?>
 <?php
 echo AdminPage::widget([
     'title' => $this->title,
     'tabs' => $this->params['rbacTabs'] ?? [],
+    'actions' => [
+        Html::a('Создать роль', ['create'], ['class' => 'btn btn-success']),
+    ],
+    'actionsPosition' => 'below_tabs',
     'showHeader' => false,
     'content' => GridView::widget([
         'dataProvider' => $dataProvider,
