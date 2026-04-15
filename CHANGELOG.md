@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.1.16] - 2026-04-15
+
+### Changed
+- release version bump and changelog sync
+
 ## [1.1.15] - 2026-04-15
 
 ### Changed
