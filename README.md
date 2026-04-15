@@ -451,6 +451,7 @@ echo Html::a(
         'data-image-full' => '/uploads/images/original/item-123.jpg',
         'data-image-title' => 'Изображение #123',
         'class' => 'sz-thumb',
+        'style' => 'width:100px;height:72px;',
     ]
 );
 ```
@@ -461,13 +462,18 @@ echo Html::a(
 - `img[src]` — placeholder, по умолчанию стандартный `load.svg` из расширения
 - `a[data-image-full]` — URL полного изображения для popup
 - `a[href]` — fallback для popup и обычная ссылка, если JS не загрузился
-- `a.sz-thumb` — готовый контейнер, который центрирует placeholder и миниатюру
+- `a.sz-thumb` — готовый контейнер, который центрирует placeholder и миниатюру, но не диктует размер
 - `img.sz-thumb__img` — картинка внутри контейнера, вписывается без растягивания
 - `data-pjax="0"` — желательно для ссылок внутри `GridView`/PJAX, чтобы клик не перехватывался PJAX
 
-Готовые размеры:
+Размер задаётся проектом:
 
-- `sz-thumb` — 100x72
+```php
+['class' => 'sz-thumb', 'style' => 'width:100px;height:72px;']
+```
+
+Или готовым модификатором для типовых случаев:
+
 - `sz-thumb sz-thumb--sm` — 72x56
 - `sz-thumb sz-thumb--lg` — 140x96
 - `sz-thumb sz-thumb--cover` — изображение заполняет контейнер через `object-fit: cover`
@@ -491,6 +497,7 @@ echo Html::a(
         'data-image-viewer' => true,
         'data-image-title' => 'Изображение #123',
         'class' => 'sz-thumb',
+        'style' => 'width:100px;height:72px;',
     ]
 );
 ```
@@ -522,6 +529,7 @@ $placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
                 'data-image-full' => $original,
                 'data-image-title' => 'Изображение #' . $model->id,
                 'class' => 'sz-thumb',
+                'style' => 'width:100px;height:72px;',
             ]
         );
     },
@@ -535,7 +543,7 @@ $placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
 ```php
 $placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
 
-echo '<a class="sz-thumb" data-pjax="0" data-image-viewer data-image-full="/uploads/images/original/item-123.jpg" data-image-title="Изображение #123" href="/uploads/images/original/item-123.jpg" onclick="return openAdminImageViewer(this)">' .
+echo '<a class="sz-thumb" style="width:100px;height:72px;" data-pjax="0" data-image-viewer data-image-full="/uploads/images/original/item-123.jpg" data-image-title="Изображение #123" href="/uploads/images/original/item-123.jpg" onclick="return openAdminImageViewer(this)">' .
     '<img class="sz-thumb__img" src="' . $placeholder . '" data-src="/uploads/images/thumbs/item-123.webp" alt="">' .
     '</a>';
 ```

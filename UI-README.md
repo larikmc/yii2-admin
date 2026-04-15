@@ -114,11 +114,13 @@
 
 Готовые классы для миниатюр:
 
-- `.sz-thumb` — контейнер 100x72, центрирует placeholder и миниатюру
+- `.sz-thumb` — контейнер без заданного размера, центрирует placeholder и миниатюру
 - `.sz-thumb--sm` — размер 72x56
 - `.sz-thumb--lg` — размер 140x96
 - `.sz-thumb--cover` — картинка заполняет контейнер через `object-fit: cover`
 - `.sz-thumb__img` — картинка внутри контейнера
+
+Размер миниатюры задаёт проект: через свой CSS, inline `style`, grid/table-контекст или готовые модификаторы `sz-thumb--sm` / `sz-thumb--lg`.
 
 ### Placeholder
 
@@ -152,6 +154,7 @@ $placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
 ```html
 <a
     class="sz-thumb"
+    style="width:100px;height:72px;"
     href="/uploads/images/original/item-123.jpg"
     data-pjax="0"
     data-image-viewer
@@ -173,7 +176,7 @@ $placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
 
 - `img src` — placeholder, обычно URL из `getLazyloadPlaceholderUrl($this)`
 - `img data-src` — миниатюра для вывода на странице
-- `a.sz-thumb` — общий контейнер, который центрирует placeholder и миниатюру
+- `a.sz-thumb` — общий контейнер, который центрирует placeholder и миниатюру, но не задаёт размер
 - `img.sz-thumb__img` — картинка внутри контейнера
 - `a data-image-full` — оригинал для popup
 - `a href` — fallback и ссылка на оригинал
@@ -203,6 +206,7 @@ echo Html::a(
         'data-image-full' => $originalUrl,
         'data-image-title' => 'Изображение #' . $model->id,
         'class' => 'sz-thumb',
+        'style' => 'width:100px;height:72px;',
     ]
 );
 ```
@@ -234,6 +238,7 @@ $placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
                 'data-image-full' => $originalUrl,
                 'data-image-title' => 'Изображение #' . $model->id,
                 'class' => 'sz-thumb',
+                'style' => 'width:100px;height:72px;',
             ]
         );
     },
@@ -247,6 +252,7 @@ $placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
 ```html
 <a
     class="sz-thumb"
+    style="width:100px;height:72px;"
     href="/uploads/images/original/item-123.jpg"
     data-pjax="0"
     data-image-viewer

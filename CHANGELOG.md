@@ -2,6 +2,12 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.1.14] - 2026-04-15
+
+### Changed
+- made `.sz-thumb` size-neutral with a white background so projects can define thumbnail dimensions themselves
+- kept `.sz-thumb--sm` and `.sz-thumb--lg` as optional ready-made size modifiers
+
 ## [1.1.13] - 2026-04-15
 
 ### Changed

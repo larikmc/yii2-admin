@@ -964,14 +964,12 @@ label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--sz-thumb-width, 100px);
-    height: var(--sz-thumb-height, 72px);
     overflow: hidden;
     border: 1px solid var(--sz-line);
     border-radius: 8px;
     vertical-align: middle;
     text-decoration: none;
-    background: rgba(247, 249, 253, 0.9);
+    background: #fff;
 }
 
 .sz-thumb:hover,
@@ -991,13 +989,13 @@ label {
 }
 
 .sz-thumb--sm {
-    --sz-thumb-width: 72px;
-    --sz-thumb-height: 56px;
+    width: 72px;
+    height: 56px;
 }
 
 .sz-thumb--lg {
-    --sz-thumb-width: 140px;
-    --sz-thumb-height: 96px;
+    width: 140px;
+    height: 96px;
 }
 
 .sz-thumb--cover img,
