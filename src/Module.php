@@ -2,7 +2,9 @@
 
 namespace larikmc\admin;
 
+use larikmc\admin\assets\AppAsset;
 use Yii;
+use yii\web\View;
 
 class Module extends \yii\base\Module
 {
@@ -32,6 +34,7 @@ class Module extends \yii\base\Module
     public ?int $captchaAfterAttempts = null;
     public ?int $lockDuration = null;
     public ?int $userAttemptsTtl = null;
+    public ?string $lazyloadPlaceholderUrl = null;
 
     public function init()
     {
@@ -83,5 +86,14 @@ class Module extends \yii\base\Module
                 'accessRoles' => $this->rbacAccessRoles,
             ],
         ]);
+    }
+
+    public function getLazyloadPlaceholderUrl(View $view): string
+    {
+        if ($this->lazyloadPlaceholderUrl !== null && $this->lazyloadPlaceholderUrl !== '') {
+            return Yii::getAlias($this->lazyloadPlaceholderUrl);
+        }
+
+        return AppAsset::register($view)->baseUrl . '/img/load.svg';
     }
 }

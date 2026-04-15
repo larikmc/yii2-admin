@@ -11,7 +11,11 @@
 
 Пакет рассчитан на сценарий, где админка, auth и RBAC живут вместе как единая backend-платформа.
 
-Для UI-слоя, визуальных правил и кастомных паттернов админки смотрите отдельный файл:
+Перед интеграцией UI обязательно прочитайте `UI-README.md`.
+
+В нём описаны визуальные правила, layout-паттерны, popup/lazyload для изображений, grouped action-кнопки, topbar и частые ошибки интеграции. Без этого файла легко подключить пакет технически правильно, но получить визуальные расхождения в админке.
+
+Связанные документы:
 
 - `UI-README.md`
 - `AI-INTEGRATION-CHECKLIST.md` (обязательный чеклист для нейросети при интеграции в новый проект)
@@ -99,6 +103,10 @@ composer require larikmc/yii2-admin
         'lockDuration' => 120,
         'userAttemptsTtl' => 120,
         'maxDelaySeconds' => 10,
+
+        // Необязательно: свой placeholder для lazyload.
+        // Если не задано, используется стандартный src/web/img/load.svg из расширения.
+        'lazyloadPlaceholderUrl' => null,
     ],
 ],
 'components' => [
@@ -387,6 +395,211 @@ echo \larikmc\admin\widgets\AdminPage::widget([
 - `sz-panel` это базовый surface-контейнер для внутренних блоков админки
 - таблицы, формы, detail-view и типовые контентные секции должны жить внутри `sz-panel`, если не нужен осознанно плоский вариант
 - для ручных alert-блоков не нужно возвращаться к bootstrap-default рамкам и фонам, если экран уже собирается из `sz-panel` и toast-паттернов
+
+## Lazyload и popup для изображений
+
+В расширение уже встроены:
+
+- lazyload для изображений: `src/web/js/lazyloader.js`
+- popup-просмотрщик оригинала: `src/web/js/image-viewer-admin.js`
+- стили popup: `src/web/css/image-viewer-admin.css`
+
+Все эти файлы подключаются через `larikmc\admin\assets\AppAsset`, поэтому при штатном layout `@larikmc/admin/views/layouts/main` ничего отдельно регистрировать не нужно.
+
+Стандартный placeholder для lazyload уже лежит в расширении:
+
+- `src/web/img/load.svg`
+
+По умолчанию используется именно он. Если нужен свой placeholder, задайте его в конфиге модуля:
+
+```php
+'modules' => [
+    'admin' => [
+        'class' => larikmc\admin\Module::class,
+        'lazyloadPlaceholderUrl' => '@web/img/load.svg',
+    ],
+],
+```
+
+В view URL placeholder лучше получать через модуль:
+
+```php
+$placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
+```
+
+### Базовый пример
+
+Миниатюра грузится лениво из `data-src`, а по клику открывается оригинал из `data-image-full`:
+
+```php
+use yii\bootstrap5\Html;
+
+$placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
+
+echo Html::a(
+    Html::img($placeholder, [
+        'data-src' => '/uploads/images/thumbs/item-123.webp',
+        'class' => 'sz-thumb__img',
+        'alt' => 'Изображение #123',
+        'loading' => 'lazy',
+        'decoding' => 'async',
+    ]),
+    '/uploads/images/original/item-123.jpg',
+    [
+        'data-pjax' => '0',
+        'data-image-viewer' => true,
+        'data-image-full' => '/uploads/images/original/item-123.jpg',
+        'data-image-title' => 'Изображение #123',
+        'class' => 'sz-thumb',
+    ]
+);
+```
+
+Что здесь важно:
+
+- `img[data-src]` — URL миниатюры, которую нужно показать в таблице или списке
+- `img[src]` — placeholder, по умолчанию стандартный `load.svg` из расширения
+- `a[data-image-full]` — URL полного изображения для popup
+- `a[href]` — fallback для popup и обычная ссылка, если JS не загрузился
+- `a.sz-thumb` — готовый контейнер, который центрирует placeholder и миниатюру
+- `img.sz-thumb__img` — картинка внутри контейнера, вписывается без растягивания
+- `data-pjax="0"` — желательно для ссылок внутри `GridView`/PJAX, чтобы клик не перехватывался PJAX
+
+Готовые размеры:
+
+- `sz-thumb` — 100x72
+- `sz-thumb sz-thumb--sm` — 72x56
+- `sz-thumb sz-thumb--lg` — 140x96
+- `sz-thumb sz-thumb--cover` — изображение заполняет контейнер через `object-fit: cover`
+
+### Если миниатюра и оригинал совпадают
+
+Можно не указывать `data-image-full`: popup возьмёт URL из `href`.
+
+```php
+$placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
+
+echo Html::a(
+    Html::img($placeholder, [
+        'data-src' => '/uploads/images/item-123.jpg',
+        'class' => 'sz-thumb__img',
+        'alt' => 'Изображение #123',
+    ]),
+    '/uploads/images/item-123.jpg',
+    [
+        'data-pjax' => '0',
+        'data-image-viewer' => true,
+        'data-image-title' => 'Изображение #123',
+        'class' => 'sz-thumb',
+    ]
+);
+```
+
+### Пример для GridView
+
+```php
+$placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
+
+[
+    'attribute' => 'image',
+    'format' => 'raw',
+    'value' => static function ($model) use ($placeholder) {
+        $thumb = '/uploads/images/items/thumbs/' . $model->image . '.webp';
+        $original = '/uploads/images/items/original/' . $model->image . '.jpg';
+
+        return \yii\bootstrap5\Html::a(
+            \yii\bootstrap5\Html::img($placeholder, [
+                'data-src' => $thumb,
+                'class' => 'sz-thumb__img',
+                'alt' => '',
+                'loading' => 'lazy',
+                'decoding' => 'async',
+            ]),
+            $original,
+            [
+                'data-pjax' => '0',
+                'data-image-viewer' => true,
+                'data-image-full' => $original,
+                'data-image-title' => 'Изображение #' . $model->id,
+                'class' => 'sz-thumb',
+            ]
+        );
+    },
+]
+```
+
+### Legacy-вариант с onclick
+
+Старый backend-паттерн тоже поддерживается:
+
+```php
+$placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
+
+echo '<a class="sz-thumb" data-pjax="0" data-image-viewer data-image-full="/uploads/images/original/item-123.jpg" data-image-title="Изображение #123" href="/uploads/images/original/item-123.jpg" onclick="return openAdminImageViewer(this)">' .
+    '<img class="sz-thumb__img" src="' . $placeholder . '" data-src="/uploads/images/thumbs/item-123.webp" alt="">' .
+    '</a>';
+```
+
+Новый вариант без inline `onclick` предпочтительнее: достаточно атрибута `data-image-viewer`.
+
+### Поддерживаемые атрибуты
+
+- `data-src` на `img` — лениво подставляется в `src`
+- `data-srcset` на `img` — лениво подставляется в `srcset`
+- `data-no-placeholder` на `img` — не добавлять класс `lazy-img`
+- `data-image-viewer` на ссылке — включает popup по клику
+- `data-image-full` на ссылке — оригинал для popup
+- `data-image-title` на ссылке — подпись под изображением
+- `title` на ссылке — fallback для подписи
+- `href` на ссылке — fallback для оригинала
+
+### Где должен лежать placeholder
+
+Если вы ничего не настраиваете, placeholder берётся из расширения:
+
+```text
+src/web/img/load.svg
+```
+
+После публикации Yii asset'ов он будет доступен по URL опубликованного `AppAsset`.
+
+Если в конкретном проекте нужен другой spinner/placeholder, положите его в web-root проекта, например:
+
+```text
+backend/web/img/load.svg
+```
+
+и укажите:
+
+```php
+'lazyloadPlaceholderUrl' => '@web/img/load.svg',
+```
+
+Можно указать и абсолютный URL:
+
+```php
+'lazyloadPlaceholderUrl' => 'https://cdn.example.com/admin/load.svg',
+```
+
+### Обновление после AJAX/PJAX
+
+При обычной загрузке страницы lazyload стартует сам. Если контент добавлен динамически, можно переинициализировать изображения внутри контейнера:
+
+```js
+lazyloader.init(document.querySelector('#pjax-container'));
+```
+
+Если используется Yii PJAX:
+
+```js
+document.addEventListener('pjax:end', function (event) {
+    if (window.lazyloader) {
+        window.lazyloader.init(event.target);
+    }
+});
+```
+
+Popup использует делегирование клика на `document`, поэтому для новых ссылок с `data-image-viewer` повторная инициализация не нужна.
 
 ## UI и grouped action-кнопки
 

@@ -1,0 +1,78 @@
+.admin-image-viewer[hidden] {
+    display: none !important;
+}
+
+.admin-image-viewer {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99999 !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+.admin-image-viewer__backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(15, 23, 42, 0.82) !important;
+}
+
+.admin-image-viewer__dialog {
+    position: relative !important;
+    z-index: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: min(92vw, 1400px) !important;
+    height: min(92vh, 900px) !important;
+    margin: 4vh auto !important;
+    padding: 24px !important;
+}
+
+.admin-image-viewer__img {
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 16px !important;
+    background: #fff !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35) !important;
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+    -webkit-user-select: none !important;
+}
+
+.admin-image-viewer__caption {
+    margin-top: 12px !important;
+    color: #fff !important;
+    font-size: 15px !important;
+    text-align: center !important;
+}
+
+.admin-image-viewer__close {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    width: 44px !important;
+    height: 44px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #fff !important;
+    font-size: 30px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    transition: background 0.18s ease, transform 0.18s ease !important;
+}
+
+.admin-image-viewer__close:hover,
+.admin-image-viewer__close:focus {
+    background: rgba(255, 255, 255, 0.28) !important;
+    transform: scale(1.05) !important;
+    outline: none !important;
+}
+
+body.admin-image-viewer-open {
+    overflow: hidden !important;
+}

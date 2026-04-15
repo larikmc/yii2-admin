@@ -7,6 +7,38 @@ $this->title = 'ADMIN-UI-KIT';
 $this->params['breadcrumbs'] = [
     ['label' => 'ADMIN-UI-KIT'],
 ];
+
+$module = Yii::$app->getModule('admin');
+$placeholder = $module->getLazyloadPlaceholderUrl($this);
+$asset = \larikmc\admin\assets\AppAsset::register($this);
+$demoThumb = $asset->baseUrl . '/img/template.jpg';
+$demoOriginal = $asset->baseUrl . '/img/template.jpg';
+$popupHtmlExample = <<<HTML
+<a class="sz-thumb sz-thumb--lg" href="{$demoOriginal}" data-pjax="0" data-image-viewer data-image-full="{$demoOriginal}" data-image-title="Демо popup">
+    <img class="sz-thumb__img" src="{$placeholder}" data-src="{$demoThumb}" loading="lazy" decoding="async" alt="">
+</a>
+HTML;
+$popupPhpExample = <<<'PHP'
+$placeholder = Yii::$app->getModule('admin')->getLazyloadPlaceholderUrl($this);
+
+echo Html::a(
+    Html::img($placeholder, [
+        'data-src' => $thumbUrl,
+        'class' => 'sz-thumb__img',
+        'loading' => 'lazy',
+        'decoding' => 'async',
+        'alt' => '',
+    ]),
+    $originalUrl,
+    [
+        'data-pjax' => '0',
+        'data-image-viewer' => true,
+        'data-image-full' => $originalUrl,
+        'data-image-title' => 'Оригинал #' . $model->id,
+        'class' => 'sz-thumb sz-thumb--lg',
+    ]
+);
+PHP;
 ?>
 
 <section class="sz-page">
@@ -114,6 +146,49 @@ $this->params['breadcrumbs'] = [
 <li><a href="/admin/product/index?page=3" data-page="2">3</a></li>
 <li><a href="/admin/product/index?page=4" data-page="3">4</a></li>
 <li class="next"><a href="/admin/product/index?page=2" data-page="1">»</a></li></ul>
+                </div>
+            </section>
+
+            <section class="sz-panel sz-ui-kit-panel sz-ui-kit-panel--span-3">
+                <p class="sz-ui-kit-section-label">Images</p>
+                <h3 class="sz-ui-kit-section-title">Popup + lazyload</h3>
+                <p class="sz-ui-kit-subtitle">Миниатюра грузится через <code>data-src</code>, а popup открывает оригинал из <code>data-image-full</code>.</p>
+
+                <div class="sz-ui-kit-image-demo">
+                    <div class="sz-ui-kit-image-demo__preview">
+                        <?= Html::a(
+                            Html::img($placeholder, [
+                                'data-src' => $demoThumb,
+                                'class' => 'sz-thumb__img',
+                                'alt' => 'Демо lazyload и popup',
+                                'loading' => 'lazy',
+                                'decoding' => 'async',
+                            ]),
+                            $demoOriginal,
+                            [
+                                'data-pjax' => '0',
+                                'data-image-viewer' => true,
+                                'data-image-full' => $demoOriginal,
+                                'data-image-title' => 'Демо popup: оригинальное изображение',
+                                'class' => 'sz-thumb sz-thumb--lg',
+                            ]
+                        ) ?>
+                        <div class="sz-ui-kit-image-demo__meta">
+                            <strong>Живой пример</strong>
+                            <span>Нажмите на миниатюру, чтобы открыть popup.</span>
+                        </div>
+                    </div>
+
+                    <div class="sz-ui-kit-code-grid">
+                        <div>
+                            <p class="sz-ui-kit-subtitle">HTML-паттерн</p>
+                            <pre class="sz-ui-kit-code"><code><?= Html::encode($popupHtmlExample) ?></code></pre>
+                        </div>
+                        <div>
+                            <p class="sz-ui-kit-subtitle">Yii/PHP-паттерн</p>
+                            <pre class="sz-ui-kit-code"><code><?= Html::encode($popupPhpExample) ?></code></pre>
+                        </div>
+                    </div>
                 </div>
             </section>
 

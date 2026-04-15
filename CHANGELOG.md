@@ -2,6 +2,19 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.1.12] - 2026-04-15
+
+### Added
+- added built-in admin image popup viewer with bundled styles and delegated `data-image-viewer` support
+- added lazyload support for `data-src` and `data-srcset` images with a default bundled `load.svg` placeholder
+- added configurable `lazyloadPlaceholderUrl` and `getLazyloadPlaceholderUrl()` helper on the admin module
+- added reusable `.sz-thumb` thumbnail classes for centered placeholders and stable image cells
+- added popup/lazyload examples to `ADMIN-UI-KIT`
+
+### Changed
+- expanded README and UI README with required UI integration notes, popup/lazyload examples, GridView examples, PJAX notes, and common mistakes
+- improved popup closing, hover state, drag prevention, and selection cleanup
+
 ## [1.1.8] - 2026-04-05
 
 ### Changed

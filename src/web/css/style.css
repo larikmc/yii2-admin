@@ -960,6 +960,53 @@ label {
     content: "";
 }
 
+.sz-thumb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sz-thumb-width, 100px);
+    height: var(--sz-thumb-height, 72px);
+    overflow: hidden;
+    border: 1px solid var(--sz-line);
+    border-radius: 8px;
+    vertical-align: middle;
+    text-decoration: none;
+    background: rgba(247, 249, 253, 0.9);
+}
+
+.sz-thumb:hover,
+.sz-thumb:focus {
+    border-color: rgba(83, 107, 152, 0.28);
+    background: rgba(255, 255, 255, 0.96);
+}
+
+.sz-thumb img,
+.sz-thumb__img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+.sz-thumb--sm {
+    --sz-thumb-width: 72px;
+    --sz-thumb-height: 56px;
+}
+
+.sz-thumb--lg {
+    --sz-thumb-width: 140px;
+    --sz-thumb-height: 96px;
+}
+
+.sz-thumb--cover img,
+.sz-thumb--cover .sz-thumb__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .sz-toast-stack {
     position: fixed;
     top: 24px;
@@ -1473,6 +1520,62 @@ label {
     text-align: left;
 }
 
+.sz-ui-kit-image-demo {
+    display: grid;
+    gap: 18px;
+}
+
+.sz-ui-kit-image-demo__preview {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.sz-ui-kit-image-demo__meta {
+    display: grid;
+    gap: 4px;
+    min-width: 220px;
+}
+
+.sz-ui-kit-image-demo__meta strong {
+    color: var(--sz-text);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.sz-ui-kit-image-demo__meta span {
+    color: var(--sz-muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.sz-ui-kit-code-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.sz-ui-kit-code {
+    min-height: 100%;
+    max-height: 320px;
+    margin: 0;
+    padding: 14px;
+    overflow: auto;
+    border: 1px solid var(--sz-line);
+    border-radius: 8px;
+    color: #25324a;
+    font-size: 12px;
+    line-height: 1.55;
+    background: rgba(247, 249, 253, 0.92);
+}
+
+.sz-ui-kit-code code {
+    color: inherit;
+    font-size: inherit;
+    white-space: pre;
+}
+
 .sz-progress-job {
     display: grid;
     gap: 20px;
@@ -1729,5 +1832,9 @@ label {
     .sz-ui-kit-list__row {
         grid-template-columns: 1fr;
         gap: 6px;
+    }
+
+    .sz-ui-kit-code-grid {
+        grid-template-columns: 1fr;
     }
 }
