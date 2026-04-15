@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.1.13] - 2026-04-15
+
+### Changed
+- reinitializes image lazyload automatically after Yii PJAX updates
+
 ## [1.1.12] - 2026-04-15
 
 ### Added
