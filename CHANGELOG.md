@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.1.15] - 2026-04-15
+
+### Changed
+- removed scale transform from popup close button hover/focus state
+
 ## [1.1.14] - 2026-04-15
 
 ### Changed

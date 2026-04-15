@@ -63,13 +63,12 @@
     font-size: 30px !important;
     line-height: 1 !important;
     cursor: pointer !important;
-    transition: background 0.18s ease, transform 0.18s ease !important;
+    transition: background 0.18s ease !important;
 }
 
 .admin-image-viewer__close:hover,
 .admin-image-viewer__close:focus {
     background: rgba(255, 255, 255, 0.28) !important;
-    transform: scale(1.05) !important;
     outline: none !important;
 }
 
