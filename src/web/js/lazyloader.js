@@ -79,3 +79,9 @@ if (document.readyState === 'loading') {
 document.addEventListener('pjax:end', event => {
     lazyloader.init(event.target || document);
 });
+
+if (window.jQuery) {
+    window.jQuery(document).on('pjax:end', function (event) {
+        lazyloader.init(event.target || document);
+    });
+}

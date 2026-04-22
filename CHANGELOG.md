@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.1.18] - 2026-04-22
+
+### Changed
+- fixed lazyload re-initialization after Yii2 PJAX updates by adding jQuery `pjax:end` binding in `lazyloader.js` (covers paginated admin grids and filters)
+
 ## [1.1.17] - 2026-04-16
 
 ### Changed
