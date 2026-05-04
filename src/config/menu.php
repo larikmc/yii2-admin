@@ -1,7 +1,6 @@
 <?php
 
 use larikmc\admin\rbac\helpers\SystemRbacHelper;
-use Yii;
 
 return [
     'primary' => [
