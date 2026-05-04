@@ -11,12 +11,13 @@ use yii\rbac\Item;
 class RoleSearch extends Model
 {
     public ?string $name = null;
+    public ?string $description = null;
 
     public function rules(): array
     {
         return [
-            ['name', 'trim'],
-            ['name', 'string'],
+            [['name', 'description'], 'trim'],
+            [['name', 'description'], 'string'],
         ];
     }
 
@@ -38,6 +39,10 @@ class RoleSearch extends Model
         $rows = [];
         foreach ($items as $item) {
             if ($this->name && stripos($item->name, $this->name) === false) {
+                continue;
+            }
+
+            if ($this->description && stripos((string) $item->description, $this->description) === false) {
                 continue;
             }
 

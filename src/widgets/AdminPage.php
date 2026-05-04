@@ -52,12 +52,13 @@ class AdminPage extends Widget
             $tabs = Html::tag(
                 'ul',
                 implode('', $items),
-                ['class' => 'nav nav-tabs mb-4']
+                ['class' => 'nav nav-tabs mb-3']
             );
         }
 
         $headerActions = $this->actionsPosition === 'header' ? $actions : '';
         $bodyActions = $this->actionsPosition === 'below_title' ? Html::tag('div', $actions, ['class' => 'mb-4']) : '';
+        $tabsActions = $this->actionsPosition === 'below_tabs' ? Html::tag('div', $actions, ['class' => 'mb-3']) : '';
 
         $headerBlock = '';
         if ($this->showHeader) {
@@ -78,7 +79,7 @@ class AdminPage extends Widget
 
         return Html::tag(
             'section',
-            $headerBlock . $tabs . Html::tag('div', $content, ['class' => 'sz-page__body']),
+            $headerBlock . $tabs . $tabsActions . Html::tag('div', $content, ['class' => 'sz-page__body']),
             ['class' => 'sz-page']
         );
     }

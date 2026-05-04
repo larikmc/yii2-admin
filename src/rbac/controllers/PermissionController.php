@@ -41,6 +41,21 @@ class PermissionController extends BaseController
         ]);
     }
 
+    public function actionView($name)
+    {
+        $permission = Yii::$app->authManager->getPermission($name);
+        if ($permission === null) {
+            throw new NotFoundHttpException('Действие не найдено.');
+        }
+
+        $service = new RbacService();
+
+        return $this->render('view', [
+            'permission' => $permission,
+            'roles' => $service->getRolesContainingPermission($permission->name),
+        ]);
+    }
+
     public function actionUpdate($name)
     {
         $service = new RbacService();

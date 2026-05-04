@@ -33,7 +33,7 @@ class LoginForm extends Model
 
             // CAPTCHA scenario
             ['verifyCode', 'required', 'on' => 'withCaptcha'],
-            ['verifyCode', 'captcha', 'on' => 'withCaptcha', 'captchaAction' => self::CAPTCHA_ROUTE],
+            ['verifyCode', 'captcha', 'on' => 'withCaptcha', 'captchaAction' => 'admin/auth/auth/captcha'],
         ];
     }
 

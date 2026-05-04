@@ -24,6 +24,7 @@ class BaseController extends Controller
             ['label' => 'Роли', 'url' => $this->getRbacRoute('role/index'), 'match' => '/admin/rbac/role/'],
             ['label' => 'Действия', 'url' => $this->getRbacRoute('permission/index'), 'match' => '/admin/rbac/permission/'],
             ['label' => 'Назначения', 'url' => $this->getRbacRoute('assignment/index'), 'match' => '/admin/rbac/assignment/'],
+            ['label' => 'Инвайты', 'url' => $this->getRbacRoute('invite/index'), 'match' => '/admin/rbac/invite/'],
         ];
 
         foreach ($items as &$item) {

@@ -90,6 +90,10 @@ $blocked = !empty($remaining) && $remaining > 0;
             ]) ?>
         </div>
 
+        <div class="text-center mt-3">
+            <?= Html::a('Забыли пароль?', ['/auth/request-password-reset'], ['class' => 'text-decoration-none']) ?>
+        </div>
+
         <?php ActiveForm::end(); ?>
         </div>
 

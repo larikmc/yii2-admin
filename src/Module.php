@@ -2,7 +2,9 @@
 
 namespace larikmc\admin;
 
+use larikmc\admin\assets\AppAsset;
 use Yii;
+use yii\web\View;
 
 class Module extends \yii\base\Module
 {
@@ -32,6 +34,7 @@ class Module extends \yii\base\Module
     public ?int $captchaAfterAttempts = null;
     public ?int $lockDuration = null;
     public ?int $userAttemptsTtl = null;
+    public ?string $lazyloadPlaceholderUrl = null;
 
     public function init()
     {
@@ -39,6 +42,14 @@ class Module extends \yii\base\Module
         Yii::setAlias('@larikmc/admin', __DIR__);
         Yii::setAlias('@larikmc/admin/auth', __DIR__ . '/auth');
         Yii::setAlias('@larikmc/admin/rbac', __DIR__ . '/rbac');
+
+        if (Yii::$app->has('urlManager')) {
+            Yii::$app->getUrlManager()->addRules([
+                'auth/invite' => 'admin/auth/auth/invite',
+                'auth/request-password-reset' => 'admin/auth/auth/request-password-reset',
+                'auth/reset-password' => 'admin/auth/auth/reset-password',
+            ], false);
+        }
 
         $defaults = require __DIR__ . '/config/menu.php';
 
@@ -83,5 +94,14 @@ class Module extends \yii\base\Module
                 'accessRoles' => $this->rbacAccessRoles,
             ],
         ]);
+    }
+
+    public function getLazyloadPlaceholderUrl(View $view): string
+    {
+        if ($this->lazyloadPlaceholderUrl !== null && $this->lazyloadPlaceholderUrl !== '') {
+            return Yii::getAlias($this->lazyloadPlaceholderUrl);
+        }
+
+        return AppAsset::register($view)->baseUrl . '/img/load.svg';
     }
 }

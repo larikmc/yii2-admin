@@ -45,6 +45,11 @@ class AssignmentService
         return $roles === [] ? 'Не назначены' : implode(', ', $roles);
     }
 
+    public function getAssignedRolesCount(string|int $userId): int
+    {
+        return count($this->getAssignedItemNames($userId));
+    }
+
     public function getAssignableItems(): array
     {
         $auth = Yii::$app->authManager;
@@ -52,7 +57,8 @@ class AssignmentService
         $result = [];
 
         foreach ($items as $item) {
-            $result[$item->name] = sprintf('%s [роль]', $item->name);
+            $suffix = $item->description ? ' - ' . $item->description : ' [роль]';
+            $result[$item->name] = $item->name . $suffix;
         }
 
         asort($result);

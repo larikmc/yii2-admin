@@ -7,6 +7,7 @@ use Yii;
 use yii\caching\DummyCache;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\FileHelper;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -25,7 +26,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index', 'clear-cache', 'flush-cache'],
+                        'actions' => ['logout', 'index', 'ui-kit', 'clear-cache', 'flush-cache'],
                         'allow' => true,
                         'roles' => ['admin'],
                     ],
@@ -159,6 +160,7 @@ class SiteController extends Controller
 
             $health[3]['ok'] = $diskUsedPercent < 90;
             $health[3]['value'] = sprintf('занято %.1f%%', $diskUsedPercent);
+            $health[3]['progress'] = max(0, min(100, $diskUsedPercent));
         }
 
         $memoryUsage = (float) memory_get_usage(true);
@@ -173,6 +175,7 @@ class SiteController extends Controller
                 $formatBytes($memoryLimitBytes),
                 $memoryPercent
             );
+            $health[4]['progress'] = max(0, min(100, $memoryPercent));
         } else {
             $health[4]['ok'] = true;
             $health[4]['value'] = sprintf('%s (лимит не ограничен)', $formatBytes($memoryUsage));
@@ -227,6 +230,11 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionUiKit()
+    {
+        return $this->render('@larikmc/admin/views/site/ui-kit');
+    }
+
     public function actionLogin()
     {
         return $this->redirect(['/auth/login']);
@@ -243,11 +251,32 @@ class SiteController extends Controller
 
     public function actionClearCache()
     {
+        $flushedComponents = [];
+        $clearedDirectories = [];
+
         try {
             if (Yii::$app->has('cache')) {
-                Yii::$app->cache->flush();
+                $cache = Yii::$app->cache;
+                if (!$cache instanceof DummyCache) {
+                    $cache->flush();
+                    $flushedComponents[] = 'app cache';
+                }
             }
-            Yii::$app->session->setFlash('success', 'Кеш очищен.');
+
+            foreach ($this->resolveRuntimeCacheDirectories() as $cacheDir) {
+                if (!is_dir($cacheDir)) {
+                    continue;
+                }
+
+                $this->clearDirectoryContents($cacheDir);
+                $clearedDirectories[] = $cacheDir;
+            }
+
+            if ($flushedComponents === [] && $clearedDirectories === []) {
+                Yii::$app->session->setFlash('warning', 'Кеш не найден: нет настроенного хранилища или каталогов runtime/cache.');
+            } else {
+                Yii::$app->session->setFlash('success', 'Кеш очищен.');
+            }
         } catch (\Throwable $e) {
             Yii::$app->session->setFlash('error', 'Не удалось очистить кеш: ' . $e->getMessage());
         }
@@ -258,5 +287,42 @@ class SiteController extends Controller
     public function actionFlushCache()
     {
         return $this->actionClearCache();
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function resolveRuntimeCacheDirectories(): array
+    {
+        $directories = [];
+        $aliases = ['@backend', '@frontend', '@common', '@runtime'];
+
+        foreach ($aliases as $alias) {
+            $basePath = Yii::getAlias($alias, false);
+            if (!is_string($basePath) || $basePath === '') {
+                continue;
+            }
+
+            $candidate = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'cache';
+            if ($alias === '@runtime') {
+                $candidate = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'cache';
+            }
+
+            $directories[] = $candidate;
+        }
+
+        return array_values(array_unique($directories));
+    }
+
+    protected function clearDirectoryContents(string $directory): void
+    {
+        $items = FileHelper::findDirectories($directory, ['recursive' => false]);
+        foreach ($items as $item) {
+            FileHelper::removeDirectory($item);
+        }
+
+        foreach (FileHelper::findFiles($directory, ['recursive' => false]) as $file) {
+            @unlink($file);
+        }
     }
 }

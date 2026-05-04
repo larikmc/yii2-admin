@@ -49,6 +49,20 @@ $isActive = static function (array $item) use ($currentRoute): bool {
         || (str_ends_with((string) $url[0], '*') && str_starts_with($currentRoute, rtrim((string) $url[0], '*')));
 };
 
+$isVisible = static function (array $item): bool {
+    if (!array_key_exists('visible', $item)) {
+        return true;
+    }
+
+    $visible = $item['visible'];
+
+    if (is_callable($visible)) {
+        return (bool) $visible();
+    }
+
+    return (bool) $visible;
+};
+
 $hasActiveChild = static function (array $item) use ($isActive): bool {
     foreach (($item['items'] ?? []) as $child) {
         if ($isActive($child)) {
@@ -59,10 +73,14 @@ $hasActiveChild = static function (array $item) use ($isActive): bool {
     return false;
 };
 
-$renderMenuItem = static function (array $item, bool $secondary = false) use ($isActive, $hasActiveChild) {
+$renderMenuItem = static function (array $item, bool $secondary = false) use ($isActive, $hasActiveChild, $isVisible) {
+    if (!$isVisible($item)) {
+        return;
+    }
+
     $icon = $item['icon'] ?? 'radio_button_unchecked';
     $label = $item['label'] ?? 'Без названия';
-    $items = $item['items'] ?? [];
+    $items = array_values(array_filter($item['items'] ?? [], static fn(array $child): bool => $isVisible($child)));
     $isDropdown = !empty($items);
     $isCurrent = $isActive($item);
     $isOpen = $hasActiveChild($item);
