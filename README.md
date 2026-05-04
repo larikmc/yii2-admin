@@ -4,7 +4,9 @@
 
 - dashboard и общий layout админки
 - авторизация и страница входа
+- восстановление пароля для админки
 - RBAC: роли, действия и назначения
+- одноразовые инвайты для регистрации администратора
 - security log
 - очистка кеша
 - системный bootstrap для `admin`, `adminPanel` и пользователя `ID=1`
@@ -33,6 +35,9 @@
 
 - `/admin`
 - `/admin/login`
+- `/admin/auth/request-password-reset`
+- `/admin/auth/reset-password?token=...`
+- `/admin/auth/invite?token=...`
 - `/admin/site/ui-kit`
 - `/admin/auth/security-log`
 - `/admin/rbac`
@@ -40,6 +45,7 @@
 - `/admin/rbac/role`
 - `/admin/rbac/permission`
 - `/admin/rbac/assignment`
+- `/admin/rbac/invite`
 
 Внутри RBAC уже поддержана схема:
 
@@ -130,6 +136,9 @@ composer require larikmc/yii2-admin
             'auth/login' => 'admin/auth/auth/login',
             'auth/logout' => 'admin/auth/auth/logout',
             'auth/captcha' => 'admin/auth/auth/captcha',
+            'auth/invite' => 'admin/auth/auth/invite',
+            'auth/request-password-reset' => 'admin/auth/auth/request-password-reset',
+            'auth/reset-password' => 'admin/auth/auth/reset-password',
             'auth/security-log' => 'admin/auth/auth/security-log',
             'auth/clear-security-log' => 'admin/auth/auth/clear-security-log',
             'rbac' => 'admin/rbac/default/index',
@@ -158,9 +167,15 @@ composer require larikmc/yii2-admin
 - `login`
 - `auth/login`
 - `auth/captcha`
+- `auth/request-password-reset`
+- `auth/reset-password`
+- `auth/invite`
 - `admin/login`
 - `admin/auth/login`
 - `admin/auth/captcha`
+- `admin/auth/request-password-reset`
+- `admin/auth/reset-password`
+- `admin/auth/invite`
 
 Иначе можно получить цикл редиректов (`ERR_TOO_MANY_REDIRECTS`) на странице входа.
 
@@ -201,7 +216,7 @@ composer require larikmc/yii2-admin
 
 По умолчанию пакет использует схему, совпадающую с текущим UI:
 
-- `menu`: dashboard + dropdown `Администрирование` с `RBAC` и `Security Log`
+- `menu`: dashboard + dropdown `Администрирование` с `RBAC`, `Инвайт администратора` и `Security Log`
 - `secondaryMenu`: только `ADMIN-UI-KIT`
 
 Важно:
@@ -229,6 +244,7 @@ composer require larikmc/yii2-admin
                 'label' => 'Администрирование',
                 'items' => [
                     ['label' => 'RBAC', 'url' => ['/rbac/default/index']],
+                    ['label' => 'Инвайт администратора', 'url' => ['/rbac/invite/index']],
                     ['label' => 'Security Log', 'url' => ['/auth/security-log']],
                 ],
             ],
@@ -249,20 +265,60 @@ composer require larikmc/yii2-admin
 В пакет уже встроен модуль авторизации:
 
 - форма входа
+- встроенное восстановление пароля для админки
 - brute-force защита
 - CAPTCHA после нескольких попыток
 - lock по IP и email
 - security log
+- регистрация администратора по одноразовой ссылке
 
 Маршруты:
 
 - `GET/POST /admin/auth/login`
+- `GET/POST /admin/auth/request-password-reset`
+- `GET/POST /admin/auth/reset-password?token=...`
+- `GET/POST /admin/auth/invite?token=...`
 - `POST /admin/auth/logout`
 - `GET /admin/auth/captcha`
 - `GET /admin/auth/security-log`
 - `POST /admin/auth/clear-security-log`
 
 Внутри пакета используются короткие маршруты `/auth/*`, поэтому их нужно пробросить через `urlManager`.
+
+### Восстановление пароля
+
+В странице входа уже встроена ссылка `Забыли пароль?`.
+
+Сценарий работы:
+
+1. пользователь открывает `/admin/auth/request-password-reset`
+2. вводит email
+3. интерфейс всегда показывает одинаковое нейтральное success-состояние
+4. письмо реально отправляется только если пользователь существует, имеет доступ `adminPanel`, модель поддерживает reset-token и в приложении настроен `mailer`
+
+Это сделано специально, чтобы не раскрывать, какие email существуют в админке.
+
+После успешной отправки форма скрывается, а на странице остается только сообщение и ссылка возврата ко входу.
+
+### Инвайт администратора
+
+В пакет встроен сценарий регистрации нового администратора по одноразовой ссылке.
+
+Сценарий работы:
+
+1. главный администратор с `ID=1` открывает `/admin/rbac/invite`
+2. генерирует ссылку приглашения
+3. ссылка автоматически копируется в буфер обмена
+4. приглашенный пользователь открывает `/admin/auth/invite?token=...`
+5. проходит регистрацию
+6. после регистрации автоматически получает роль `admin` и попадает в админку
+
+Ограничения:
+
+- генерация invite-ссылки доступна только пользователю с `ID=1`
+- экран `/admin/rbac/invite` скрыт из меню для остальных
+- прямой доступ к генерации invite для остальных запрещен
+- invite одноразовый
 
 ## RBAC
 
@@ -271,6 +327,7 @@ composer require larikmc/yii2-admin
 - роли
 - действия
 - назначения ролей пользователям
+- генерация одноразовых invite-ссылок для новых администраторов
 
 Маршруты:
 
@@ -279,6 +336,7 @@ composer require larikmc/yii2-admin
 - `/admin/rbac/role`
 - `/admin/rbac/permission`
 - `/admin/rbac/assignment`
+- `/admin/rbac/invite`
 
 ### Системные элементы
 
@@ -296,6 +354,7 @@ composer require larikmc/yii2-admin
 - действие `adminPanel` является системным и не может быть удалено
 - связь `admin -> adminPanel` должна существовать всегда
 - у пользователя с `ID=1` роль `admin` должна сохраняться всегда
+- генерация invite-ссылок доступна только пользователю с `ID=1`
 
 Связь системных прав:
 
@@ -342,6 +401,8 @@ echo \larikmc\admin\widgets\AdminPage::widget([
 - тень карточки
 
 Используйте его для списков, форм, таблиц и detail-экранов, если нужен единый стиль панели.
+
+Важно: не генерируйте для этого расширения лишнюю разметку (включая собственные breadcrumbs, дополнительные обертки под стили и отдельные UI-каркасы), если используете штатный layout админки. Виджет `AdminPage`, меню и базовые стили уже встроены и подключаются самим пакетом.
 
 Пример ручного использования:
 

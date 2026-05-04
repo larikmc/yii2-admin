@@ -2,6 +2,20 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.2.0] - 2026-05-04
+
+### Added
+- added built-in admin password reset flow with `/admin/auth/request-password-reset` and `/admin/auth/reset-password`
+- added one-time admin invite flow with `/admin/rbac/invite` and `/admin/auth/invite`
+- added invite-based admin signup with automatic `admin` role assignment
+- added password recovery link on the admin login screen
+
+### Changed
+- updated README with new auth routes, invite routes, integration rules, and guest whitelist requirements
+- changed password reset UX to always show a neutral success state without revealing whether an email exists
+- limited password reset email delivery to users who have `adminPanel` access
+- limited invite generation UI and controller access to the root administrator with `ID=1`
+
 ## [1.1.19] - 2026-05-04
 
 ### Changed

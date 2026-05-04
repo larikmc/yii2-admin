@@ -6,4 +6,5 @@ return [
     'rbac/roles' => 'rbac/role/index',
     'rbac/permissions' => 'rbac/permission/index',
     'rbac/assignments' => 'rbac/assignment/index',
+    'rbac/invites' => 'rbac/invite/index',
 ];

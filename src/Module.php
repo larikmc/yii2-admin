@@ -43,6 +43,14 @@ class Module extends \yii\base\Module
         Yii::setAlias('@larikmc/admin/auth', __DIR__ . '/auth');
         Yii::setAlias('@larikmc/admin/rbac', __DIR__ . '/rbac');
 
+        if (Yii::$app->has('urlManager')) {
+            Yii::$app->getUrlManager()->addRules([
+                'auth/invite' => 'admin/auth/auth/invite',
+                'auth/request-password-reset' => 'admin/auth/auth/request-password-reset',
+                'auth/reset-password' => 'admin/auth/auth/reset-password',
+            ], false);
+        }
+
         $defaults = require __DIR__ . '/config/menu.php';
 
         if (empty($this->menu)) {

@@ -1,5 +1,8 @@
 <?php
 
+use larikmc\admin\rbac\helpers\SystemRbacHelper;
+use Yii;
+
 return [
     'primary' => [
         [
@@ -14,6 +17,15 @@ return [
                 [
                     'label' => 'RBAC',
                     'url' => ['/rbac/default/index'],
+                ],
+                [
+                    'label' => 'Инвайт администратора',
+                    'url' => ['/rbac/invite/index'],
+                    'visible' => static function (): bool {
+                        $identity = Yii::$app->user->identity;
+
+                        return $identity !== null && (string) $identity->getId() === SystemRbacHelper::ROOT_USER_ID;
+                    },
                 ],
                 [
                     'label' => 'Security Log',

@@ -7,8 +7,12 @@ use yii\web\Controller;
 use yii\captcha\CaptchaAction;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use larikmc\admin\auth\models\InviteSignupForm;
 use larikmc\admin\auth\models\LoginForm;
+use larikmc\admin\auth\models\PasswordResetRequestForm;
+use larikmc\admin\auth\models\ResetPasswordForm;
 use larikmc\admin\auth\Module;
+use larikmc\admin\rbac\services\AdminInviteService;
 use larikmc\admin\rbac\services\InstallService;
 
 class AuthController extends Controller
@@ -29,7 +33,7 @@ class AuthController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['login', 'captcha'],
+                        'actions' => ['login', 'captcha', 'invite', 'request-password-reset', 'reset-password'],
                         'allow' => true,
                     ],
                     [
@@ -355,6 +359,102 @@ class AuthController extends Controller
     {
         Yii::$app->user->logout();
         return $this->redirect($this->getAuthRoute('login'));
+    }
+
+    public function actionInvite(string $token = '')
+    {
+        $service = new AdminInviteService();
+        if (!$service->validateToken($token)) {
+            Yii::$app->session->setFlash('error', 'Ссылка приглашения недействительна или уже использована.');
+            return $this->redirect($this->getAuthRoute('login'));
+        }
+
+        if (!Yii::$app->user->isGuest) {
+            $identity = Yii::$app->user->identity;
+            $userId = $identity?->getId();
+            if ($userId !== null && $service->consumeToken($token, $userId)) {
+                Yii::$app->session->setFlash('success', 'Роль администратора назначена.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Не удалось назначить роль администратора.');
+            }
+
+            return $this->redirect(['/admin/site/index']);
+        }
+
+        /** @var Module $module */
+        $module = $this->module;
+        $model = new InviteSignupForm([
+            'userClass' => $module->userClass,
+        ]);
+
+        if ($model->load(Yii::$app->request->post())) {
+            $user = $model->signup();
+            if ($user !== null) {
+                try {
+                    (new InstallService())->installTables();
+                } catch (\Throwable $e) {
+                    Yii::error('Не удалось автоматически инициализировать RBAC: ' . $e->getMessage(), self::LOG_CATEGORY);
+                }
+
+                $userId = $user->getId();
+                if ($userId !== null && $service->consumeToken($token, $userId) && Yii::$app->user->login($user, $module->rememberMeDuration)) {
+                    Yii::$app->session->setFlash('success', 'Аккаунт администратора создан.');
+                    return $this->redirect(['/admin/site/index']);
+                }
+
+                if ($userId !== null) {
+                    Yii::$app->user->login($user, $module->rememberMeDuration);
+                }
+                Yii::$app->session->setFlash('warning', 'Аккаунт создан, но роль администратора не назначилась.');
+                return $this->redirect(['/admin/site/index']);
+            }
+        }
+
+        return $this->render('invite', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionRequestPasswordReset()
+    {
+        /** @var Module $module */
+        $module = $this->module;
+        $model = new PasswordResetRequestForm([
+            'userClass' => $module->userClass,
+        ]);
+        $submitted = false;
+
+        if ($model->load(Yii::$app->request->post()) && $model->sendEmail()) {
+            $submitted = true;
+            Yii::$app->session->setFlash('success', 'Если email привязан к администратору, мы отправили письмо с инструкцией.');
+        }
+
+        return $this->render('request-password-reset', [
+            'model' => $model,
+            'submitted' => $submitted,
+        ]);
+    }
+
+    public function actionResetPassword(string $token = '')
+    {
+        /** @var Module $module */
+        $module = $this->module;
+
+        try {
+            $model = new ResetPasswordForm($token, $module->userClass);
+        } catch (\yii\base\InvalidArgumentException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+            return $this->redirect($this->getAuthRoute('request-password-reset'));
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->resetPassword()) {
+            Yii::$app->session->setFlash('success', 'Пароль успешно изменён.');
+            return $this->redirect($this->getAuthRoute('login'));
+        }
+
+        return $this->render('reset-password', [
+            'model' => $model,
+        ]);
     }
 
     public function actionSecurityLog()
