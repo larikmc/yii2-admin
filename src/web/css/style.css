@@ -404,6 +404,17 @@ a {
     box-shadow: none;
 }
 
+.sz-panel .grid-view {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.sz-panel .grid-view .table-responsive {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
 .sz-panel .table-responsive:last-child,
 .sz-panel .grid-view:last-child,
 .sz-panel form:last-child,

@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.2.1] - 2026-05-04
+
+### Changed
+- fixed GridView overflow in admin panels so wide tables scroll inside the panel and do not push the whole layout to the right
+
 ## [1.2.0] - 2026-05-04
 
 ### Added
