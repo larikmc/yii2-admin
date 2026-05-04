@@ -2,6 +2,12 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.1.19] - 2026-05-04
+
+### Changed
+- fixed wide `GridView` tables inside `.sz-panel` so horizontal overflow stays inside the panel instead of pushing the whole admin layout to the right
+- added `min-width: 0` safeguards for `.sz-panel` and `.sz-content__inner` to keep responsive admin pages stable with large tables
+
 ## [1.1.18] - 2026-04-22
 
 ### Changed

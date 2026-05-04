@@ -396,12 +396,23 @@ a {
     border-radius: var(--sz-radius-md);
 }
 
+.sz-panel {
+    min-width: 0;
+}
+
 .sz-panel .grid-view,
 .sz-panel form:not(.d-inline):not(.tax-form--plain):not(.sz-logout__form) {
     padding: 0;
     border-radius: 0;
     background: transparent;
     box-shadow: none;
+}
+
+.sz-panel .grid-view {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: visible;
 }
 
 .sz-panel .table-responsive:last-child,
@@ -1147,6 +1158,7 @@ label {
 .sz-content__inner {
     max-width: none;
     width: 100%;
+    min-width: 0;
 }
 
 .sz-workspace {
