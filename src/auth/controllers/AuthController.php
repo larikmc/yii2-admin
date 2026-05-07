@@ -383,10 +383,20 @@ class AuthController extends Controller
 
         /** @var Module $module */
         $module = $this->module;
+        $adminModule = Yii::$app->getModule('admin');
+        $usernameField = 'username';
+        $emailField = 'email';
+        if ($adminModule !== null && property_exists($adminModule, 'usernameField')) {
+            $usernameField = (string) $adminModule->usernameField;
+        }
+        if ($adminModule !== null && property_exists($adminModule, 'emailField')) {
+            $emailField = (string) $adminModule->emailField;
+        }
+
         $model = new InviteSignupForm([
             'userClass' => $module->userClass,
-            'usernameField' => $module->usernameField,
-            'emailField' => $module->emailField,
+            'usernameField' => $usernameField,
+            'emailField' => $emailField,
         ]);
 
         if ($model->load(Yii::$app->request->post())) {
