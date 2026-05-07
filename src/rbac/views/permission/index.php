@@ -27,16 +27,23 @@ echo AdminPage::widget([
             [
                 'attribute' => 'name',
                 'label' => 'Имя',
+                'headerOptions' => ['style' => 'width: 30%;'],
+                'contentOptions' => ['style' => 'width: 30%;'],
+                'filterInputOptions' => ['class' => 'form-control', 'style' => 'min-width: 140px;'],
             ],
             [
                 'attribute' => 'description',
                 'format' => 'ntext',
                 'label' => 'Описание',
+                'headerOptions' => ['style' => 'width: 50%;'],
+                'contentOptions' => ['style' => 'width: 50%;'],
+                'filterInputOptions' => ['class' => 'form-control', 'style' => 'min-width: 180px;'],
             ],
             [
                 'class' => ActionColumn::class,
                 'template' => '{update} {delete}',
-                'contentOptions' => ['class' => 'action-column'],
+                'headerOptions' => ['style' => 'width: 84px; min-width: 84px; padding: 8px 6px;'],
+                'contentOptions' => ['class' => 'action-column', 'style' => 'width: 84px; min-width: 84px; padding: 8px 6px;'],
                 'buttonOptions' => ['class' => 'sz-row-action'],
                 'urlCreator' => static fn($action, $model) => [$action, 'name' => $model['name']],
                 'buttons' => [

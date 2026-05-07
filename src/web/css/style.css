@@ -939,6 +939,32 @@ label {
     box-shadow: 0 12px 20px rgba(94, 42, 52, 0.22);
 }
 
+@media (max-width: 900px) {
+    .sz-panel {
+        overflow: hidden;
+    }
+
+    .sz-panel .grid-view,
+    .sz-panel .table-responsive,
+    .sz-panel > table,
+    .sz-panel > .table {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sz-panel .grid-view > table,
+    .sz-panel .table-responsive > table,
+    .sz-panel > table,
+    .sz-panel > .table {
+        width: max-content;
+        min-width: 100%;
+        margin-bottom: 0;
+    }
+}
+
 .grid-view .action-column .glyphicon {
     font-size: 15px;
 }
