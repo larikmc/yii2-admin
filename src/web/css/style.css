@@ -1584,6 +1584,44 @@ label {
     gap: 14px;
 }
 
+.sz-error-page {
+    padding: 24px;
+}
+
+.sz-error-page__top {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.sz-error-page__code {
+    margin: 0;
+    color: #6b7792;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.sz-error-page__title {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 46px);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    color: #1b2439;
+}
+
+.sz-error-page__alert {
+    border-radius: 14px;
+}
+
+.sz-error-page__hint {
+    margin: 0 0 16px;
+    color: #56617d;
+    font-size: 16px;
+}
+
 .sz-ui-kit-code {
     min-height: 100%;
     max-height: 320px;

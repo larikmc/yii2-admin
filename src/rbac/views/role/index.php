@@ -11,16 +11,16 @@ $this->params['breadcrumbs'] = [
     ['label' => 'RBAC', 'url' => ['/rbac/default/index']],
     ['label' => $this->title],
 ];
-$this->params['topbarActions'] = [
-    Html::a('Создать роль', ['create'], ['class' => 'btn btn-success']),
-];
 ?>
 <?php
 echo AdminPage::widget([
     'title' => $this->title,
     'tabs' => $this->params['rbacTabs'] ?? [],
     'showHeader' => false,
-    'content' => GridView::widget([
+    'content' => '<div class="sz-actions-bar"><div class="sz-actions-bar__inner">'
+        . Html::a('Создать роль', ['create'], ['class' => 'btn btn-success'])
+        . '</div></div>'
+        . GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [

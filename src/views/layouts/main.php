@@ -4,6 +4,7 @@
 /** @var string $content */
 
 use larikmc\admin\assets\AppAsset;
+use larikmc\admin\rbac\helpers\SystemRbacHelper;
 use yii\bootstrap5\Html;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -76,6 +77,14 @@ $hasActiveChild = static function (array $item) use ($isActive): bool {
 $renderMenuItem = static function (array $item, bool $secondary = false) use ($isActive, $hasActiveChild, $isVisible) {
     if (!$isVisible($item)) {
         return;
+    }
+
+    $url = $item['url'] ?? null;
+    if (is_array($url) && ($url[0] ?? null) === '/admin/site/ui-kit') {
+        $identity = Yii::$app->user->identity;
+        if ($identity === null || (string) $identity->getId() !== SystemRbacHelper::ROOT_USER_ID) {
+            return;
+        }
     }
 
     $icon = $item['icon'] ?? 'radio_button_unchecked';

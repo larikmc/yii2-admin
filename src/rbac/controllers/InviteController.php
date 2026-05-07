@@ -2,11 +2,9 @@
 
 namespace larikmc\admin\rbac\controllers;
 
-use larikmc\admin\rbac\helpers\SystemRbacHelper;
 use larikmc\admin\rbac\services\AdminInviteService;
 use Yii;
 use yii\helpers\Url;
-use yii\web\ForbiddenHttpException;
 
 class InviteController extends BaseController
 {
@@ -14,11 +12,6 @@ class InviteController extends BaseController
 
     public function actionIndex()
     {
-        $identity = Yii::$app->user->identity;
-        if ($identity === null || (string) $identity->getId() !== SystemRbacHelper::ROOT_USER_ID) {
-            throw new ForbiddenHttpException('Генерация ссылок приглашения доступна только главному администратору.');
-        }
-
         $service = new AdminInviteService();
         $inviteData = Yii::$app->session->get(self::INVITE_SESSION_KEY);
         if ($inviteData !== null) {
