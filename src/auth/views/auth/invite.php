@@ -28,16 +28,19 @@ $this->title = 'Регистрация администратора';
     <div class="registration__form-wrap">
         <?php $form = ActiveForm::begin(['id' => 'invite-signup-form']); ?>
 
-        <?= $form->field($model, 'username')
-            ->textInput([
-                'class' => 'form-control form-control-lg',
-                'autofocus' => true,
-                'autocomplete' => 'username',
-            ]) ?>
+        <?php if ($model->needsUsername()): ?>
+            <?= $form->field($model, 'username')
+                ->textInput([
+                    'class' => 'form-control form-control-lg',
+                    'autofocus' => true,
+                    'autocomplete' => 'username',
+                ]) ?>
+        <?php endif; ?>
 
         <?= $form->field($model, 'email')
             ->textInput([
                 'class' => 'form-control form-control-lg',
+                'autofocus' => !$model->needsUsername(),
                 'autocomplete' => 'email',
             ]) ?>
 

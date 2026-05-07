@@ -10,6 +10,8 @@ use yii\web\IdentityInterface;
 class InviteSignupForm extends Model
 {
     public string $userClass = '';
+    public string $usernameField = 'username';
+    public string $emailField = 'email';
     public $username;
     public $email;
     public $password;
@@ -17,14 +19,15 @@ class InviteSignupForm extends Model
     public function rules(): array
     {
         return [
-            [['username', 'email', 'password'], 'required'],
+            [['email', 'password'], 'required'],
+            ['username', 'required', 'when' => static fn(self $model): bool => $model->needsUsername()],
             [['username', 'email'], 'trim'],
             ['email', 'filter', 'filter' => static fn($value) => mb_strtolower((string) $value, 'UTF-8')],
-            ['username', 'string', 'min' => 2, 'max' => 255],
+            ['username', 'string', 'min' => 2, 'max' => 255, 'skipOnEmpty' => true],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
             ['password', 'string', 'min' => $this->resolvePasswordMinLength()],
-            ['username', 'validateUsernameUnique'],
+            ['username', 'validateUsernameUnique', 'skipOnEmpty' => true],
             ['email', 'validateEmailUnique'],
         ];
     }
@@ -44,8 +47,12 @@ class InviteSignupForm extends Model
 
         /** @var ActiveRecord&IdentityInterface $user */
         $user = new $class();
-        $user->username = $this->username;
-        $user->email = $this->email;
+        if ($user->hasAttribute($this->usernameField)) {
+            $user->setAttribute($this->usernameField, $this->needsUsername() ? $this->username : $this->email);
+        }
+        if ($user->hasAttribute($this->emailField)) {
+            $user->setAttribute($this->emailField, $this->email);
+        }
 
         if (defined($class . '::STATUS_ACTIVE') && $user->hasAttribute('status')) {
             $user->setAttribute('status', constant($class . '::STATUS_ACTIVE'));
@@ -85,8 +92,12 @@ class InviteSignupForm extends Model
             return;
         }
 
+        if (!$this->needsUsername()) {
+            return;
+        }
+
         $class = $this->userClass;
-        if ($class::find()->andWhere(['username' => $this->$attribute])->exists()) {
+        if ($class::find()->andWhere([$this->usernameField => $this->$attribute])->exists()) {
             $this->addError($attribute, 'Этот логин уже занят.');
         }
     }
@@ -98,9 +109,14 @@ class InviteSignupForm extends Model
         }
 
         $class = $this->userClass;
-        if ($class::find()->andWhere(['email' => $this->$attribute])->exists()) {
+        if ($class::find()->andWhere([$this->emailField => $this->$attribute])->exists()) {
             $this->addError($attribute, 'Этот email уже используется.');
         }
+    }
+
+    public function needsUsername(): bool
+    {
+        return $this->usernameField !== '' && $this->usernameField !== $this->emailField;
     }
 
     private function resolvePasswordMinLength(): int

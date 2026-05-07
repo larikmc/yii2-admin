@@ -385,6 +385,8 @@ class AuthController extends Controller
         $module = $this->module;
         $model = new InviteSignupForm([
             'userClass' => $module->userClass,
+            'usernameField' => $module->usernameField,
+            'emailField' => $module->emailField,
         ]);
 
         if ($model->load(Yii::$app->request->post())) {
