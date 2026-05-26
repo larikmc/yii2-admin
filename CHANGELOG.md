@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.2.2] - 2026-05-26
+
+### Changed
+- fixed admin invite generation UX on `/admin/rbac/invite`: generated link is now shown in UI, copy button added, and clipboard fallback works when `navigator.clipboard` is unavailable
+
 ## [1.2.1] - 2026-05-04
 
 ### Changed
