@@ -34,26 +34,9 @@ class AdminPage extends Widget
 
         $tabs = '';
         if ($this->tabs !== []) {
-            $items = [];
-            foreach ($this->tabs as $tab) {
-                $label = Html::encode((string) ($tab['label'] ?? ''));
-                $url = $tab['url'] ?? '#';
-                $active = (bool) ($tab['active'] ?? false);
-                $items[] = Html::tag(
-                    'li',
-                    Html::a($label, $url, [
-                        'class' => 'nav-link' . ($active ? ' active' : ''),
-                        'aria-current' => $active ? 'page' : null,
-                    ]),
-                    ['class' => 'nav-item']
-                );
-            }
-
-            $tabs = Html::tag(
-                'ul',
-                implode('', $items),
-                ['class' => 'nav nav-tabs mb-3']
-            );
+            $tabs = AdminTabs::widget([
+                'items' => $this->tabs,
+            ]);
         }
 
         $headerActions = $this->actionsPosition === 'header' ? $actions : '';

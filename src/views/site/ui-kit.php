@@ -1,5 +1,6 @@
 <?php
 
+use larikmc\admin\widgets\AdminTabs;
 use yii\bootstrap5\Html;
 use yii\web\View;
 
@@ -39,6 +40,40 @@ echo Html::a(
     ]
 );
 PHP;
+
+$tabsPhpExample = <<<'PHP'
+echo AdminTabs::widget([
+    'items' => [
+        [
+            'label' => 'Обзор',
+            'active' => true,
+            'content' => '<div class="sz-panel">...</div>',
+        ],
+        [
+            'label' => 'История',
+            'content' => '<div class="sz-panel">...</div>',
+        ],
+    ],
+]);
+PHP;
+
+$tabsDemo = AdminTabs::widget([
+    'items' => [
+        [
+            'label' => 'Обзор',
+            'active' => true,
+            'content' => '<div class="sz-ui-kit-tab-card"><strong>Обзор</strong><span>Тут можно держать сводку, метрики или быстрые действия.</span></div>',
+        ],
+        [
+            'label' => 'История',
+            'content' => '<div class="sz-ui-kit-tab-card"><strong>История</strong><span>Контент переключается без перезагрузки страницы и подходит для локальных разделов.</span></div>',
+        ],
+        [
+            'label' => 'Настройки',
+            'content' => '<div class="sz-ui-kit-tab-card"><strong>Настройки</strong><span>Внутрь можно класть формы, таблицы, карточки и любой HTML.</span></div>',
+        ],
+    ],
+]);
 ?>
 
 <section class="sz-page">
@@ -147,6 +182,17 @@ PHP;
                         <?= Html::button('Сбросить', ['class' => 'btn btn-outline-secondary', 'type' => 'button', 'data-demo-progress-reset' => true]) ?>
                     </div>
                 </div>
+            </section>
+
+            <section class="sz-panel sz-ui-kit-panel sz-ui-kit-panel--span-3">
+                <p class="sz-ui-kit-section-label">Tabs</p>
+                <h3 class="sz-ui-kit-section-title">Полноценные табы</h3>
+                <p class="sz-ui-kit-subtitle">Внешне повторяют RBAC-вкладки, но умеют переключать локальный контент на странице.</p>
+                <div class="sz-ui-kit-tabs-demo">
+                    <?= $tabsDemo ?>
+                </div>
+                <p class="sz-ui-kit-subtitle">Yii/PHP-паттерн</p>
+                <pre class="sz-ui-kit-code"><code><?= Html::encode($tabsPhpExample) ?></code></pre>
             </section>
 
             <section class="sz-panel sz-ui-kit-panel sz-ui-kit-panel--span-3">

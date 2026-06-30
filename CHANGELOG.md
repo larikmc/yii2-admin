@@ -2,6 +2,15 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.2.4] - 2026-06-30
+
+### Added
+- added reusable `AdminTabs` widget that preserves the RBAC tabs visual style and supports both link-based navigation and in-page tab panels
+- added a live tabs demo with usage example to `/admin/site/ui-kit`
+
+### Changed
+- migrated `AdminPage` tabs rendering to the shared `AdminTabs` widget so RBAC and future admin sections use the same tab implementation
+
 ## [1.2.2] - 2026-05-26
 
 ### Changed

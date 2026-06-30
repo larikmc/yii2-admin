@@ -448,6 +448,22 @@ a {
     box-shadow: 0 10px 20px rgba(29, 78, 216, 0.2);
 }
 
+.sz-tabs {
+    width: 100%;
+}
+
+.sz-tab-panels {
+    display: grid;
+}
+
+.sz-tab-panel {
+    display: none;
+}
+
+.sz-tab-panel.is-active {
+    display: block;
+}
+
 .sz-stat-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1640,6 +1656,30 @@ label {
     color: inherit;
     font-size: inherit;
     white-space: pre;
+}
+
+.sz-ui-kit-tabs-demo {
+    display: grid;
+    gap: 18px;
+}
+
+.sz-ui-kit-tab-card {
+    display: grid;
+    gap: 8px;
+    min-height: 140px;
+    padding: 24px;
+    border: 1px solid var(--sz-line);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 248, 255, 0.88) 100%);
+}
+
+.sz-ui-kit-tab-card strong {
+    font-size: 18px;
+}
+
+.sz-ui-kit-tab-card span {
+    color: var(--sz-muted);
+    line-height: 1.6;
 }
 
 .sz-progress-job {
