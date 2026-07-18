@@ -2,6 +2,15 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [1.2.5] - 2026-07-18
+
+### Added
+- added built-in guest guard for unknown admin routes: unauthenticated requests to arbitrary `/admin/...` URLs now redirect to the configured login route instead of reaching admin error pages with sidebar/menu
+- added configurable module options `guardUnknownAdminRoutesForGuests` and `guestAllowedPaths` for projects that need to disable or extend the default guest whitelist
+
+### Changed
+- module now registers the short `login` route automatically alongside reset/invite routes, so the recommended `/admin/login` URL works out of the box when `user.loginUrl = ['/login']`
+
 ## [1.2.4] - 2026-06-30
 
 ### Added

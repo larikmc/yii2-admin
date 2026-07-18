@@ -8,6 +8,27 @@ use yii\web\View;
 
 class Module extends \yii\base\Module
 {
+    private const DEFAULT_GUEST_ALLOWED_PATHS = [
+        'login',
+        'logout',
+        'auth/login',
+        'auth/logout',
+        'auth/captcha',
+        'auth/invite',
+        'auth/request-password-reset',
+        'auth/reset-password',
+        'site/error',
+        'admin/login',
+        'admin/logout',
+        'admin/auth/login',
+        'admin/auth/logout',
+        'admin/auth/captcha',
+        'admin/auth/invite',
+        'admin/auth/request-password-reset',
+        'admin/auth/reset-password',
+        'admin/site/error',
+    ];
+
     public $controllerNamespace = 'larikmc\admin\controllers';
     public $defaultRoute = 'site/index';
     public $menu = [];
@@ -35,6 +56,8 @@ class Module extends \yii\base\Module
     public ?int $lockDuration = null;
     public ?int $userAttemptsTtl = null;
     public ?string $lazyloadPlaceholderUrl = null;
+    public bool $guardUnknownAdminRoutesForGuests = true;
+    public array $guestAllowedPaths = [];
 
     public function init()
     {
@@ -45,10 +68,17 @@ class Module extends \yii\base\Module
 
         if (Yii::$app->has('urlManager')) {
             Yii::$app->getUrlManager()->addRules([
+                'login' => 'admin/auth/auth/login',
                 'auth/invite' => 'admin/auth/auth/invite',
                 'auth/request-password-reset' => 'admin/auth/auth/request-password-reset',
                 'auth/reset-password' => 'admin/auth/auth/reset-password',
             ], false);
+        }
+
+        if ($this->guardUnknownAdminRoutesForGuests) {
+            Yii::$app->on(\yii\base\Application::EVENT_BEFORE_REQUEST, function (): void {
+                $this->guardGuestRequest();
+            });
         }
 
         $defaults = require __DIR__ . '/config/menu.php';
@@ -103,5 +133,33 @@ class Module extends \yii\base\Module
         }
 
         return AppAsset::register($view)->baseUrl . '/img/load.svg';
+    }
+
+    private function guardGuestRequest(): void
+    {
+        $app = Yii::$app;
+        if (!$app->has('user') || !$app->has('request') || $app->user->isGuest === false) {
+            return;
+        }
+
+        $pathInfo = trim((string) $app->request->pathInfo, '/');
+        $normalizedPath = preg_replace('#^admin/#', '', $pathInfo) ?? $pathInfo;
+
+        if ($pathInfo === '' || $pathInfo === 'admin') {
+            $app->user->loginRequired();
+            $app->end();
+        }
+
+        $allowedPaths = array_values(array_unique(array_merge(
+            self::DEFAULT_GUEST_ALLOWED_PATHS,
+            $this->guestAllowedPaths
+        )));
+
+        if (in_array($pathInfo, $allowedPaths, true) || in_array($normalizedPath, $allowedPaths, true)) {
+            return;
+        }
+
+        $app->user->loginRequired();
+        $app->end();
     }
 }

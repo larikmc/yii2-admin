@@ -120,6 +120,14 @@ composer require larikmc/yii2-admin
         // Необязательно: свой placeholder для lazyload.
         // Если не задано, используется стандартный src/web/img/load.svg из расширения.
         'lazyloadPlaceholderUrl' => null,
+
+        // По умолчанию пакет сам защищает гостя от случайных /admin/... URL
+        // и отправляет на loginUrl. Можно отключить при необходимости.
+        'guardUnknownAdminRoutesForGuests' => true,
+
+        // Дополнительные guest-роуты, если в проекте есть свои публичные
+        // backend-страницы внутри /admin.
+        'guestAllowedPaths' => [],
     ],
 ],
 'components' => [
@@ -192,7 +200,9 @@ composer require larikmc/yii2-admin
 3. правило `urlManager`: `'login' => 'admin/auth/auth/login'`
 4. правило `urlManager`: `'auth/captcha' => 'admin/auth/auth/captcha'`
 
-Если у вас есть глобальная проверка доступа в `on beforeRequest`, обязательно добавьте в whitelist:
+Пакет сам включает стандартный guest-whitelist для auth/error маршрутов.
+
+Если у вас есть собственная глобальная проверка доступа в `on beforeRequest`, обязательно добавьте в whitelist:
 
 - `login`
 - `auth/login`
@@ -208,6 +218,103 @@ composer require larikmc/yii2-admin
 - `admin/auth/invite`
 
 Иначе можно получить цикл редиректов (`ERR_TOO_MANY_REDIRECTS`) на странице входа.
+
+### Защита от случайных `/admin/...` URL у гостя
+
+Частая интеграционная ошибка:
+
+- `errorAction` уже указывает на `/admin/site/error`
+- layout админки уже подключен
+- auth-роуты уже проброшены правильно
+- но гость всё ещё может открыть случайный несуществующий URL вида `/admin/some-random-path`
+
+В таком случае Yii может отрендерить `404` внутри admin-layout, и неавторизованный пользователь увидит sidebar/menu админки.
+
+Начиная с актуальной версии пакет **по умолчанию запрещает** такие URL для гостя на уровне модуля:
+
+- если гость открывает неразрешенный `/admin/...`
+- пакет вызывает `loginRequired()`
+- и пользователь уходит на `loginUrl`, то есть на красивый `/admin/login`
+
+Если вы хотите поведение как в `https://your-domain/admin/login`:
+
+- гость открывает корректные auth-страницы
+- гость не может открыть произвольный `/admin/...`
+- любой неправильный admin URL у гостя сразу уводит на красивый `/admin/login`
+
+обычно ничего дополнительно писать не нужно, если вы используете модуль `admin` в штатной конфигурации.
+
+При необходимости поведение можно настраивать:
+
+```php
+'modules' => [
+    'admin' => [
+        'class' => larikmc\admin\Module::class,
+
+        // Отключить встроенный guard полностью
+        'guardUnknownAdminRoutesForGuests' => false,
+
+        // Или оставить guard, но расширить whitelist
+        'guestAllowedPaths' => [
+            'upload-photopea/upload',
+            'admin/upload-photopea/upload',
+        ],
+    ],
+],
+```
+
+Если проекту нужен собственный guard на уровне приложения, используйте такой шаблон в `backend/config/main.php`:
+
+```php
+'on beforeRequest' => function () {
+    $app = Yii::$app;
+
+    $pathInfo = trim((string) $app->request->pathInfo, '/');
+    $normalizedPath = preg_replace('#^admin/#', '', $pathInfo) ?? $pathInfo;
+
+    $allowedPaths = [
+        'login',
+        'auth/login',
+        'auth/logout',
+        'auth/captcha',
+        'auth/invite',
+        'auth/request-password-reset',
+        'auth/reset-password',
+        'site/error',
+        'admin/login',
+        'admin/auth/login',
+        'admin/auth/logout',
+        'admin/auth/captcha',
+        'admin/auth/invite',
+        'admin/auth/request-password-reset',
+        'admin/auth/reset-password',
+        'admin/site/error',
+    ];
+
+    if (in_array($pathInfo, $allowedPaths, true) || in_array($normalizedPath, $allowedPaths, true)) {
+        return;
+    }
+
+    if ($app->user->isGuest) {
+        $app->user->loginRequired();
+        $app->end();
+    }
+},
+```
+
+Что это дает:
+
+- `/admin/login` остаётся рабочим коротким URL входа
+- `/admin/auth/request-password-reset` и `/admin/auth/reset-password` тоже остаются доступными гостю
+- случайные `/admin/...` URL больше не показывают guest-пользователю admin sidebar и внутренний layout
+- вместо этого Yii отправляет гостя на `loginUrl`, то есть на красивый `/admin/login`
+
+Если вы сознательно отключаете встроенный guard, альтернативный минимальный вариант:
+
+- оставить `errorAction => '/admin/site/error'`
+- и в локальном `SiteController` переключать layout ошибки для гостя на auth-layout
+
+Но для production-поведения обычно лучше именно ранний `beforeRequest`-guard, потому что он не даёт гостю доходить до внутренних admin-ошибок вообще.
 
 ### Схема доступа
 
