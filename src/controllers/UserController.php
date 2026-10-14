@@ -1,0 +1,260 @@
+<?php
+
+namespace larikmc\admin\controllers;
+
+use larikmc\admin\models\ProfileForm;
+use Yii;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\BadRequestHttpException;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
+
+class UserController extends Controller
+{
+    private const EMAIL_CHANGE_TTL = 3600; // 1 час
+
+    public $layout = '@larikmc/admin/views/layouts/main';
+
+    public function behaviors(): array
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'actions' => ['profile', 'confirm-email', 'verify-email-code', 'cancel-email-change', 'resend-email-change'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'profile' => ['get', 'post'],
+                    'confirm-email' => ['get'],
+                    'verify-email-code' => ['post'],
+                    'cancel-email-change' => ['post'],
+                    'resend-email-change' => ['post'],
+                ],
+            ],
+        ];
+    }
+
+    public function actionProfile()
+    {
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new NotFoundHttpException('Пользователь не авторизован.');
+        }
+
+        $model = new ProfileForm($user);
+
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            if ($model->emailChangeRequested && $model->requestedEmail !== null) {
+                $this->initiateEmailChange($user, $model->requestedEmail);
+                Yii::$app->session->setFlash(
+                    'info',
+                    "Основные данные сохранены. Для изменения почты на {$model->requestedEmail} отправлено письмо с подтверждением на текущий адрес {$user->email}."
+                );
+            } else {
+                Yii::$app->session->setFlash('success', 'Настройки профиля успешно сохранены.');
+            }
+
+            return $this->refresh();
+        }
+
+        $pendingEmailChange = $this->getPendingEmailChange((int) $user->id);
+
+        return $this->render('@larikmc/admin/views/user/profile', [
+            'model' => $model,
+            'user' => $user,
+            'pendingEmailChange' => $pendingEmailChange,
+        ]);
+    }
+
+    public function actionConfirmEmail(?string $token = null): Response
+    {
+        if (empty($token)) {
+            throw new BadRequestHttpException('Отсутствует токен подтверждения.');
+        }
+
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new NotFoundHttpException('Пользователь не авторизован.');
+        }
+
+        $cache = Yii::$app->cache;
+        $tokenKey = 'email_change_token_' . $token;
+        $userId = $cache ? $cache->get($tokenKey) : null;
+
+        if (!$userId || (int) $userId !== (int) $user->id) {
+            Yii::$app->session->setFlash('danger', 'Ссылка подтверждения недействительна или срок ее действия истек.');
+            return $this->redirect(['profile']);
+        }
+
+        $pending = $this->getPendingEmailChange((int) $user->id);
+        if (!$pending || empty($pending['newEmail'])) {
+            Yii::$app->session->setFlash('danger', 'Запрос на смену почты не найден или уже был обработан.');
+            return $this->redirect(['profile']);
+        }
+
+        $newEmail = (string) $pending['newEmail'];
+        $user->email = $newEmail;
+        if ($user->save(false)) {
+            $this->clearPendingEmailChange((int) $user->id, $token);
+            Yii::$app->session->setFlash('success', "E-mail успешно подтвержден и изменен на {$newEmail}.");
+        } else {
+            Yii::$app->session->setFlash('danger', 'Не удалось сохранить новый E-mail.');
+        }
+
+        return $this->redirect(['profile']);
+    }
+
+    public function actionVerifyEmailCode(): Response
+    {
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new NotFoundHttpException('Пользователь не авторизован.');
+        }
+
+        $code = trim((string) $this->request->post('code', ''));
+        $pending = $this->getPendingEmailChange((int) $user->id);
+
+        if (!$pending || empty($pending['code'])) {
+            Yii::$app->session->setFlash('danger', 'Активный запрос на смену почты не найден.');
+            return $this->redirect(['profile']);
+        }
+
+        if ($code === '' || $code !== (string) $pending['code']) {
+            Yii::$app->session->setFlash('danger', 'Неверный проверочный код. Проверьте код из письма.');
+            return $this->redirect(['profile']);
+        }
+
+        $newEmail = (string) $pending['newEmail'];
+        $user->email = $newEmail;
+        if ($user->save(false)) {
+            $this->clearPendingEmailChange((int) $user->id, $pending['token'] ?? null);
+            Yii::$app->session->setFlash('success', "E-mail успешно подтвержден и изменен на {$newEmail}.");
+        } else {
+            Yii::$app->session->setFlash('danger', 'Не удалось сохранить новый E-mail.');
+        }
+
+        return $this->redirect(['profile']);
+    }
+
+    public function actionCancelEmailChange(): Response
+    {
+        $user = Yii::$app->user->identity;
+        if ($user) {
+            $pending = $this->getPendingEmailChange((int) $user->id);
+            $this->clearPendingEmailChange((int) $user->id, $pending['token'] ?? null);
+            Yii::$app->session->setFlash('info', 'Запрос на смену почты отменен.');
+        }
+
+        return $this->redirect(['profile']);
+    }
+
+    public function actionResendEmailChange(): Response
+    {
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new NotFoundHttpException('Пользователь не авторизован.');
+        }
+
+        $pending = $this->getPendingEmailChange((int) $user->id);
+        if (!$pending) {
+            Yii::$app->session->setFlash('danger', 'Активный запрос на смену почты не найден.');
+            return $this->redirect(['profile']);
+        }
+
+        $this->sendConfirmationEmail($user, (string) $pending['newEmail'], (string) $pending['token'], (string) $pending['code']);
+        Yii::$app->session->setFlash('success', "Письмо с подтверждением повторно отправлено на текущий адрес {$user->email}.");
+
+        return $this->redirect(['profile']);
+    }
+
+    private function initiateEmailChange($user, string $newEmail): void
+    {
+        $token = Yii::$app->security->generateRandomString(32);
+        $code = sprintf('%06d', mt_rand(100000, 999999));
+
+        $data = [
+            'userId' => (int) $user->id,
+            'currentEmail' => (string) $user->email,
+            'newEmail' => $newEmail,
+            'token' => $token,
+            'code' => $code,
+            'expiresAt' => time() + self::EMAIL_CHANGE_TTL,
+        ];
+
+        $cache = Yii::$app->cache;
+        if ($cache) {
+            $cache->set('email_change_' . $user->id, $data, self::EMAIL_CHANGE_TTL);
+            $cache->set('email_change_token_' . $token, (int) $user->id, self::EMAIL_CHANGE_TTL);
+        }
+
+        $this->sendConfirmationEmail($user, $newEmail, $token, $code);
+    }
+
+    private function sendConfirmationEmail($user, string $newEmail, string $token, string $code): bool
+    {
+        if (!Yii::$app->has('mailer')) {
+            return false;
+        }
+
+        $supportEmail = Yii::$app->params['supportEmail'] ?? (Yii::$app->params['senderEmail'] ?? 'no-reply@skidkum.loc');
+        $senderName = Yii::$app->params['senderName'] ?? (Yii::$app->name ?? 'Admin Panel');
+
+        try {
+            $confirmUrl = Yii::$app->urlManager->createAbsoluteUrl([
+                '/admin/user/confirm-email',
+                'token' => $token,
+            ]);
+
+            return (bool) Yii::$app->mailer->compose()
+                ->setTo($user->email)
+                ->setFrom([$supportEmail => $senderName])
+                ->setSubject('Подтверждение смены адреса электронной почты')
+                ->setTextBody(
+                    "Здравствуйте, {$user->username}!\n\n" .
+                    "Был получен запрос на смену адреса электронной почты в панели управления.\n\n" .
+                    "Новый адрес: {$newEmail}\n" .
+                    "Проверочный код: {$code}\n\n" .
+                    "Или перейдите по следующей ссылке для подтверждения:\n{$confirmUrl}\n\n" .
+                    "Код и ссылка действительны в течение 1 часа.\n" .
+                    "Если вы не совершали этот запрос, проигнорируйте письмо — текущий адрес останется без изменений."
+                )
+                ->send();
+        } catch (\Throwable $e) {
+            Yii::error('Failed to send email confirmation: ' . $e->getMessage(), __METHOD__);
+            return false;
+        }
+    }
+
+    private function getPendingEmailChange(int $userId): ?array
+    {
+        $cache = Yii::$app->cache;
+        if (!$cache) {
+            return null;
+        }
+
+        $data = $cache->get('email_change_' . $userId);
+        return is_array($data) ? $data : null;
+    }
+
+    private function clearPendingEmailChange(int $userId, ?string $token = null): void
+    {
+        $cache = Yii::$app->cache;
+        if (!$cache) {
+            return;
+        }
+
+        $cache->delete('email_change_' . $userId);
+        if (!empty($token)) {
+            $cache->delete('email_change_token_' . $token);
+        }
+    }
+}

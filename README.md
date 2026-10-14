@@ -35,6 +35,7 @@
 - `/admin/auth/request-password-reset`
 - `/admin/auth/reset-password?token=...`
 - `/admin/auth/invite?token=...`
+- `/admin/user/profile`
 - `/admin/site/ui-kit`
 - `/admin/auth/security-log`
 - `/admin/rbac`

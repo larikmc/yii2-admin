@@ -9,14 +9,20 @@ use yii\web\View;
 class AdminTabs extends Widget
 {
     public array $items = [];
+    public string $style = 'line'; // 'line' or 'pills'
     public string $containerClass = '';
-    public string $navClass = 'nav nav-tabs mb-3';
+    public ?string $navClass = null;
     public bool $encodeLabels = true;
 
     public function run(): string
     {
         if ($this->items === []) {
             return '';
+        }
+
+        $baseNavClass = $this->navClass;
+        if ($baseNavClass === null) {
+            $baseNavClass = $this->style === 'pills' ? 'nav-pills-solid' : 'nav nav-tabs mb-3';
         }
 
         $hasPanels = $this->hasPanels();
@@ -76,7 +82,7 @@ class AdminTabs extends Widget
         }
 
         $html = Html::tag('ul', implode('', $navItems), [
-            'class' => trim($this->navClass . ' sz-tabs__nav'),
+            'class' => trim($baseNavClass . ' sz-tabs__nav'),
             'role' => $hasPanels ? 'tablist' : null,
             'data-sz-tabs' => $hasPanels ? true : null,
         ]);

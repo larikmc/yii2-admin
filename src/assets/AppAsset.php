@@ -12,7 +12,7 @@ class AppAsset extends AssetBundle
         'css/home.css',
         'css/style.css',
         'css/image-viewer-admin.css',
-        'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap',
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
         'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0',
     ];
     public $js = [
@@ -21,7 +21,7 @@ class AppAsset extends AssetBundle
         'js/image-viewer-admin.js',
     ];
     public $publishOptions = [
-        'forceCopy' => YII_ENV_DEV,
+        'forceCopy' => YII_ENV_DEV || YII_DEBUG,
     ];
     public $depends = [
         'yii\web\YiiAsset',

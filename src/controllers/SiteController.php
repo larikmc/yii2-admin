@@ -57,13 +57,13 @@ class SiteController extends Controller
         $identity = Yii::$app->user->identity;
 
         $health = [
-            ['title' => 'Кеш', 'ok' => false, 'value' => 'Не проверено'],
-            ['title' => 'Режим приложения', 'ok' => !YII_DEBUG, 'value' => sprintf('%s (%s)', YII_ENV, YII_DEBUG ? 'debug' : 'prod')],
-            ['title' => 'Свободное место', 'ok' => false, 'value' => 'Неизвестно'],
+            ['title' => 'Кеш', 'ok' => false, 'value' => 'Не проверено', 'hint' => 'Yii::$app->cache'],
+            ['title' => 'Режим приложения', 'ok' => !YII_DEBUG, 'value' => sprintf('%s (%s)', YII_ENV, YII_DEBUG ? 'debug' : 'prod'), 'hint' => 'YII_ENV'],
+            ['title' => 'База данных', 'ok' => false, 'value' => 'Не проверено', 'hint' => 'Yii::$app->db'],
             ['title' => 'Использование диска', 'ok' => false, 'value' => 'Неизвестно'],
             ['title' => 'Память PHP', 'ok' => false, 'value' => 'Неизвестно'],
-            ['title' => 'Размер логов backend', 'ok' => false, 'value' => 'Неизвестно'],
-            ['title' => 'Размер логов frontend', 'ok' => false, 'value' => 'Неизвестно'],
+            ['title' => 'Логи backend', 'ok' => false, 'value' => 'Неизвестно', 'hint' => '@backend/runtime/logs'],
+            ['title' => 'Логи frontend', 'ok' => false, 'value' => 'Неизвестно', 'hint' => '@frontend/runtime/logs'],
         ];
 
         $formatBytes = static function (float $bytes): string {
@@ -124,6 +124,8 @@ class SiteController extends Controller
                 $dbOk = false;
             }
         }
+        $health[2]['ok'] = $dbOk;
+        $health[2]['value'] = $dbOk ? 'Подключена' : 'Ошибка соединения';
 
         if (Yii::$app->has('cache')) {
             $cache = Yii::$app->cache;
@@ -152,15 +154,13 @@ class SiteController extends Controller
         $diskTotal = @disk_total_space($diskPath);
         $diskFree = @disk_free_space($diskPath);
         if (is_numeric($diskTotal) && is_numeric($diskFree) && $diskTotal > 0) {
-            $diskUsedPercent = (($diskTotal - $diskFree) / $diskTotal) * 100;
-            $diskFreePercent = ($diskFree / $diskTotal) * 100;
+            $diskUsed = max(0, $diskTotal - $diskFree);
+            $diskUsedPercent = ($diskUsed / $diskTotal) * 100;
 
-            $health[2]['ok'] = $diskFreePercent >= 15;
-            $health[2]['value'] = sprintf('%s из %s', $formatBytes((float) $diskFree), $formatBytes((float) $diskTotal));
-
-            $health[3]['ok'] = $diskUsedPercent < 90;
+            $health[3]['ok'] = $diskUsedPercent < 85;
             $health[3]['value'] = sprintf('занято %.1f%%', $diskUsedPercent);
             $health[3]['progress'] = max(0, min(100, $diskUsedPercent));
+            $health[3]['footHint'] = sprintf('Свободно %s из %s', $formatBytes((float) $diskFree), $formatBytes((float) $diskTotal));
         }
 
         $memoryUsage = (float) memory_get_usage(true);
@@ -170,15 +170,16 @@ class SiteController extends Controller
             $memoryPercent = ($memoryUsage / $memoryLimitBytes) * 100;
             $health[4]['ok'] = $memoryPercent < 85;
             $health[4]['value'] = sprintf(
-                '%s of %s (%.1f%%)',
+                '%s из %s',
                 $formatBytes($memoryUsage),
-                $formatBytes($memoryLimitBytes),
-                $memoryPercent
+                $formatBytes($memoryLimitBytes)
             );
             $health[4]['progress'] = max(0, min(100, $memoryPercent));
+            $health[4]['footHint'] = sprintf('Использовано %.1f%%', $memoryPercent);
         } else {
             $health[4]['ok'] = true;
-            $health[4]['value'] = sprintf('%s (лимит не ограничен)', $formatBytes($memoryUsage));
+            $health[4]['value'] = $formatBytes($memoryUsage);
+            $health[4]['hint'] = 'Лимит не ограничен';
         }
 
         try {
@@ -223,6 +224,8 @@ class SiteController extends Controller
                 'phpVersion' => PHP_VERSION,
                 'yiiVersion' => Yii::getVersion(),
                 'timeZone' => Yii::$app->timeZone,
+                'serverTime' => date('H:i:s'),
+                'serverTimestamp' => time(),
             ],
             'health' => $health,
             'usersTotal' => $usersTotal,

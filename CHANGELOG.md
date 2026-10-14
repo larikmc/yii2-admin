@@ -2,6 +2,21 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.0.0] - 2026-10-14
+
+### Added
+- added user profile management (`/admin/user/profile`) with username, name, password, and secure two-step email change
+- added email change confirmation flow with security token / confirmation code verification
+- added placeholder icon asset for UI components
+- added dark / light theme switcher with localStorage persistence
+- added full-width layout mode toggle
+- added topbar notifications popover and user profile dropdown
+
+### Changed
+- redesigned admin panel UI with modern Inter typography, sleek surfaces, refined metrics cards, and improved navigation
+- updated sidebar collapse UX and mobile drawer behavior
+- enhanced `/admin/site/ui-kit` with updated component showcases, badges, form controls, and tab examples
+
 ## [1.2.5] - 2026-07-18
 
 ### Added
