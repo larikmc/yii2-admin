@@ -8,12 +8,17 @@ use yii\bootstrap5\Html;
 $this->title = 'Регистрация администратора';
 ?>
 
-<div class="registration">
-    <button type="button" class="theme-toggle" data-auth-theme-toggle aria-pressed="false">
-        <span class="theme-toggle__knob"></span>
-        <span class="theme-toggle__label" data-auth-theme-label>Light</span>
-    </button>
-    <h1 class="mb-4"><?= Html::encode($this->title) ?></h1>
+<div class="registration auth-card">
+    <div class="auth-brand">
+        <div class="auth-brand__logo">A</div>
+        <div class="auth-brand__copy">
+            <strong>ADMIN PANEL</strong>
+            <small>Панель управления</small>
+        </div>
+    </div>
+
+    <h1 class="auth-card__title"><?= Html::encode($this->title) ?></h1>
+    <p class="auth-card__subtitle">Заполните данные для создания учетной записи по приглашению</p>
 
     <?php foreach (Yii::$app->session->getAllFlashes() as $type => $msg): ?>
         <?php if (strpos((string) $type, 'auth.') === 0): ?>
@@ -21,7 +26,8 @@ $this->title = 'Регистрация администратора';
         <?php endif; ?>
         <?php $alertClass = $type === 'error' ? 'alert-danger' : 'alert-warning'; ?>
         <div class="alert <?= Html::encode($alertClass) ?>">
-            <?= Html::encode($msg) ?>
+            <span class="material-symbols-rounded"><?= $type === 'error' ? 'error' : 'warning' ?></span>
+            <div><?= Html::encode($msg) ?></div>
         </div>
     <?php endforeach; ?>
 
@@ -31,29 +37,37 @@ $this->title = 'Регистрация администратора';
         <?php if ($model->needsUsername()): ?>
             <?= $form->field($model, 'username')
                 ->textInput([
-                    'class' => 'form-control form-control-lg',
+                    'class' => 'form-control',
                     'autofocus' => true,
                     'autocomplete' => 'username',
+                    'placeholder' => 'admin_username',
                 ]) ?>
         <?php endif; ?>
 
         <?= $form->field($model, 'email')
             ->textInput([
-                'class' => 'form-control form-control-lg',
+                'class' => 'form-control',
                 'autofocus' => !$model->needsUsername(),
                 'autocomplete' => 'email',
+                'placeholder' => 'admin@example.com',
             ]) ?>
 
-        <?= $form->field($model, 'password')
-            ->passwordInput([
-                'class' => 'form-control form-control-lg',
-                'autocomplete' => 'new-password',
-            ]) ?>
+        <?= $form->field($model, 'password', [
+            'template' => "{label}\n<div class=\"auth-input-group auth-password-wrap\">{input}<button type=\"button\" class=\"auth-password-toggle\" data-password-toggle tabindex=\"-1\" aria-label=\"Показать пароль\" title=\"Показать пароль\"><span class=\"material-symbols-rounded\">visibility</span></button></div>\n{error}",
+        ])->passwordInput([
+            'class' => 'form-control',
+            'autocomplete' => 'new-password',
+            'placeholder' => '••••••••',
+        ]) ?>
 
         <div class="form-group mt-3">
             <?= Html::submitButton('Создать администратора', [
-                'class' => 'btn auth-submit btn-lg w-100',
+                'class' => 'btn auth-submit w-100',
             ]) ?>
+        </div>
+
+        <div class="auth-links text-center mt-3">
+            <?= Html::a('← Вернуться ко входу', ['/auth/login'], ['class' => 'auth-link']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

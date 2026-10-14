@@ -2,6 +2,18 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.0.1] - 2026-10-14
+
+### Added
+- aligned auth module UI with the main admin design (ambient lighting, Inter typography, Material Symbols)
+- added cross-module dark/light theme synchronization between admin panel and auth pages
+- added interactive password visibility toggle (`visibility` / `visibility_off`) on all auth password inputs
+- added Caps Lock indicator for password fields
+- added quick navigation link to public website from the auth header
+
+### Changed
+- redesigned login, password reset and admin invite views with cohesive glassmorphic cards and branding
+
 ## [2.0.0] - 2026-10-14
 
 ### Added

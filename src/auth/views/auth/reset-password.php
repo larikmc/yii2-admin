@@ -8,26 +8,38 @@ use yii\bootstrap5\Html;
 $this->title = 'Новый пароль';
 ?>
 
-<div class="registration">
-    <button type="button" class="theme-toggle" data-auth-theme-toggle aria-pressed="false">
-        <span class="theme-toggle__knob"></span>
-        <span class="theme-toggle__label" data-auth-theme-label>Light</span>
-    </button>
-    <h1 class="mb-4"><?= Html::encode($this->title) ?></h1>
+<div class="registration auth-card">
+    <div class="auth-brand">
+        <div class="auth-brand__logo">A</div>
+        <div class="auth-brand__copy">
+            <strong>ADMIN PANEL</strong>
+            <small>Панель управления</small>
+        </div>
+    </div>
+
+    <h1 class="auth-card__title"><?= Html::encode($this->title) ?></h1>
+    <p class="auth-card__subtitle">Придумайте новый надежный пароль для вашей учетной записи</p>
 
     <div class="registration__form-wrap">
         <?php $form = ActiveForm::begin(['id' => 'reset-password-form']); ?>
 
-        <?= $form->field($model, 'password')->passwordInput([
-            'class' => 'form-control form-control-lg',
-            'autofill' => 'new-password',
+        <?= $form->field($model, 'password', [
+            'template' => "{label}\n<div class=\"auth-input-group auth-password-wrap\">{input}<button type=\"button\" class=\"auth-password-toggle\" data-password-toggle tabindex=\"-1\" aria-label=\"Показать пароль\" title=\"Показать пароль\"><span class=\"material-symbols-rounded\">visibility</span></button></div>\n{error}",
+        ])->passwordInput([
+            'class' => 'form-control',
+            'autofocus' => true,
             'autocomplete' => 'new-password',
+            'placeholder' => '••••••••',
         ]) ?>
 
         <div class="form-group mt-3">
-            <?= Html::submitButton('Сохранить пароль', [
-                'class' => 'btn auth-submit btn-lg w-100',
+            <?= Html::submitButton('Сохранить новый пароль', [
+                'class' => 'btn auth-submit w-100',
             ]) ?>
+        </div>
+
+        <div class="auth-links text-center mt-3">
+            <?= Html::a('← Вернуться ко входу', ['/auth/login'], ['class' => 'auth-link']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

@@ -13,12 +13,17 @@ $this->title = 'Вход в систему';
 $blocked = !empty($remaining) && $remaining > 0;
 ?>
 
-<div class="registration">
-    <button type="button" class="theme-toggle" data-auth-theme-toggle aria-pressed="false">
-        <span class="theme-toggle__knob"></span>
-        <span class="theme-toggle__label" data-auth-theme-label>Light</span>
-    </button>
-    <h1 class="mb-4"><?= Html::encode($this->title) ?></h1>
+<div class="registration auth-card">
+    <div class="auth-brand">
+        <div class="auth-brand__logo">A</div>
+        <div class="auth-brand__copy">
+            <strong>ADMIN PANEL</strong>
+            <small>Панель управления</small>
+        </div>
+    </div>
+
+    <h1 class="auth-card__title"><?= Html::encode($this->title) ?></h1>
+    <p class="auth-card__subtitle">Введите данные для входа в панель управления</p>
 
     <?php foreach (Yii::$app->session->getAllFlashes() as $type => $msg): ?>
         <?php if (strpos((string)$type, 'auth.') === 0): ?>
@@ -26,14 +31,15 @@ $blocked = !empty($remaining) && $remaining > 0;
         <?php endif; ?>
         <?php $alertClass = $type === 'error' ? 'alert-danger' : 'alert-warning'; ?>
         <div class="alert <?= Html::encode($alertClass) ?>">
-            <?= Html::encode($msg) ?>
+            <span class="material-symbols-rounded"><?= $type === 'error' ? 'error' : 'warning' ?></span>
+            <div><?= Html::encode($msg) ?></div>
         </div>
     <?php endforeach; ?>
 
     <?php if ($blocked): ?>
-        <div class="alert alert-warning text-center"
-             id="lock-timer">
-            Попытки входа временно ограничены. Повторите попытку через
+        <div class="alert alert-warning text-center" id="lock-timer">
+            <span class="material-symbols-rounded" style="font-size:32px;color:#e24e6c;">lock_clock</span>
+            <div>Попытки входа временно ограничены. Повторите попытку через:</div>
             <span id="timer"><?= gmdate('i:s', (int)$remaining) ?></span>
         </div>
     <?php endif; ?>
@@ -45,16 +51,19 @@ $blocked = !empty($remaining) && $remaining > 0;
 
         <?= $form->field($model, 'email')
                 ->textInput([
-                        'class' => 'form-control form-control-lg',
+                        'class' => 'form-control',
                         'autofocus' => true,
                         'autocomplete' => 'username',
+                        'placeholder' => 'admin@example.com',
                 ]) ?>
 
-        <?= $form->field($model, 'password')
-                ->passwordInput([
-                        'class' => 'form-control form-control-lg',
-                        'autocomplete' => 'current-password',
-                ]) ?>
+        <?= $form->field($model, 'password', [
+            'template' => "{label}\n<div class=\"auth-input-group auth-password-wrap\">{input}<button type=\"button\" class=\"auth-password-toggle\" data-password-toggle tabindex=\"-1\" aria-label=\"Показать пароль\" title=\"Показать пароль\"><span class=\"material-symbols-rounded\">visibility</span></button></div>\n{error}",
+        ])->passwordInput([
+            'class' => 'form-control',
+            'autocomplete' => 'current-password',
+            'placeholder' => '••••••••',
+        ]) ?>
 
         <?php
         echo Html::textInput('login_check', '', [
@@ -69,29 +78,28 @@ $blocked = !empty($remaining) && $remaining > 0;
         <?php if ($model->scenario === 'withCaptcha'): ?>
             <?= $form->field($model, 'verifyCode')->widget(Captcha::class, [
                     'captchaAction' => [LoginForm::CAPTCHA_ROUTE],
-                    'template' => '<div class="auth-captcha-row"><div class="auth-captcha-image">{image}</div><div class="auth-captcha-input">{input}</div></div>',
+                    'template' => '<div class="auth-captcha-row"><div class="auth-captcha-image" title="Нажмите, чтобы обновить код">{image}</div><div class="auth-captcha-input">{input}</div></div>',
                     'options' => [
-                            'class' => 'form-control form-control-lg',
-                            'placeholder' => 'Введите код с картинки',
+                            'class' => 'form-control',
+                            'placeholder' => 'Код с картинки',
                             'autocomplete' => 'off',
                     ],
                     'imageOptions' => [
                             'alt' => 'CAPTCHA',
-                            'title' => 'Обновить изображение',
-                            'style' => 'cursor:pointer;',
+                            'title' => 'Нажмите, чтобы обновить код',
                     ],
             ]) ?>
         <?php endif; ?>
 
         <div class="form-group mt-3">
-            <?= Html::submitButton('Войти', [
-                    'class' => 'btn auth-submit btn-lg w-100',
+            <?= Html::submitButton('Войти в панель', [
+                    'class' => 'btn auth-submit w-100',
                     'name'  => 'login-button',
             ]) ?>
         </div>
 
-        <div class="text-center mt-3">
-            <?= Html::a('Забыли пароль?', ['/auth/request-password-reset'], ['class' => 'text-decoration-none']) ?>
+        <div class="auth-links text-center mt-3">
+            <?= Html::a('Забыли пароль?', ['/auth/request-password-reset'], ['class' => 'auth-link']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>
@@ -119,7 +127,7 @@ function updateTimer() {
     const secs = seconds % 60;
 
     if (seconds < 60) {
-        timerEl.style.color = '#d9534f';
+        timerEl.style.color = '#e24e6c';
         timerEl.style.fontWeight = 'bold';
     }
 
