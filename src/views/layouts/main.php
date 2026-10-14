@@ -174,10 +174,11 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
     echo '</li>';
 };
 $isSidebarCompact = (isset($_COOKIE['admin-sidebar-compact']) && $_COOKIE['admin-sidebar-compact'] === '1');
+$isDarkTheme = (isset($_COOKIE['admin-theme']) && $_COOKIE['admin-theme'] === 'dark');
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>">
+<html lang="<?= Yii::$app->language ?>" class="<?= $isDarkTheme ? 'dark' : '' ?>">
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -186,6 +187,19 @@ $isSidebarCompact = (isset($_COOKIE['admin-sidebar-compact']) && $_COOKIE['admin
     <script>
         (function() {
             try {
+                var theme = null;
+                var cookieTheme = document.cookie.match(/(?:^|; )admin-theme=([^;]*)/);
+                if (cookieTheme) {
+                    theme = cookieTheme[1];
+                } else {
+                    theme = localStorage.getItem('admin-theme');
+                }
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else if (theme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                }
+
                 var isCompact = false;
                 var m = document.cookie.match(/(?:^|; )admin-sidebar-compact=([^;]*)/);
                 if (m) {
@@ -203,7 +217,7 @@ $isSidebarCompact = (isset($_COOKIE['admin-sidebar-compact']) && $_COOKIE['admin
     <?php $this->head() ?>
 </head>
 
-<body class="sz-admin-body d-flex flex-column h-100 <?= $isSidebarCompact ? 'sz-sidebar-is-collapsed' : 'sz-sidebar-is-open' ?>">
+<body class="sz-admin-body d-flex flex-column h-100 <?= $isDarkTheme ? 'dark ' : '' ?><?= $isSidebarCompact ? 'sz-sidebar-is-collapsed' : 'sz-sidebar-is-open' ?>">
 <?php $this->beginBody() ?>
 
 <div class="sz-shell-glow sz-shell-glow--violet"></div>
@@ -266,8 +280,8 @@ $isSidebarCompact = (isset($_COOKIE['admin-sidebar-compact']) && $_COOKIE['admin
                     ]
                 ) ?>
 
-                <button class="toolbtn" id="themeButton" type="button" data-sz-theme-toggle title="Переключить тему" aria-label="Переключить тему">
-                    <span class="material-symbols-rounded" id="themeIcon">dark_mode</span>
+                <button class="toolbtn" id="themeButton" type="button" data-sz-theme-toggle title="<?= $isDarkTheme ? 'Светлая тема' : 'Темная тема' ?>" aria-label="<?= $isDarkTheme ? 'Светлая тема' : 'Темная тема' ?>">
+                    <span class="material-symbols-rounded" id="themeIcon"><?= $isDarkTheme ? 'light_mode' : 'dark_mode' ?></span>
                 </button>
 
                 <button class="toolbtn" id="widthButton" type="button" data-sz-width-toggle title="По всей ширине" aria-label="По всей ширине экрана">

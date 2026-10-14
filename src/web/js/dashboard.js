@@ -1,8 +1,26 @@
 // Toggle the visibility of a dropdown menu
 const toggleDropdown = (dropdown, menu, isOpen) => {
     dropdown.classList.toggle("sz-dd--open", isOpen);
-    // делаем анимацию высоты
-    menu.style.height = isOpen ? `${menu.scrollHeight}px` : "0px";
+    const toggle = dropdown.querySelector("[data-sz-dd-toggle]");
+    if (toggle) {
+        toggle.setAttribute("aria-expanded", String(isOpen));
+        toggle.classList.toggle("expanded", isOpen);
+    }
+    if (isOpen) {
+        menu.style.height = `${menu.scrollHeight}px`;
+        const onEnd = () => {
+            if (dropdown.classList.contains("sz-dd--open")) {
+                menu.style.height = "auto";
+            }
+            menu.removeEventListener("transitionend", onEnd);
+        };
+        menu.addEventListener("transitionend", onEnd);
+    } else {
+        menu.style.height = `${menu.scrollHeight}px`;
+        requestAnimationFrame(() => {
+            menu.style.height = "0px";
+        });
+    }
 };
 
 // Close all open dropdowns
@@ -164,9 +182,14 @@ document.querySelectorAll("[data-sz-toast]").forEach((toast) => {
 // Theme switcher (Light / Dark)
 const initTheme = () => {
     try {
-        const savedTheme = localStorage.getItem("admin-theme");
+        const cookieMatch = document.cookie.match(/(?:^|; )admin-theme=([^;]*)/);
+        const savedTheme = cookieMatch ? cookieMatch[1] : localStorage.getItem("admin-theme");
         if (savedTheme === "dark") {
+            document.documentElement.classList.add("dark");
             document.body.classList.add("dark");
+        } else if (savedTheme === "light") {
+            document.documentElement.classList.remove("dark");
+            document.body.classList.remove("dark");
         }
     } catch (e) {}
 
@@ -192,9 +215,11 @@ const initTheme = () => {
     if (themeButton) {
         themeButton.addEventListener("click", () => {
             const isDark = document.body.classList.toggle("dark");
+            document.documentElement.classList.toggle("dark", isDark);
             updateThemeIcon();
             try {
                 localStorage.setItem("admin-theme", isDark ? "dark" : "light");
+                document.cookie = "admin-theme=" + (isDark ? "dark" : "light") + "; path=/; max-age=31536000; SameSite=Lax";
             } catch (e) {}
         });
     }

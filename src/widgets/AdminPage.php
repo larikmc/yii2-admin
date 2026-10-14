@@ -11,6 +11,7 @@ class AdminPage extends Widget
     public ?string $subtitle = null;
     public string $content = '';
     public array $tabs = [];
+    public ?string $tabsStyle = null;
     public array $actions = [];
     public bool $boxed = true;
     public string $panelClass = 'sz-panel';
@@ -34,9 +35,13 @@ class AdminPage extends Widget
 
         $tabs = '';
         if ($this->tabs !== []) {
-            $tabs = AdminTabs::widget([
+            $tabsOptions = [
                 'items' => $this->tabs,
-            ]);
+            ];
+            if ($this->tabsStyle !== null) {
+                $tabsOptions['style'] = $this->tabsStyle;
+            }
+            $tabs = AdminTabs::widget($tabsOptions);
         }
 
         $headerActions = $this->actionsPosition === 'header' ? $actions : '';

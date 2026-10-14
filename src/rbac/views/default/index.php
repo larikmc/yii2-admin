@@ -9,12 +9,43 @@ $this->params['breadcrumbs'] = [
     ['label' => 'RBAC'],
 ];
 
-$content = '<div class="sz-stat-grid">'
-    . '<div class="sz-stat-card"><div class="sz-stat-card__label">Роли</div><div class="sz-stat-card__value">' . (int) $report['counts']['roles'] . '</div></div>'
-    . '<div class="sz-stat-card"><div class="sz-stat-card__label">Действия</div><div class="sz-stat-card__value">' . (int) $report['counts']['permissions'] . '</div></div>'
-    . '<div class="sz-stat-card"><div class="sz-stat-card__label">Назначения</div><div class="sz-stat-card__value">' . (int) $report['counts']['assignments'] . '</div></div>'
-    . '<div class="sz-stat-card"><div class="sz-stat-card__label">Пользователи</div><div class="sz-stat-card__value">' . (int) $report['counts']['users'] . '</div></div>'
-    . '</div>';
+$cards = [
+    [
+        'title' => 'Роли',
+        'value' => (int) $report['counts']['roles'],
+        'icon' => 'admin_panel_settings',
+        'class' => 'hero-blue',
+    ],
+    [
+        'title' => 'Действия',
+        'value' => (int) $report['counts']['permissions'],
+        'icon' => 'key',
+        'class' => 'hero-mint',
+    ],
+    [
+        'title' => 'Назначения',
+        'value' => (int) $report['counts']['assignments'],
+        'icon' => 'assignment_ind',
+        'class' => 'hero-peach',
+    ],
+    [
+        'title' => 'Пользователи',
+        'value' => (int) $report['counts']['users'],
+        'icon' => 'group',
+        'class' => 'hero-violet',
+    ],
+];
+
+$cardsHtml = [];
+foreach ($cards as $c) {
+    $cardsHtml[] = '<article class="hero-card ' . Html::encode($c['class']) . ' sz-stat-card">'
+        . '<span class="overline">' . Html::encode($c['title']) . '</span>'
+        . '<strong>' . $c['value'] . '</strong>'
+        . '<span class="hero-ico"><span class="material-symbols-rounded">' . Html::encode($c['icon']) . '</span></span>'
+        . '</article>';
+}
+
+$content = '<div class="sz-stat-grid">' . implode('', $cardsHtml) . '</div>';
 
 echo AdminPage::widget([
     'title' => $this->title,

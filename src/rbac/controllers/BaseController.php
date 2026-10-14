@@ -17,19 +17,23 @@ class BaseController extends Controller
 
     protected function getRbacTabs(): array
     {
-        $currentRoute = '/' . Yii::$app->controller->route;
+        $currentRoute = ltrim(Yii::$app->controller->route, '/');
         $items = [
-            ['label' => 'Обзор', 'url' => $this->getRbacRoute('default/index'), 'match' => '/admin/rbac/default/'],
-            ['label' => 'Пользователи', 'url' => $this->getRbacRoute('user/index'), 'match' => '/admin/rbac/user/'],
-            ['label' => 'Роли', 'url' => $this->getRbacRoute('role/index'), 'match' => '/admin/rbac/role/'],
-            ['label' => 'Действия', 'url' => $this->getRbacRoute('permission/index'), 'match' => '/admin/rbac/permission/'],
-            ['label' => 'Назначения', 'url' => $this->getRbacRoute('assignment/index'), 'match' => '/admin/rbac/assignment/'],
-            ['label' => 'Инвайты', 'url' => $this->getRbacRoute('invite/index'), 'match' => '/admin/rbac/invite/'],
+            ['label' => 'Обзор', 'url' => $this->getRbacRoute('default/index'), 'pattern' => 'default'],
+            ['label' => 'Пользователи', 'url' => $this->getRbacRoute('user/index'), 'pattern' => 'user'],
+            ['label' => 'Роли', 'url' => $this->getRbacRoute('role/index'), 'pattern' => 'role'],
+            ['label' => 'Действия', 'url' => $this->getRbacRoute('permission/index'), 'pattern' => 'permission'],
+            ['label' => 'Назначения', 'url' => $this->getRbacRoute('assignment/index'), 'pattern' => 'assignment'],
+            ['label' => 'Инвайты', 'url' => $this->getRbacRoute('invite/index'), 'pattern' => 'invite'],
         ];
 
         foreach ($items as &$item) {
-            $item['active'] = str_starts_with($currentRoute, $item['match']);
-            unset($item['match']);
+            $pattern = $item['pattern'];
+            $item['active'] = str_starts_with($currentRoute, 'admin/rbac/' . $pattern . '/')
+                || str_starts_with($currentRoute, 'rbac/' . $pattern . '/')
+                || $currentRoute === 'admin/rbac/' . $pattern
+                || $currentRoute === 'rbac/' . $pattern;
+            unset($item['pattern']);
         }
         unset($item);
 

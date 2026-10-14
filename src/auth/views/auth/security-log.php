@@ -16,28 +16,28 @@ ob_start();
     <?php if ($logs === []): ?>
         <div class="alert alert-secondary mb-0">Лог безопасности пуст или файл логов еще не создан.</div>
     <?php else: ?>
-        <div class="table-responsive border rounded-3 overflow-hidden bg-white">
+        <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>IP</th>
-                    <th>Уровень</th>
+                    <th style="width: 190px;">Дата</th>
+                    <th style="width: 140px;">IP</th>
+                    <th style="width: 120px;">Уровень</th>
                     <th>Сообщение</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($logs as $log): ?>
                     <tr>
-                        <td><?= Html::encode($log['date']) ?></td>
-                        <td><?= Html::encode($log['ip']) ?></td>
+                        <td><code><?= Html::encode($log['date']) ?></code></td>
+                        <td><?= !empty($log['ip']) && $log['ip'] !== '-' ? Html::encode($log['ip']) : '<span class="text-muted">—</span>' ?></td>
                         <td>
-                        <span class="badge rounded-pill text-bg-warning">
-                            <?= Html::encode($log['level']) ?>
-                        </span>
-                    </td>
-                    <td><?= Html::encode($log['message']) ?></td>
-                </tr>
+                            <span class="badge text-bg-warning">
+                                <?= Html::encode($log['level']) ?>
+                            </span>
+                        </td>
+                        <td><?= Html::encode($log['message']) ?></td>
+                    </tr>
                 <?php endforeach; ?>
                 </tbody>
             </table>

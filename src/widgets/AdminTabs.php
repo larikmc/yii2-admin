@@ -9,7 +9,7 @@ use yii\web\View;
 class AdminTabs extends Widget
 {
     public array $items = [];
-    public string $style = 'line'; // 'line' or 'pills'
+    public string $style = 'pills'; // 'pills' or 'line'
     public string $containerClass = '';
     public ?string $navClass = null;
     public bool $encodeLabels = true;
