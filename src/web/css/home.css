@@ -738,4 +738,416 @@ body.dark .metric--amber .metric-icon {
     .hero-grid { grid-template-columns: 1fr; }
 }
 
+/* ========================================================= */
+/* SYSTEM RUNTIME CONSOLE (VARIANT 1)                        */
+/* ========================================================= */
+.console-section {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.console-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.console-panel {
+    background: #ffffff;
+    border: 1px solid rgba(40, 52, 82, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 4px 22px rgba(28, 48, 92, 0.035);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.console-panel:hover {
+    box-shadow: 0 8px 28px rgba(28, 48, 92, 0.06);
+}
+
+body.dark .console-panel {
+    background: #1b2842;
+    border-color: rgba(73, 103, 150, 0.22);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
+}
+
+.console-panel__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    margin-bottom: 16px;
+}
+
+body.dark .console-panel__header {
+    border-bottom-color: rgba(148, 163, 184, 0.1);
+}
+
+.console-panel__title-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.console-panel__icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(49, 137, 247, 0.12);
+    color: #2563eb;
+    font-size: 22px;
+}
+
+.console-panel__icon--cyan {
+    background: rgba(14, 165, 233, 0.12);
+    color: #0284c7;
+}
+
+body.dark .console-panel__icon {
+    background: rgba(49, 137, 247, 0.22);
+    color: #60a5fa;
+}
+
+body.dark .console-panel__icon--cyan {
+    background: rgba(14, 165, 233, 0.22);
+    color: #38bdf8;
+}
+
+.console-panel__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 750;
+    color: #0f172a;
+    line-height: 1.25;
+}
+
+body.dark .console-panel__title {
+    color: #f1f5f9;
+}
+
+.console-panel__subtitle {
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    color: #64748b;
+}
+
+body.dark .console-panel__subtitle {
+    color: #94a3b8;
+}
+
+.env-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+}
+
+.env-pill__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.env-pill--dev {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+}
+.env-pill--dev .env-pill__dot {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+body.dark .env-pill--dev {
+    background: rgba(245, 158, 11, 0.22);
+    color: #fbbf24;
+}
+
+.env-pill--prod {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+.env-pill--prod .env-pill__dot {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+/* KPI rows inside panel 1 */
+.kpi-row {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    margin-bottom: 12px;
+}
+
+.kpi-row:last-child {
+    margin-bottom: 0;
+}
+
+body.dark .kpi-row {
+    background: #162238;
+    border-color: #263854;
+}
+
+.kpi-row__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.kpi-row__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 650;
+    color: #1e293b;
+}
+
+body.dark .kpi-row__title {
+    color: #e2e8f0;
+}
+
+.kpi-icon {
+    font-size: 18px;
+    color: #3b82f6;
+}
+
+.kpi-row__values {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.kpi-val {
+    font-size: 17px;
+    font-weight: 750;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+}
+
+body.dark .kpi-val {
+    color: #f8fafc;
+}
+
+.kpi-muted {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.kpi-bar {
+    width: 100%;
+    height: 7px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+body.dark .kpi-bar {
+    background: #2a3b56;
+}
+
+.kpi-bar__fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    transition: width .4s ease;
+}
+
+.kpi-bar__fill--blue {
+    background: linear-gradient(90deg, #38bdf8, #2563eb);
+}
+
+.kpi-bar__fill--green {
+    background: linear-gradient(90deg, #34d399, #059669);
+}
+
+.kpi-row__foot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #64748b;
+}
+
+body.dark .kpi-row__foot {
+    color: #94a3b8;
+}
+
+/* Panel 2: Split Content (Users + Logs) */
+.console-panel__content--split {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.console-user-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 16px 14px;
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(147, 51, 234, 0.08), rgba(59, 130, 246, 0.06));
+    border: 1px solid rgba(147, 51, 234, 0.16);
+}
+
+body.dark .console-user-block {
+    background: linear-gradient(145deg, rgba(147, 51, 234, 0.15), rgba(59, 130, 246, 0.12));
+    border-color: rgba(147, 51, 234, 0.28);
+}
+
+.console-user-block__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #8b5cf6;
+    color: #fff;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+}
+
+.console-user-block__caption {
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: .4px;
+    color: #6d28d9;
+    margin-bottom: 2px;
+}
+
+body.dark .console-user-block__caption {
+    color: #c4b5fd;
+}
+
+.console-user-block__num {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1e1b4b;
+    margin-bottom: 4px;
+}
+
+body.dark .console-user-block__num {
+    color: #fff;
+}
+
+.console-user-block__meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #059669;
+}
+
+body.dark .console-user-block__meta {
+    color: #34d399;
+}
+
+.status-indicator-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+}
+
+.console-logs-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+.console-log-item {
+    padding: 10px 13px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+body.dark .console-log-item {
+    background: #162238;
+    border-color: #263854;
+}
+
+.console-log-item__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.console-log-icon {
+    font-size: 16px;
+    color: #0ea5e9;
+}
+
+.console-log-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    flex: 1;
+}
+
+body.dark .console-log-title {
+    color: #e2e8f0;
+}
+
+.console-log-badge {
+    font-size: 11px;
+    font-weight: 750;
+    color: #0284c7;
+    background: rgba(14, 165, 233, 0.12);
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-variant-numeric: tabular-nums;
+}
+
+body.dark .console-log-badge {
+    background: rgba(14, 165, 233, 0.22);
+    color: #38bdf8;
+}
+
+.console-log-path {
+    display: block;
+    font-size: 10.5px;
+    color: #64748b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+body.dark .console-log-path {
+    color: #94a3b8;
+}
+
+@media (max-width: 1100px) {
+    .console-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 680px) {
+    .console-panel__content--split {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 

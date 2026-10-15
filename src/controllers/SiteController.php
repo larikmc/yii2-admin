@@ -228,6 +228,41 @@ class SiteController extends Controller
                 'serverTimestamp' => time(),
             ],
             'health' => $health,
+            'metricsData' => [
+                'env' => [
+                    'name' => YII_ENV,
+                    'debug' => YII_DEBUG,
+                    'isProd' => !YII_DEBUG && YII_ENV === 'prod',
+                ],
+                'disk' => [
+                    'usedPercent' => isset($diskUsedPercent) ? round($diskUsedPercent, 1) : null,
+                    'freeFormatted' => is_numeric($diskFree) ? $formatBytes((float)$diskFree) : 'н/д',
+                    'totalFormatted' => is_numeric($diskTotal) ? $formatBytes((float)$diskTotal) : 'н/д',
+                    'ok' => $health[3]['ok'] ?? true,
+                ],
+                'memory' => [
+                    'usedFormatted' => $formatBytes($memoryUsage),
+                    'limitFormatted' => ($memoryLimitBytes !== null && $memoryLimitBytes > 0) ? $formatBytes($memoryLimitBytes) : 'Без ограничений',
+                    'percent' => isset($memoryPercent) ? round($memoryPercent, 1) : null,
+                    'ok' => $health[4]['ok'] ?? true,
+                ],
+                'logs' => [
+                    'backend' => [
+                        'size' => $health[5]['value'] ?? 'н/д',
+                        'path' => '@backend/runtime/logs',
+                        'ok' => $health[5]['ok'] ?? true,
+                    ],
+                    'frontend' => [
+                        'size' => $health[6]['value'] ?? 'н/д',
+                        'path' => '@frontend/runtime/logs',
+                        'ok' => $health[6]['ok'] ?? true,
+                    ],
+                ],
+                'users' => [
+                    'total' => $usersTotal,
+                    'active' => $usersActive,
+                ],
+            ],
             'usersTotal' => $usersTotal,
             'usersActive' => $usersActive,
         ]);

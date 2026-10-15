@@ -42,110 +42,149 @@ $this->title = 'Добро пожаловать, ' . ($summary['email'] ?? 'Ад
         </div>
     </section>
 
-    <!-- 2. Metrics Grid -->
-    <section class="metrics" aria-label="Состояние системы">
-        <?php foreach ($health as $item): ?>
-            <?php
-            $title = $item['title'] ?? '';
-            $val = $item['value'] ?? '';
-            $hint = $item['hint'] ?? '';
-            $footHint = $item['footHint'] ?? '';
-            $ok = !empty($item['ok']);
-            $progress = isset($item['progress']) ? round((float)$item['progress'], 1) : null;
-            
-            // Choose color scheme based on title or ok state
-            $iconName = 'database';
-            $themeClass = 'metric--mint';
-            $barClass = 'green';
-            $lowerTitle = mb_strtolower($title);
+    <?php
+    $mEnv = $metricsData['env'] ?? ['name' => YII_ENV, 'debug' => YII_DEBUG, 'isProd' => !YII_DEBUG];
+    $mDisk = $metricsData['disk'] ?? ['usedPercent' => 45, 'freeFormatted' => '240 GB', 'totalFormatted' => '460 GB', 'ok' => true];
+    $mMemory = $metricsData['memory'] ?? ['usedFormatted' => '2.0 MB', 'limitFormatted' => '1.0 GB', 'percent' => 0.2, 'ok' => true];
+    $mLogs = $metricsData['logs'] ?? [
+        'backend' => ['size' => '1.2 MB', 'path' => '@backend/runtime/logs', 'ok' => true],
+        'frontend' => ['size' => '1.8 MB', 'path' => '@frontend/runtime/logs', 'ok' => true],
+    ];
+    $mUsers = $metricsData['users'] ?? ['total' => $usersTotal, 'active' => $usersActive];
+    ?>
 
-            if (str_contains($lowerTitle, 'кеш') || str_contains($lowerTitle, 'cache')) {
-                $iconName = 'dns';
-                $themeClass = 'metric--mint';
-                $barClass = 'green';
-            } elseif (str_contains($lowerTitle, 'база') || str_contains($lowerTitle, 'db') || str_contains($lowerTitle, 'данных')) {
-                $iconName = 'database';
-                $themeClass = 'metric--teal';
-                $barClass = 'green';
-            } elseif (str_contains($lowerTitle, 'режим') || str_contains($lowerTitle, 'env')) {
-                $iconName = 'view_in_ar';
-                $themeClass = $ok ? 'metric--indigo' : 'metric--amber';
-            } elseif (str_contains($lowerTitle, 'лог') || str_contains($lowerTitle, 'log')) {
-                $iconName = 'description';
-                $themeClass = 'metric--cyan';
-            } elseif (str_contains($lowerTitle, 'диск') || str_contains($lowerTitle, 'disk') || str_contains($lowerTitle, 'место')) {
-                $iconName = 'hard_drive';
-                $themeClass = 'metric--blue';
-                $barClass = $ok ? 'blue' : 'rose';
-            } elseif (str_contains($lowerTitle, 'памят') || str_contains($lowerTitle, 'memory')) {
-                $iconName = 'memory';
-                $themeClass = 'metric--violet';
-                $barClass = $ok ? 'violet' : 'rose';
-            }
-            ?>
-            <article class="metric <?= $themeClass ?>">
-                <div class="metric-head">
-                    <div class="metric-icon-wrap">
-                        <span class="metric-icon">
-                            <span class="material-symbols-rounded"><?= $iconName ?></span>
+    <!-- 2. System Status & Runtime Console (2-panel layout) -->
+    <section class="console-section" aria-label="Состояние системы">
+        <div class="console-grid">
+            <!-- 1. Панель аппаратных ресурсов и окружения -->
+            <div class="console-panel">
+                <div class="console-panel__header">
+                    <div class="console-panel__title-box">
+                        <span class="console-panel__icon">
+                            <span class="material-symbols-rounded">dns</span>
                         </span>
-                    </div>
-                    <div class="metric-title-group">
-                        <span class="metric-label"><?= Html::encode(mb_strtoupper($title)) ?></span>
-                        <?php if ($hint !== ''): ?>
-                            <span class="metric-badge-code"><?= Html::encode($hint) ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="metric-status-badge <?= $ok ? 'is-ok' : 'is-alert' ?>" title="<?= $ok ? 'В норме' : 'Требует внимания' ?>">
-                        <span class="status-pulse-dot"></span>
-                        <span class="status-badge-icon material-symbols-rounded"><?= $ok ? 'check' : 'priority_high' ?></span>
-                    </div>
-                </div>
-
-                <div class="metric-body">
-                    <div class="metric-value"><?= Html::encode($val) ?></div>
-                </div>
-
-                <?php if ($progress !== null): ?>
-                    <div class="metric-progress-wrap">
-                        <div class="bar <?= $barClass ?>">
-                            <span style="width: <?= min(100, max(0, $progress)) ?>%;<?= $progress > 0 ? 'min-width:6px;' : '' ?>"></span>
+                        <div>
+                            <h3 class="console-panel__title">Серверные ресурсы</h3>
+                            <p class="console-panel__subtitle">Нагрузка на файловую систему и интерпретатор</p>
                         </div>
                     </div>
-                <?php endif; ?>
-
-                <?php if ($footHint !== ''): ?>
-                    <div class="metric-foot">
-                        <span class="metric-foot-hint"><?= Html::encode($footHint) ?></span>
+                    <div>
+                        <?php if ($mEnv['debug']): ?>
+                            <span class="env-pill env-pill--dev" title="Включен режим отладки YII_DEBUG">
+                                <span class="env-pill__dot"></span>
+                                <span><?= Html::encode($mEnv['name']) ?> (debug)</span>
+                            </span>
+                        <?php else: ?>
+                            <span class="env-pill env-pill--prod" title="Режим продакшн">
+                                <span class="env-pill__dot"></span>
+                                <span><?= Html::encode($mEnv['name']) ?> (prod)</span>
+                            </span>
+                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
-            </article>
-        <?php endforeach; ?>
+                </div>
 
-        <!-- Пользователи -->
-        <article class="metric metric--purple">
-            <div class="metric-head">
-                <div class="metric-icon-wrap">
-                    <span class="metric-icon">
-                        <span class="material-symbols-rounded">group</span>
-                    </span>
-                </div>
-                <div class="metric-title-group">
-                    <span class="metric-label">ПОЛЬЗОВАТЕЛИ</span>
-                    <span class="metric-badge-code">Всего в БД</span>
-                </div>
-                <div class="metric-status-badge is-ok" title="В норме">
-                    <span class="status-pulse-dot"></span>
-                    <span class="status-badge-icon material-symbols-rounded">check</span>
+                <div class="console-panel__content">
+                    <!-- Диск -->
+                    <div class="kpi-row">
+                        <div class="kpi-row__head">
+                            <div class="kpi-row__title">
+                                <span class="material-symbols-rounded kpi-icon">hard_drive</span>
+                                <span class="kpi-name">Дисковое пространство</span>
+                            </div>
+                            <div class="kpi-row__values">
+                                <span class="kpi-val"><?= $mDisk['usedPercent'] !== null ? ($mDisk['usedPercent'] . '%') : 'н/д' ?></span>
+                                <span class="kpi-muted">занято</span>
+                            </div>
+                        </div>
+                        <?php if ($mDisk['usedPercent'] !== null): ?>
+                            <div class="kpi-bar">
+                                <span class="kpi-bar__fill kpi-bar__fill--blue" style="width: <?= min(100, max(0, $mDisk['usedPercent'])) ?>%;"></span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="kpi-row__foot">
+                            <span>Свободно: <strong><?= Html::encode($mDisk['freeFormatted']) ?></strong></span>
+                            <span>Всего: <?= Html::encode($mDisk['totalFormatted']) ?></span>
+                        </div>
+                    </div>
+
+                    <!-- Память PHP -->
+                    <div class="kpi-row">
+                        <div class="kpi-row__head">
+                            <div class="kpi-row__title">
+                                <span class="material-symbols-rounded kpi-icon">memory</span>
+                                <span class="kpi-name">Память PHP скрипта</span>
+                            </div>
+                            <div class="kpi-row__values">
+                                <span class="kpi-val"><?= Html::encode($mMemory['usedFormatted']) ?></span>
+                                <span class="kpi-muted">/ <?= Html::encode($mMemory['limitFormatted']) ?></span>
+                            </div>
+                        </div>
+                        <?php if ($mMemory['percent'] !== null): ?>
+                            <div class="kpi-bar">
+                                <span class="kpi-bar__fill kpi-bar__fill--green" style="width: <?= min(100, max(2, $mMemory['percent'])) ?>%;"></span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="kpi-row__foot">
+                            <span>Текущее потребление: <strong><?= Html::encode($mMemory['usedFormatted']) ?></strong></span>
+                            <span><?= $mMemory['percent'] !== null ? ('Использовано ' . $mMemory['percent'] . '% лимита') : 'Лимит не ограничен' ?></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="metric-body">
-                <div class="metric-value"><?= $usersTotal === null ? 'н/д' : Html::encode((string)$usersTotal) ?></div>
+
+            <!-- 2. Панель активности и журналов -->
+            <div class="console-panel">
+                <div class="console-panel__header">
+                    <div class="console-panel__title-box">
+                        <span class="console-panel__icon console-panel__icon--cyan">
+                            <span class="material-symbols-rounded">monitoring</span>
+                        </span>
+                        <div>
+                            <h3 class="console-panel__title">Активность и журналы</h3>
+                            <p class="console-panel__subtitle">Пользовательская база и runtime-логи системы</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="console-panel__content console-panel__content--split">
+                    <!-- Пользователи (KPI карточка) -->
+                    <div class="console-user-block">
+                        <div class="console-user-block__icon">
+                            <span class="material-symbols-rounded">group</span>
+                        </div>
+                        <div class="console-user-block__info">
+                            <span class="console-user-block__caption">ПОЛЬЗОВАТЕЛИ В СИСТЕМЕ</span>
+                            <div class="console-user-block__num"><?= $mUsers['total'] === null ? 'н/д' : Html::encode((string)$mUsers['total']) ?></div>
+                            <div class="console-user-block__meta">
+                                <span class="status-indicator-dot"></span>
+                                <span><?= $mUsers['active'] !== null ? ('Активных: ' . Html::encode((string)$mUsers['active'])) : 'Зарегистрировано в БД' ?></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Логи (Мини-реестр) -->
+                    <div class="console-logs-block">
+                        <div class="console-log-item">
+                            <div class="console-log-item__head">
+                                <span class="material-symbols-rounded console-log-icon">description</span>
+                                <span class="console-log-title">Логи Backend</span>
+                                <span class="console-log-badge"><?= Html::encode($mLogs['backend']['size']) ?></span>
+                            </div>
+                            <code class="console-log-path"><?= Html::encode($mLogs['backend']['path']) ?></code>
+                        </div>
+
+                        <div class="console-log-item">
+                            <div class="console-log-item__head">
+                                <span class="material-symbols-rounded console-log-icon">description</span>
+                                <span class="console-log-title">Логи Frontend</span>
+                                <span class="console-log-badge"><?= Html::encode($mLogs['frontend']['size']) ?></span>
+                            </div>
+                            <code class="console-log-path"><?= Html::encode($mLogs['frontend']['path']) ?></code>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="metric-foot">
-                <span class="metric-foot-hint"><?= $usersActive !== null ? ('Активных: ' . Html::encode((string)$usersActive)) : 'Зарегистрированные аккаунты' ?></span>
-            </div>
-        </article>
+        </div>
     </section>
 </div>
 
@@ -180,4 +219,5 @@ $clockJs = <<<JS
 JS;
 $this->registerJs($clockJs, \yii\web\View::POS_READY);
 ?>
+
 
