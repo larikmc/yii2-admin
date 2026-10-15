@@ -40,7 +40,31 @@ $breadcrumbTrail = implode('<span class="sz-breadcrumbs__sep">/</span>', $breadc
 $userName = $identity->username ?? $identity->email ?? 'Администратор';
 $userEmail = $identity->email ?? null;
 
-$isActive = static function (array $item) use ($currentRoute): bool {
+$rawCurrentRoute = (string) (Yii::$app->controller->route ?? '');
+$requestedRoute = (string) (Yii::$app->requestedRoute ?? '');
+$adminModuleId = Yii::$app->controller->module ? (string) Yii::$app->controller->module->uniqueId : 'admin';
+
+$normalizeRoute = static function (string $route) use ($adminModuleId): string {
+    $r = trim($route, '/');
+    if ($r === '') {
+        return '';
+    }
+    if ($adminModuleId !== '' && (str_starts_with($r, $adminModuleId . '/') || $r === $adminModuleId)) {
+        $r = (string) substr($r, strlen($adminModuleId));
+        $r = trim($r, '/');
+    } elseif (str_starts_with($r, 'admin/')) {
+        $r = trim((string) substr($r, 6), '/');
+    }
+    if (str_starts_with($r, 'auth/auth/')) {
+        $r = 'auth/' . substr($r, 10);
+    }
+    return $r;
+};
+
+$currentNorm = $normalizeRoute($rawCurrentRoute);
+$requestedNorm = $normalizeRoute($requestedRoute);
+
+$isActive = static function (array $item) use ($currentRoute, $rawCurrentRoute, $currentNorm, $requestedNorm, $normalizeRoute): bool {
     if (isset($item['active'])) {
         return (bool) (is_callable($item['active']) ? $item['active']() : $item['active']);
     }
@@ -50,8 +74,69 @@ $isActive = static function (array $item) use ($currentRoute): bool {
         return false;
     }
 
-    return rtrim((string) $url[0], '*') === $currentRoute
-        || (str_ends_with((string) $url[0], '*') && str_starts_with($currentRoute, rtrim((string) $url[0], '*')));
+    $itemRaw = (string) $url[0];
+    if ($itemRaw === '' || $itemRaw === '#') {
+        return false;
+    }
+
+    // Direct match with raw current route
+    $itemSlash = '/' . ltrim($itemRaw, '/');
+    if ($currentRoute === $itemSlash || '/' . ltrim($rawCurrentRoute, '/') === $itemSlash) {
+        return true;
+    }
+
+    // Wildcard match (* at end)
+    if (str_ends_with($itemRaw, '*')) {
+        $prefix = rtrim($itemRaw, '*');
+        $normPrefix = trim($normalizeRoute($prefix), '/');
+        if ($normPrefix !== '' && (str_starts_with($currentNorm, $normPrefix) || str_starts_with($requestedNorm, $normPrefix))) {
+            return true;
+        }
+        $rawPrefix = '/' . trim($prefix, '/');
+        if (strlen($rawPrefix) > 1 && str_starts_with($currentRoute, $rawPrefix)) {
+            return true;
+        }
+    }
+
+    $itemNorm = $normalizeRoute($itemRaw);
+    if ($itemNorm === '') {
+        return false;
+    }
+
+    // Exact match after normalization
+    if ($itemNorm === $currentNorm || ($requestedNorm !== '' && $itemNorm === $requestedNorm)) {
+        return true;
+    }
+
+    // Special matching for built-in RBAC sub-controllers
+    // Tabs like roles, permissions, assignments, users under RBAC item
+    if (($itemNorm === 'rbac/default/index' || $itemNorm === 'rbac/default' || $itemNorm === 'rbac')
+        && str_starts_with($currentNorm, 'rbac/')
+        && !str_starts_with($currentNorm, 'rbac/invite')
+    ) {
+        return true;
+    }
+
+    // Special matching for Auth / Security Log
+    if ($itemNorm === 'auth/security-log' && ($currentNorm === 'auth/security-log' || $currentNorm === 'auth/clear-security-log')) {
+        return true;
+    }
+
+    // Controller-level match for CRUD actions (e.g. menu link is catalog/product/index, but user is on catalog/product/update)
+    $itemParts = explode('/', $itemNorm);
+    $currentParts = explode('/', $currentNorm);
+    $itemAction = end($itemParts);
+    if (($itemAction === 'index' || count($itemParts) === count($currentParts) - 1) && count($itemParts) >= 2 && count($currentParts) >= 2) {
+        array_pop($itemParts);
+        $itemCtrl = implode('/', $itemParts);
+        array_pop($currentParts);
+        $currentCtrl = implode('/', $currentParts);
+        if ($itemCtrl === $currentCtrl) {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 $isVisible = static function (array $item): bool {
@@ -68,9 +153,9 @@ $isVisible = static function (array $item): bool {
     return (bool) $visible;
 };
 
-$hasActiveChild = static function (array $item) use ($isActive): bool {
+$hasActiveChild = static function (array $item) use (&$hasActiveChild, $isActive): bool {
     foreach (($item['items'] ?? []) as $child) {
-        if ($isActive($child)) {
+        if ($isActive($child) || $hasActiveChild($child)) {
             return true;
         }
     }
@@ -97,12 +182,13 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
     $isDropdown = !empty($items);
     $isCurrent = $isActive($item);
     $childIsActive = $hasActiveChild($item);
-    $autoExpand = (bool) ($module->autoExpandActiveSubmenu ?? false);
+    $autoExpand = (bool) ($module->autoExpandActiveSubmenu ?? true);
     $isOpen = ($item['open'] ?? null) === true || ($autoExpand && $childIsActive);
     $itemClass = 'sz-nav__item nav-group'
         . ($isDropdown ? ' sz-dd' : '')
         . ($isOpen ? ' sz-dd--open' : '')
-        . ($isCurrent ? ' sz-nav__item--active' : '');
+        . ($isCurrent ? ' sz-nav__item--active' : '')
+        . ($childIsActive ? ' sz-dd--has-active-child' : '');
 
     if ($secondary) {
         $linkClass = 'kit sz-nav__link' . ($isCurrent ? ' is-current active' : '');
@@ -127,7 +213,10 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
             '<span class="material-symbols-rounded nav-chevron sz-dd__icon">keyboard_arrow_down</span>',
             '#',
             [
-                'class' => 'nav-button sz-nav__link' . ($isCurrent ? ' active' : '') . ($isOpen ? ' expanded' : ''),
+                'class' => 'nav-button sz-nav__link'
+                    . ($isCurrent ? ' active' : '')
+                    . ($isOpen ? ' expanded' : '')
+                    . ($childIsActive ? ' has-active-child' : ''),
                 'data-sz-dd-toggle' => true,
                 'aria-expanded' => $isOpen ? 'true' : 'false',
                 'title' => $label,
@@ -140,7 +229,7 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
             echo Html::a(
                 Html::encode($child['label'] ?? 'Без названия'),
                 Url::to($child['url'] ?? '#'),
-                ['class' => 'sz-submenu__link' . ($childActive ? ' selected' : '')]
+                ['class' => 'sz-submenu__link' . ($childActive ? ' selected active' : '')]
             );
         }
         echo '</div>';

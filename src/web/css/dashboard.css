@@ -355,6 +355,16 @@ button#collapse:hover {
     color: #fff;
 }
 
+.nav-button.has-active-child,
+.sz-dd--has-active-child > .sz-nav__link {
+    color: #fff;
+}
+
+.nav-button.has-active-child .nav-icon,
+.sz-dd--has-active-child > .sz-nav__link .nav-icon {
+    color: #60a5fa;
+}
+
 .nav-button span,
 .sz-nav__link span.sz-nav__label {
     white-space: nowrap;
@@ -436,19 +446,22 @@ button#collapse:hover {
 }
 
 .subnav button:hover,
-.subnav button.selected,
 .subnav a:hover,
-.subnav a.selected,
-.sz-submenu__link:hover,
-.sz-submenu__link.selected {
-    background: rgba(108, 153, 240, .18);
+.sz-submenu__link:hover {
+    background: rgba(108, 153, 240, .14);
     color: #fff;
 }
 
 .subnav button.selected,
+.subnav button.active,
 .subnav a.selected,
-.sz-submenu__link.selected {
+.subnav a.active,
+.sz-submenu__link.selected,
+.sz-submenu__link.active {
+    background: rgba(59, 130, 246, .24);
+    color: #ffffff;
     font-weight: 650;
+    box-shadow: inset 0 0 0 1px rgba(96, 165, 250, .32);
 }
 
 .sz-submenu__title {

@@ -2,6 +2,17 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.0.7] - 2026-10-15
+
+### Fixed
+- sidebar menu dropdowns now automatically stay expanded when navigating inside their sub-routes (e.g. RBAC, roles/permissions tabs, invites, security logs, or custom catalog CRUD pages)
+- active child submenu links are now clearly highlighted with distinct accent background, border accent and bold font (`.selected`, `.active`)
+- parent dropdown item receives active child state indicator (`has-active-child` / `sz-dd--has-active-child`) with highlighted icon
+- enhanced route resolution (`$isActive`) with support for normalized admin prefixes, controller-level matching for CRUD actions (create/update/view under index link), and RBAC tab routes
+
+### Changed
+- `autoExpandActiveSubmenu` default changed to `true` in `Module` so active dropdown sections stay open seamlessly out of the box
+
 ## [2.0.6] - 2026-10-15
 
 ### Fixed

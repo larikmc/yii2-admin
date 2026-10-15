@@ -58,7 +58,7 @@ class Module extends \yii\base\Module
     public ?string $lazyloadPlaceholderUrl = null;
     public bool $guardUnknownAdminRoutesForGuests = true;
     public array $guestAllowedPaths = [];
-    public bool $autoExpandActiveSubmenu = false;
+    public bool $autoExpandActiveSubmenu = true;
 
     public function init()
     {
