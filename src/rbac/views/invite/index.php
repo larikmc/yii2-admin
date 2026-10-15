@@ -65,43 +65,72 @@ if ($inviteData !== null) {
 
     async function copyText(text) {
         if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(text);
-            return true;
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                // fall through to fallback
+            }
         }
 
-        input.removeAttribute('readonly');
-        input.select();
-        input.setSelectionRange(0, 99999);
+        var textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.width = '2em';
+        textArea.style.height = '2em';
+        textArea.style.padding = '0';
+        textArea.style.border = 'none';
+        textArea.style.outline = 'none';
+        textArea.style.boxShadow = 'none';
+        textArea.style.background = 'transparent';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
         var ok = false;
         try {
             ok = document.execCommand('copy');
         } catch (e) {
             ok = false;
         }
-        input.setAttribute('readonly', 'readonly');
+        document.body.removeChild(textArea);
         return ok;
     }
 
     btn.addEventListener('click', async function () {
-        var text = input.value || '';
+        var text = (input.value || '').trim();
         if (!text) return;
 
-        var originalText = labelEl ? labelEl.textContent : btn.textContent;
-        var originalIcon = iconEl ? iconEl.textContent : '';
+        var originalText = labelEl ? labelEl.textContent : 'Скопировать';
+        var originalIcon = iconEl ? iconEl.textContent : 'content_copy';
+
         try {
             var ok = await copyText(text);
-            if (labelEl) labelEl.textContent = ok ? 'Скопировано!' : 'Не удалось скопировать';
-            if (iconEl && ok) iconEl.textContent = 'done';
+            if (ok) {
+                if (labelEl) labelEl.textContent = 'Скопировано!';
+                if (iconEl) iconEl.textContent = 'done';
+            } else {
+                input.focus();
+                input.select();
+                if (labelEl) labelEl.textContent = 'Не удалось скопировать';
+            }
         } catch (e) {
+            input.focus();
+            input.select();
             if (labelEl) labelEl.textContent = 'Не удалось скопировать';
         }
+
         setTimeout(function () {
             if (labelEl) labelEl.textContent = originalText;
             if (iconEl) iconEl.textContent = originalIcon;
-        }, 1800);
+        }, 2200);
     });
 
-    btn.click();
+    input.addEventListener('click', function () {
+        input.select();
+    });
 })();
 JS);
 }
