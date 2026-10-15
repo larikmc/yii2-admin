@@ -2,6 +2,18 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.0.6] - 2026-10-15
+
+### Fixed
+- fixed jerky layout twitching and jumping during dropdown animations by eliminating `max-height` conflict and animated margins/paddings
+- fixed submenus snapping shut instantly on close; closing animation now plays completely and smoothly down to 0px
+- fixed dropdown toggle failing on first click; toggles immediately on first click with responsive chevron rotation
+- resolved issue where bottom submenu tab (`SEO` / `Редиректы` and similar) remained permanently open on reload and navigation
+- synchronized left guide border (`border-left`) to smoothly expand and collapse alongside the submenu without visual glitching or cutoffs
+
+### Added
+- added `autoExpandActiveSubmenu` property (default `false`) to `Module` to keep submenus neatly folded on page load unless explicitly configured with `'open' => true`
+
 ## [2.0.5] - 2026-10-15
 
 ### Fixed

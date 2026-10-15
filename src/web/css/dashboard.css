@@ -369,12 +369,15 @@ button#collapse:hover {
     position: absolute;
     right: 8px;
     font-size: 18px;
-    transition: transform .22s;
+    transition: transform .22s cubic-bezier(0.4, 0, 0.2, 1);
     margin-left: auto;
 }
 
+.nav-button.expanded .nav-chevron,
+.nav-button.expanded .sz-dd__icon,
 .nav-button[aria-expanded="true"] .nav-chevron,
-.sz-dd--open .sz-dd__icon {
+.nav-button[aria-expanded="true"] .sz-dd__icon,
+.sz-dd--open > .sz-nav__link .sz-dd__icon {
     transform: rotate(180deg);
 }
 
@@ -389,32 +392,24 @@ button#collapse:hover {
 .sz-submenu {
     margin: 0 0 0 24px;
     padding: 0 0 0 18px;
-    border-left: 1px solid transparent;
+    border-left: 1px solid rgba(169, 195, 232, .24);
     display: flex;
     flex-direction: column;
     gap: 2px;
     list-style: none;
     overflow: hidden;
     height: 0;
-    max-height: 0;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     box-sizing: border-box;
     transition: height .24s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity .2s ease,
-                border-color .2s ease,
-                padding .24s ease,
-                margin .24s ease;
+                opacity .2s ease;
 }
 
 .sz-dd--open > .subnav,
 .sz-dd--open > .sz-submenu {
     height: auto;
-    max-height: none;
-    margin: 2px 0 6px 24px;
-    padding: 2px 0 2px 18px;
-    border-left: 1px solid rgba(169, 195, 232, .24);
     opacity: 1;
     visibility: visible;
     pointer-events: auto;

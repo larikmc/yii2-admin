@@ -78,7 +78,7 @@ $hasActiveChild = static function (array $item) use ($isActive): bool {
     return false;
 };
 
-$renderMenuItem = static function (array $item, bool $secondary = false) use ($isActive, $hasActiveChild, $isVisible) {
+$renderMenuItem = static function (array $item, bool $secondary = false) use ($isActive, $hasActiveChild, $isVisible, $module) {
     if (!$isVisible($item)) {
         return;
     }
@@ -96,7 +96,9 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
     $items = array_values(array_filter($item['items'] ?? [], static fn(array $child): bool => $isVisible($child)));
     $isDropdown = !empty($items);
     $isCurrent = $isActive($item);
-    $isOpen = ($item['open'] ?? null) === true || $hasActiveChild($item);
+    $childIsActive = $hasActiveChild($item);
+    $autoExpand = (bool) ($module->autoExpandActiveSubmenu ?? false);
+    $isOpen = ($item['open'] ?? null) === true || ($autoExpand && $childIsActive);
     $itemClass = 'sz-nav__item nav-group'
         . ($isDropdown ? ' sz-dd' : '')
         . ($isOpen ? ' sz-dd--open' : '')

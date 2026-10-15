@@ -19,15 +19,20 @@ const toggleDropdown = (dropdown, menu, isOpen) => {
 
     if (isOpen) {
         dropdown.classList.add("sz-dd--open");
-
-        // Ensure clean starting point from 0
+        menu.style.visibility = "visible";
+        menu.style.pointerEvents = "auto";
         menu.style.transition = "none";
-        menu.style.height = "0px";
-        void menu.offsetHeight; // force reflow
-        menu.style.transition = "";
+        menu.style.height = "auto";
+        menu.style.opacity = "1";
+        const targetHeight = menu.offsetHeight;
 
-        const targetHeight = menu.scrollHeight;
+        menu.style.height = "0px";
+        menu.style.opacity = "0";
+        void menu.offsetHeight; // force reflow
+
+        menu.style.transition = "height 0.24s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease";
         menu.style.height = `${targetHeight}px`;
+        menu.style.opacity = "1";
 
         const onEnd = (e) => {
             if (e && (e.target !== menu || e.propertyName !== "height")) return;
@@ -38,10 +43,11 @@ const toggleDropdown = (dropdown, menu, isOpen) => {
                 menu._szTimer = null;
             }
             if (dropdown.classList.contains("sz-dd--open")) {
-                menu.style.transition = "none";
-                menu.style.height = "";
-                void menu.offsetHeight;
                 menu.style.transition = "";
+                menu.style.height = "";
+                menu.style.opacity = "";
+                menu.style.visibility = "";
+                menu.style.pointerEvents = "";
             }
         };
 
@@ -49,16 +55,17 @@ const toggleDropdown = (dropdown, menu, isOpen) => {
         menu.addEventListener("transitionend", onEnd);
         menu._szTimer = setTimeout(onEnd, 280);
     } else {
-        const currentHeight = menu.getBoundingClientRect().height;
+        const currentHeight = menu.offsetHeight;
         menu.style.transition = "none";
         menu.style.height = `${currentHeight}px`;
+        menu.style.opacity = "1";
         void menu.offsetHeight; // force reflow
-        menu.style.transition = "";
 
-        dropdown.classList.remove("sz-dd--open");
+        menu.style.transition = "height 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease";
 
         requestAnimationFrame(() => {
             menu.style.height = "0px";
+            menu.style.opacity = "0";
         });
 
         const onEnd = (e) => {
@@ -69,14 +76,17 @@ const toggleDropdown = (dropdown, menu, isOpen) => {
                 clearTimeout(menu._szTimer);
                 menu._szTimer = null;
             }
-            if (!dropdown.classList.contains("sz-dd--open")) {
-                menu.style.height = "";
-            }
+            dropdown.classList.remove("sz-dd--open");
+            menu.style.transition = "";
+            menu.style.height = "";
+            menu.style.opacity = "";
+            menu.style.visibility = "";
+            menu.style.pointerEvents = "";
         };
 
         menu._szEndHandler = onEnd;
         menu.addEventListener("transitionend", onEnd);
-        menu._szTimer = setTimeout(onEnd, 280);
+        menu._szTimer = setTimeout(onEnd, 260);
     }
 };
 
@@ -100,7 +110,7 @@ document.querySelectorAll("[data-sz-dd-toggle]").forEach((toggle) => {
         const menu = dropdown.querySelector("[data-sz-dd-menu]");
         if (!menu) return;
 
-        const isOpen = dropdown.classList.contains("sz-dd--open");
+        const isOpen = dropdown.classList.contains("sz-dd--open") && toggle.getAttribute("aria-expanded") === "true";
 
         closeAllDropdowns(dropdown);
         toggleDropdown(dropdown, menu, !isOpen);
