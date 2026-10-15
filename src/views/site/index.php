@@ -55,76 +55,95 @@ $this->title = 'Добро пожаловать, ' . ($summary['email'] ?? 'Ад
             
             // Choose color scheme based on title or ok state
             $iconName = 'database';
-            $iconClass = 'mint';
-            $barClass = 'blue';
+            $themeClass = 'metric--mint';
+            $barClass = 'green';
             $lowerTitle = mb_strtolower($title);
+
             if (str_contains($lowerTitle, 'кеш') || str_contains($lowerTitle, 'cache')) {
                 $iconName = 'dns';
-                $iconClass = 'mint';
+                $themeClass = 'metric--mint';
+                $barClass = 'green';
             } elseif (str_contains($lowerTitle, 'база') || str_contains($lowerTitle, 'db') || str_contains($lowerTitle, 'данных')) {
                 $iconName = 'database';
-                $iconClass = 'mint';
+                $themeClass = 'metric--teal';
+                $barClass = 'green';
             } elseif (str_contains($lowerTitle, 'режим') || str_contains($lowerTitle, 'env')) {
                 $iconName = 'view_in_ar';
-                $iconClass = '';
+                $themeClass = $ok ? 'metric--indigo' : 'metric--amber';
             } elseif (str_contains($lowerTitle, 'лог') || str_contains($lowerTitle, 'log')) {
                 $iconName = 'description';
-                $iconClass = '';
+                $themeClass = 'metric--cyan';
             } elseif (str_contains($lowerTitle, 'диск') || str_contains($lowerTitle, 'disk') || str_contains($lowerTitle, 'место')) {
                 $iconName = 'hard_drive';
-                $iconClass = '';
+                $themeClass = 'metric--blue';
                 $barClass = $ok ? 'blue' : 'rose';
             } elseif (str_contains($lowerTitle, 'памят') || str_contains($lowerTitle, 'memory')) {
                 $iconName = 'memory';
-                $iconClass = 'lavender';
-                $barClass = $ok ? 'green' : 'rose';
+                $themeClass = 'metric--violet';
+                $barClass = $ok ? 'violet' : 'rose';
             }
             ?>
-            <article class="metric">
+            <article class="metric <?= $themeClass ?>">
                 <div class="metric-head">
-                    <span class="metric-icon <?= $iconClass ?>">
-                        <span class="material-symbols-rounded"><?= $iconName ?></span>
-                    </span>
-                    <div>
-                        <div class="metric-label"><?= Html::encode(mb_strtoupper($title)) ?></div>
-                        <div class="metric-value"><?= Html::encode($val) ?></div>
+                    <div class="metric-icon-wrap">
+                        <span class="metric-icon">
+                            <span class="material-symbols-rounded"><?= $iconName ?></span>
+                        </span>
+                    </div>
+                    <div class="metric-title-group">
+                        <span class="metric-label"><?= Html::encode(mb_strtoupper($title)) ?></span>
                         <?php if ($hint !== ''): ?>
-                            <div class="metric-hint"><?= Html::encode($hint) ?></div>
+                            <span class="metric-badge-code"><?= Html::encode($hint) ?></span>
                         <?php endif; ?>
                     </div>
+                    <div class="metric-status-badge <?= $ok ? 'is-ok' : 'is-alert' ?>" title="<?= $ok ? 'В норме' : 'Требует внимания' ?>">
+                        <span class="status-pulse-dot"></span>
+                        <span class="status-badge-icon material-symbols-rounded"><?= $ok ? 'check' : 'priority_high' ?></span>
+                    </div>
                 </div>
+
+                <div class="metric-body">
+                    <div class="metric-value"><?= Html::encode($val) ?></div>
+                </div>
+
                 <?php if ($progress !== null): ?>
-                    <div class="bar <?= $barClass ?>">
-                        <span style="width: <?= min(100, max(0, $progress)) ?>%;<?= $progress > 0 ? 'min-width:4px;' : '' ?>"></span>
+                    <div class="metric-progress-wrap">
+                        <div class="bar <?= $barClass ?>">
+                            <span style="width: <?= min(100, max(0, $progress)) ?>%;<?= $progress > 0 ? 'min-width:6px;' : '' ?>"></span>
+                        </div>
                     </div>
                 <?php endif; ?>
-                <div class="metric-foot">
-                    <?php if ($footHint !== ''): ?>
-                        <div class="metric-hint"><?= Html::encode($footHint) ?></div>
-                    <?php endif; ?>
-                    <span class="pill <?= $ok ? '' : 'danger' ?>">
-                        <span class="material-symbols-rounded"><?= $ok ? 'check' : 'priority_high' ?></span>
-                    </span>
-                </div>
+
+                <?php if ($footHint !== ''): ?>
+                    <div class="metric-foot">
+                        <span class="metric-foot-hint"><?= Html::encode($footHint) ?></span>
+                    </div>
+                <?php endif; ?>
             </article>
         <?php endforeach; ?>
 
         <!-- Пользователи -->
-        <article class="metric">
+        <article class="metric metric--purple">
             <div class="metric-head">
-                <span class="metric-icon lavender">
-                    <span class="material-symbols-rounded">group</span>
-                </span>
-                <div>
-                    <div class="metric-label">ПОЛЬЗОВАТЕЛИ</div>
-                    <div class="metric-value"><?= $usersTotal === null ? 'н/д' : Html::encode((string)$usersTotal) ?></div>
-                    <div class="metric-hint">Всего в базе данных</div>
+                <div class="metric-icon-wrap">
+                    <span class="metric-icon">
+                        <span class="material-symbols-rounded">group</span>
+                    </span>
+                </div>
+                <div class="metric-title-group">
+                    <span class="metric-label">ПОЛЬЗОВАТЕЛИ</span>
+                    <span class="metric-badge-code">Всего в БД</span>
+                </div>
+                <div class="metric-status-badge is-ok" title="В норме">
+                    <span class="status-pulse-dot"></span>
+                    <span class="status-badge-icon material-symbols-rounded">check</span>
                 </div>
             </div>
+            <div class="metric-body">
+                <div class="metric-value"><?= $usersTotal === null ? 'н/д' : Html::encode((string)$usersTotal) ?></div>
+            </div>
             <div class="metric-foot">
-                <span class="pill">
-                    <span class="material-symbols-rounded">check</span>
-                </span>
+                <span class="metric-foot-hint"><?= $usersActive !== null ? ('Активных: ' . Html::encode((string)$usersActive)) : 'Зарегистрированные аккаунты' ?></span>
             </div>
         </article>
     </section>
