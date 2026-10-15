@@ -2,6 +2,43 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.0.5] - 2026-10-15
+
+### Fixed
+- sidebar menu dropdowns now cleanly collapse by default on page load and refresh (only the section containing the active child route is expanded automatically)
+- fixed dropdown toggle requiring double click to close; toggles immediately on the first click
+- eliminated left border line (`border-left`) jump/glitch during and after dropdown expand/collapse animations
+- removed leftover 4px border stub and margin gaps for closed submenus (now completely zero-height, hidden and transparent)
+- prevented child elements' bubbling `transitionend` events from prematurely interrupting height animation
+- fixed rapid clicking on dropdowns to smoothly reverse animation without broken heights or desynchronization
+
+### Added
+- supported `'active'` and `'open'` keys in menu configuration array for custom submenu control
+- comprehensive documentation for sidebar menu configuration in `README.md`
+
+## [2.0.4] - 2026-10-15
+
+### Added
+- modern 2-panel runtime console dashboard with live server telemetry, resource metrics and runtime logs preview
+- quick cache flushing and runtime actions directly from dashboard
+
+## [2.0.3] - 2026-10-15
+
+### Changed
+- improved admin invite link copying UX with visual feedback
+- refined RBAC invite form layout spacing and toast notifications
+
+## [2.0.2] - 2026-10-14
+
+### Added
+- modernized RBAC overview stat cards into hero-metrics
+- switched default `AdminTabs` style to segmented solid pills (`.nav-pills-solid`)
+- added synchronous theme preload script and cookie support to eliminate FOUC (flash of unstyled content)
+
+### Fixed
+- fixed security log table display and empty state in dark mode
+- fixed sidebar toggle and compact mode persistence across page loads
+
 ## [2.0.1] - 2026-10-14
 
 ### Added

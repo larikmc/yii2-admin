@@ -6,8 +6,8 @@
 
 ## 1) Что сделать в первую очередь
 
-1. Прочитать `README.md` и `UI-README.md` полностью.
-2. Принять `UI-README.md` как визуальный source of truth.
+1. Прочитать `README.md` (включая подробный раздел "UI guide") полностью.
+2. Принять раздел "UI guide" в `README.md` как визуальный source of truth.
 3. Проверить, что используется layout пакета:
    - `@larikmc/admin/views/layouts/main`
 4. Проверить, что подключены asset-файлы пакета:
@@ -94,7 +94,7 @@
 
 Скопируй и используй как стартовый системный/рабочий промпт:
 
-> Интегрируй изменения строго по `AI-INTEGRATION-CHECKLIST.md`, `README.md`, `UI-README.md`.
+> Интегрируй изменения строго по `AI-INTEGRATION-CHECKLIST.md` и разделу "UI guide" в `README.md`.
 > Обязательно:
 > 1) один H1 только в topbar (внутри контента без дубля, для `AdminPage` ставь `showHeader=false`),
 > 2) bootstrap buttons и `.badge.text-bg-*`,

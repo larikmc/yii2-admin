@@ -41,6 +41,10 @@ $userName = $identity->username ?? $identity->email ?? 'Администрато
 $userEmail = $identity->email ?? null;
 
 $isActive = static function (array $item) use ($currentRoute): bool {
+    if (isset($item['active'])) {
+        return (bool) (is_callable($item['active']) ? $item['active']() : $item['active']);
+    }
+
     $url = $item['url'] ?? null;
     if (!is_array($url) || !isset($url[0])) {
         return false;
@@ -92,7 +96,7 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
     $items = array_values(array_filter($item['items'] ?? [], static fn(array $child): bool => $isVisible($child)));
     $isDropdown = !empty($items);
     $isCurrent = $isActive($item);
-    $isOpen = $hasActiveChild($item);
+    $isOpen = ($item['open'] ?? null) === true || $hasActiveChild($item);
     $itemClass = 'sz-nav__item nav-group'
         . ($isDropdown ? ' sz-dd' : '')
         . ($isOpen ? ' sz-dd--open' : '')
