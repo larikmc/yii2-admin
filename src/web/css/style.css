@@ -4333,3 +4333,93 @@ body.dark .an-kpi > strong,
 html.dark .an-kpi > strong {
     color: #f0f6ff !important;
 }
+
+/* ==========================================================================
+   SVG & amCharts 4 графики в темной теме
+   ========================================================================== */
+body.dark .stat-chart-canvas text,
+body.dark .karandash-chart-canvas text,
+body.dark [id^="chart"] text,
+body.dark .sz-chart text,
+html.dark .stat-chart-canvas text,
+html.dark .karandash-chart-canvas text,
+html.dark [id^="chart"] text,
+html.dark .sz-chart text {
+    fill: #a0b2d6 !important;
+}
+
+/* Исключения: текст внутри тултипов остается белым */
+body.dark .stat-chart-canvas [role="tooltip"] text,
+body.dark .karandash-chart-canvas [role="tooltip"] text,
+body.dark [id^="chart"] [role="tooltip"] text,
+body.dark .sz-chart [role="tooltip"] text,
+body.dark .stat-chart-canvas g[aria-label*="tooltip"] text,
+body.dark .karandash-chart-canvas g[aria-label*="tooltip"] text,
+body.dark [id^="chart"] g[aria-label*="tooltip"] text,
+body.dark .sz-chart g[aria-label*="tooltip"] text,
+html.dark .stat-chart-canvas [role="tooltip"] text,
+html.dark .karandash-chart-canvas [role="tooltip"] text,
+html.dark [id^="chart"] [role="tooltip"] text,
+html.dark .sz-chart [role="tooltip"] text {
+    fill: #ffffff !important;
+}
+
+/* Текст легенды графиков */
+body.dark .stat-chart-canvas g[aria-label*="Legend"] text,
+body.dark .karandash-chart-canvas g[aria-label*="Legend"] text,
+body.dark [id^="chart"] g[aria-label*="Legend"] text,
+body.dark .sz-chart g[aria-label*="Legend"] text,
+html.dark .stat-chart-canvas g[aria-label*="Legend"] text,
+html.dark .karandash-chart-canvas g[aria-label*="Legend"] text,
+html.dark [id^="chart"] g[aria-label*="Legend"] text,
+html.dark .sz-chart g[aria-label*="Legend"] text {
+    fill: #dce8ff !important;
+}
+
+/* Сетка и направляющие линий */
+body.dark .stat-chart-canvas line,
+body.dark .karandash-chart-canvas line,
+body.dark [id^="chart"] line,
+body.dark .sz-chart line,
+html.dark .stat-chart-canvas line,
+html.dark .karandash-chart-canvas line,
+html.dark [id^="chart"] line,
+html.dark .sz-chart line {
+    stroke: rgba(160, 185, 230, 0.12) !important;
+}
+
+/* Полоса прокрутки (Scrollbar) в темной теме */
+body.dark .stat-chart-canvas g[aria-label*="Scrollbar"] > rect,
+body.dark .karandash-chart-canvas g[aria-label*="Scrollbar"] > rect,
+body.dark [id^="chart"] g[aria-label*="Scrollbar"] > rect,
+body.dark .sz-chart g[aria-label*="Scrollbar"] > rect,
+html.dark .stat-chart-canvas g[aria-label*="Scrollbar"] > rect,
+html.dark .karandash-chart-canvas g[aria-label*="Scrollbar"] > rect,
+html.dark [id^="chart"] g[aria-label*="Scrollbar"] > rect,
+html.dark .sz-chart g[aria-label*="Scrollbar"] > rect {
+    fill: #16243b !important;
+    stroke: #2a3c5a !important;
+}
+
+body.dark .stat-chart-canvas g[aria-label*="Scrollbar"] path,
+body.dark .karandash-chart-canvas g[aria-label*="Scrollbar"] path,
+body.dark [id^="chart"] g[aria-label*="Scrollbar"] path,
+body.dark .sz-chart g[aria-label*="Scrollbar"] path,
+html.dark .stat-chart-canvas g[aria-label*="Scrollbar"] path,
+html.dark .karandash-chart-canvas g[aria-label*="Scrollbar"] path,
+html.dark [id^="chart"] g[aria-label*="Scrollbar"] path,
+html.dark .sz-chart g[aria-label*="Scrollbar"] path {
+    stroke: #3c5684 !important;
+}
+
+/* Курсорные линии */
+body.dark .stat-chart-canvas g[aria-label*="Cursor"] line,
+body.dark .karandash-chart-canvas g[aria-label*="Cursor"] line,
+body.dark [id^="chart"] g[aria-label*="Cursor"] line,
+body.dark .sz-chart g[aria-label*="Cursor"] line,
+html.dark .stat-chart-canvas g[aria-label*="Cursor"] line,
+html.dark .karandash-chart-canvas g[aria-label*="Cursor"] line,
+html.dark [id^="chart"] g[aria-label*="Cursor"] line,
+html.dark .sz-chart g[aria-label*="Cursor"] line {
+    stroke: rgba(160, 185, 230, 0.35) !important;
+}
