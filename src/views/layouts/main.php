@@ -126,7 +126,7 @@ $isActive = static function (array $item) use ($currentRoute, $rawCurrentRoute, 
     $itemParts = explode('/', $itemNorm);
     $currentParts = explode('/', $currentNorm);
     $itemAction = end($itemParts);
-    if (($itemAction === 'index' || count($itemParts) === count($currentParts) - 1) && count($itemParts) >= 2 && count($currentParts) >= 2) {
+    if ($itemAction === 'index' && count($itemParts) === count($currentParts) && count($itemParts) >= 2) {
         array_pop($itemParts);
         $itemCtrl = implode('/', $itemParts);
         array_pop($currentParts);
