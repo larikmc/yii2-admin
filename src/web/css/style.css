@@ -674,6 +674,16 @@ body.dark .pop .sz-pop-item--logout:focus-visible {
     box-shadow: none;
 }
 
+/* Eliminate double border when .table-responsive wraps .grid-view, while keeping horizontal scroll */
+.table-responsive:has(.grid-view),
+.table-responsive > .grid-view,
+.sz-panel .table-responsive:has(.grid-view) {
+    border: none !important;
+    border-radius: 0 !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
 .sz-panel form:not(.d-inline):not(.tax-form--plain):not(.sz-logout__form) {
     padding: 0;
     border-radius: 0;
