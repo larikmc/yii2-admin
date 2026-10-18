@@ -4388,32 +4388,85 @@ html.dark .sz-chart line {
     stroke: rgba(160, 185, 230, 0.12) !important;
 }
 
-/* Полоса прокрутки (amCharts Scrollbar) в темной теме */
+/* Стильные бейджи в шапках графиков (например, "Всего месяцев: 112") */
+.stat-chart-header .badge {
+    border-radius: 99px !important;
+    padding: 5px 13px !important;
+    font-size: 11.5px !important;
+    font-weight: 650 !important;
+    letter-spacing: 0.2px !important;
+    transition: all 0.2s ease !important;
+}
+
+body.dark .stat-chart-header .badge,
+body.dark .stat-chart-header .bg-light,
+body.dark .stat-chart-header [class*="bg-light"],
+html.dark .stat-chart-header .badge {
+    background: rgba(49, 137, 247, 0.12) !important;
+    color: #93c5fd !important;
+    border: 1px solid rgba(49, 137, 247, 0.32) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+body.dark .stat-chart-header .badge:hover,
+html.dark .stat-chart-header .badge:hover {
+    background: rgba(49, 137, 247, 0.22) !important;
+    border-color: rgba(49, 137, 247, 0.55) !important;
+    color: #bfdbfe !important;
+    box-shadow: 0 0 14px rgba(49, 137, 247, 0.35) !important;
+}
+
+/* Полоса прокрутки (amCharts Scrollbar) в темной теме - кибер-неоновый стиль */
 body.dark [role="scrollbar"] > g:first-child path,
 html.dark [role="scrollbar"] > g:first-child path {
-    fill: #16243a !important;
+    fill: #111c2e !important;
     fill-opacity: 0.9 !important;
-    stroke: #2a3c5a !important;
+    stroke: rgba(66, 127, 243, 0.25) !important;
     stroke-width: 1px !important;
 }
 
-body.dark [role="scrollbar"] [role="slider"] g[fill] path,
-html.dark [role="scrollbar"] [role="slider"] g[fill] path {
-    fill: #283e60 !important;
-    fill-opacity: 0.95 !important;
-    stroke: #3c5a87 !important;
+/* Выделенный диапазон (Thumb range) - полупрозрачный синий с неоновым контуром */
+body.dark [role="scrollbar"] [role="slider"]:first-of-type g[fill] path,
+html.dark [role="scrollbar"] [role="slider"]:first-of-type g[fill] path {
+    fill: rgba(49, 137, 247, 0.18) !important;
+    stroke: #3189f7 !important;
+    stroke-width: 1.5px !important;
+    stroke-opacity: 0.8 !important;
 }
 
-body.dark [role="scrollbar"] [role="slider"]:hover g[fill] path,
-html.dark [role="scrollbar"] [role="slider"]:hover g[fill] path {
-    fill: #344f7a !important;
-    stroke: #527bb5 !important;
+/* Круглые ручки-ползунки (Grips) */
+body.dark [role="scrollbar"] [role="slider"]:not(:first-of-type) g[fill] path,
+html.dark [role="scrollbar"] [role="slider"]:not(:first-of-type) g[fill] path {
+    fill: #182844 !important;
+    stroke: #3b82f6 !important;
+    stroke-width: 2px !important;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 6px rgba(59, 130, 246, 0.5)) !important;
+    transition: all 0.15s ease !important;
+    cursor: ew-resize !important;
 }
 
+/* При наведении на ручки ползунка - яркое синее свечение */
+body.dark [role="scrollbar"] [role="slider"]:not(:first-of-type):hover g[fill] path,
+html.dark [role="scrollbar"] [role="slider"]:not(:first-of-type):hover g[fill] path {
+    fill: #2563eb !important;
+    stroke: #93c5fd !important;
+    stroke-width: 2.5px !important;
+    filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.85)) !important;
+}
+
+/* Насечки на ползунках ("||") */
 body.dark [role="scrollbar"] [role="slider"] g[stroke] path,
 html.dark [role="scrollbar"] [role="slider"] g[stroke] path {
-    stroke: #9bb5de !important;
-    stroke-opacity: 0.9 !important;
+    stroke: #93c5fd !important;
+    stroke-width: 1.5px !important;
+    stroke-linecap: round !important;
+    transition: stroke 0.15s ease !important;
+}
+
+body.dark [role="scrollbar"] [role="slider"]:hover g[stroke] path,
+html.dark [role="scrollbar"] [role="slider"]:hover g[stroke] path {
+    stroke: #ffffff !important;
 }
 
 /* Курсорные линии */
