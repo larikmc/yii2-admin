@@ -3573,6 +3573,68 @@ body.dark .sz-progress-job__bar-wrap {
     font-size: 16px;
 }
 
+/* Модификаторы размеров кнопок */
+.btn-sm,
+.btn.btn-sm {
+    height: 26px !important;
+    min-height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 11.5px !important;
+    font-weight: 650 !important;
+    border-radius: 7px !important;
+    gap: 5px !important;
+}
+
+.btn-xs,
+.btn.btn-xs {
+    height: 22px !important;
+    min-height: 22px !important;
+    padding: 0 7px !important;
+    font-size: 11px !important;
+    font-weight: 650 !important;
+    border-radius: 5px !important;
+    gap: 3px !important;
+}
+
+.btn-lg,
+.btn.btn-lg {
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 20px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    gap: 8px !important;
+}
+
+/* Кнопки внутри таблиц по умолчанию компактные и гармоничные с бейджами */
+.table td .btn,
+.table td .btn-sm {
+    height: 26px !important;
+    min-height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 11.5px !important;
+    font-weight: 650 !important;
+    border-radius: 7px !important;
+    vertical-align: middle;
+}
+
+.table td .btn.btn-xs {
+    height: 22px !important;
+    min-height: 22px !important;
+    padding: 0 7px !important;
+    font-size: 11px !important;
+}
+
+.btn-sm .icon,
+.btn-sm .material-symbols-rounded,
+.table td .btn .icon,
+.table td .btn .material-symbols-rounded {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+}
+
 .btn:hover {
     filter: brightness(.97);
 }
