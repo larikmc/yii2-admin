@@ -4388,28 +4388,32 @@ html.dark .sz-chart line {
     stroke: rgba(160, 185, 230, 0.12) !important;
 }
 
-/* Полоса прокрутки (Scrollbar) в темной теме */
-body.dark .stat-chart-canvas g[aria-label*="Scrollbar"] > rect,
-body.dark .karandash-chart-canvas g[aria-label*="Scrollbar"] > rect,
-body.dark [id^="chart"] g[aria-label*="Scrollbar"] > rect,
-body.dark .sz-chart g[aria-label*="Scrollbar"] > rect,
-html.dark .stat-chart-canvas g[aria-label*="Scrollbar"] > rect,
-html.dark .karandash-chart-canvas g[aria-label*="Scrollbar"] > rect,
-html.dark [id^="chart"] g[aria-label*="Scrollbar"] > rect,
-html.dark .sz-chart g[aria-label*="Scrollbar"] > rect {
-    fill: #16243b !important;
+/* Полоса прокрутки (amCharts Scrollbar) в темной теме */
+body.dark [role="scrollbar"] > g:first-child path,
+html.dark [role="scrollbar"] > g:first-child path {
+    fill: #16243a !important;
+    fill-opacity: 0.9 !important;
     stroke: #2a3c5a !important;
+    stroke-width: 1px !important;
 }
 
-body.dark .stat-chart-canvas g[aria-label*="Scrollbar"] path,
-body.dark .karandash-chart-canvas g[aria-label*="Scrollbar"] path,
-body.dark [id^="chart"] g[aria-label*="Scrollbar"] path,
-body.dark .sz-chart g[aria-label*="Scrollbar"] path,
-html.dark .stat-chart-canvas g[aria-label*="Scrollbar"] path,
-html.dark .karandash-chart-canvas g[aria-label*="Scrollbar"] path,
-html.dark [id^="chart"] g[aria-label*="Scrollbar"] path,
-html.dark .sz-chart g[aria-label*="Scrollbar"] path {
-    stroke: #3c5684 !important;
+body.dark [role="scrollbar"] [role="slider"] g[fill] path,
+html.dark [role="scrollbar"] [role="slider"] g[fill] path {
+    fill: #283e60 !important;
+    fill-opacity: 0.95 !important;
+    stroke: #3c5a87 !important;
+}
+
+body.dark [role="scrollbar"] [role="slider"]:hover g[fill] path,
+html.dark [role="scrollbar"] [role="slider"]:hover g[fill] path {
+    fill: #344f7a !important;
+    stroke: #527bb5 !important;
+}
+
+body.dark [role="scrollbar"] [role="slider"] g[stroke] path,
+html.dark [role="scrollbar"] [role="slider"] g[stroke] path {
+    stroke: #9bb5de !important;
+    stroke-opacity: 0.9 !important;
 }
 
 /* Курсорные линии */
