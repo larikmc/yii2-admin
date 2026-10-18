@@ -2,6 +2,15 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.0.8] - 2026-10-18
+
+### Fixed
+- **GridView table styling**: fixed missing outer border and rounded corners on generic tables; `.grid-view .table` now has a unified 1px border (`var(--stroke)` / `#354660` in dark mode) with `border-radius: 14px`, cleanly applying to all ready-made and custom CRUD tables
+- **GridView summary**: fixed large font and unwanted thick separator below "Показаны записи 1-3 из 3"; summary is now rendered in clean `12px` muted typography without border interference
+- **Table bottom border**: eliminated double-thick line at the bottom of GridView by removing border on the last row's cells (`tbody tr:last-child td { border-bottom: 0 !important; }`)
+- **Dashboard console spacing**: eliminated excessive `margin-top: 24px` on `.console-section`, balancing spacing between the top environment cards (PHP / Yii / Timezone) and runtime console widgets
+- **Invite link generation**: removed redundant toast notification on generating invite link since the link block appears immediately in place; tightened button spacing (`margin-bottom: 0`)
+
 ## [2.0.7] - 2026-10-15
 
 ### Fixed

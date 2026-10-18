@@ -742,7 +742,7 @@ body.dark .metric--amber .metric-icon {
 /* SYSTEM RUNTIME CONSOLE (VARIANT 1)                        */
 /* ========================================================= */
 .console-section {
-    margin-top: 24px;
+    margin-top: 0;
     margin-bottom: 24px;
 }
 

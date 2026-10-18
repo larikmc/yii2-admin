@@ -22,7 +22,6 @@ class InviteController extends BaseController
             $inviteData = $service->createInvite();
             $inviteData['url'] = Url::to(['/auth/invite', 'token' => $inviteData['token']], true);
             Yii::$app->session->set(self::INVITE_SESSION_KEY, $inviteData);
-            $this->success('Одноразовая ссылка для администратора создана.');
             return $this->redirect(['index']);
         }
 
