@@ -3988,3 +3988,132 @@ html.dark .sz-panel .table-responsive {
     background: transparent !important;
     border-color: #354660 !important;
 }
+
+/* ==========================================================================
+   Home Server Widget (Light & Dark)
+   ========================================================================== */
+.hs-wrap {
+    width: 100%;
+    max-width: 1100px;
+    padding: 0;
+}
+
+.hs-card {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid var(--stroke, #e7edfb);
+    border-radius: 22px;
+    padding: 28px 32px;
+    box-shadow: 0 10px 30px rgba(20, 50, 120, 0.05);
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+body.dark .hs-card,
+html.dark .hs-card {
+    background: #17243b !important;
+    border-color: #2a3c57 !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32) !important;
+}
+
+body.dark .hs-status-row,
+html.dark .hs-status-row {
+    border-bottom-color: #25364d !important;
+}
+
+body.dark .hs-status strong,
+html.dark .hs-status strong,
+body.dark .hs-status-text strong,
+html.dark .hs-status-text strong {
+    color: #f0f6ff !important;
+}
+
+body.dark .hs-status small,
+html.dark .hs-status small,
+body.dark .hs-status-text small,
+html.dark .hs-status-text small {
+    color: #8da4c8 !important;
+}
+
+body.dark .hs-server-badge,
+html.dark .hs-server-badge {
+    background: rgba(49, 137, 247, 0.16) !important;
+    color: #70adff !important;
+}
+
+body.dark .hs-info,
+html.dark .hs-info {
+    background: #111c2e !important;
+    border-color: #23344d !important;
+    box-shadow: none !important;
+}
+
+body.dark .hs-info:hover,
+html.dark .hs-info:hover {
+    border-color: #314a6e !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+body.dark .hs-info-head .material-symbols-rounded,
+html.dark .hs-info-head .material-symbols-rounded {
+    color: #7997c4 !important;
+}
+
+body.dark .hs-info span,
+html.dark .hs-info span {
+    color: #7997c4 !important;
+}
+
+body.dark .hs-info b,
+html.dark .hs-info b {
+    color: #e6f0ff !important;
+}
+
+body.dark .hs-btn-danger:disabled,
+body.dark .hs-btn-danger[disabled],
+html.dark .hs-btn-danger:disabled,
+html.dark .hs-btn-danger[disabled] {
+    background: #1b273a !important;
+    border-color: #263852 !important;
+    color: #536b8e !important;
+}
+
+body.dark .hs-btn-secondary,
+html.dark .hs-btn-secondary {
+    background: #142136 !important;
+    border-color: #2b3e5a !important;
+    color: #c4d6f2 !important;
+}
+
+body.dark .hs-btn-secondary:hover,
+html.dark .hs-btn-secondary:hover {
+    background: #1a2b44 !important;
+    border-color: #3f5980 !important;
+    color: #ffffff !important;
+}
+
+body.dark .hs-token,
+html.dark .hs-token {
+    background: linear-gradient(135deg, rgba(16, 55, 52, 0.75), rgba(20, 36, 62, 0.85)) !important;
+    border-color: rgba(52, 211, 153, 0.3) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark .hs-token strong,
+html.dark .hs-token strong {
+    color: #34d399 !important;
+}
+
+body.dark .hs-token code,
+html.dark .hs-token code {
+    background: #0f1c2d !important;
+    border-color: #24414c !important;
+    color: #6ee7b7 !important;
+}
+
+body.dark .hs-note,
+html.dark .hs-note {
+    color: #7b94b8 !important;
+}
