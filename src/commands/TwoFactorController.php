@@ -26,6 +26,15 @@ class TwoFactorController extends Controller
         if ($adminModule instanceof Module) {
             $userClass = $adminModule->userClass !== '' ? $adminModule->userClass : $adminModule->userModel;
         }
+        if ($userClass === '' && Yii::$app->has('user') && !empty(Yii::$app->user->identityClass)) {
+            $userClass = Yii::$app->user->identityClass;
+        }
+        if ($userClass === '' && class_exists('common\models\User')) {
+            $userClass = 'common\models\User';
+        }
+        if ($userClass === '' && class_exists('app\models\User')) {
+            $userClass = 'app\models\User';
+        }
 
         if ($userClass === '' || !class_exists($userClass)) {
             $this->stderr("Ошибка: Не сконфигурирован класс пользователя в модуле admin.\n", Console::FG_RED);
@@ -97,6 +106,15 @@ class TwoFactorController extends Controller
         $userClass = '';
         if ($adminModule instanceof Module) {
             $userClass = $adminModule->userClass !== '' ? $adminModule->userClass : $adminModule->userModel;
+        }
+        if ($userClass === '' && Yii::$app->has('user') && !empty(Yii::$app->user->identityClass)) {
+            $userClass = Yii::$app->user->identityClass;
+        }
+        if ($userClass === '' && class_exists('common\models\User')) {
+            $userClass = 'common\models\User';
+        }
+        if ($userClass === '' && class_exists('app\models\User')) {
+            $userClass = 'app\models\User';
         }
 
         if ($userClass === '' || !class_exists($userClass)) {

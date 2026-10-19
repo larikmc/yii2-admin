@@ -22,27 +22,18 @@ class ProfileForm extends Model
     public function __construct($user, array $config = [])
     {
         $this->user = $user;
-        $this->username = (string) $user->username;
-        $this->email = (string) $user->email;
+        $this->username = isset($user->username) ? (string) $user->username : (string) ($user->email ?? '');
+        $this->email = (string) ($user->email ?? '');
         parent::__construct($config);
     }
 
     public function rules(): array
     {
         $userClass = get_class($this->user);
+        $hasUsername = $this->user->hasProperty('username') || $this->user->canGetProperty('username');
 
-        return [
-            [['username', 'email'], 'required'],
-            ['username', 'trim'],
-            ['username', 'string', 'min' => 2, 'max' => 255],
-            [
-                'username',
-                'unique',
-                'targetClass' => $userClass,
-                'targetAttribute' => 'username',
-                'filter' => ['!=', 'id', $this->user->id],
-                'message' => 'Это имя пользователя уже занято.',
-            ],
+        $rules = [
+            [['email'], 'required'],
             ['email', 'trim'],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
@@ -58,6 +49,22 @@ class ProfileForm extends Model
             ['currentPassword', 'validateCurrentPassword'],
             ['confirmPassword', 'compare', 'compareAttribute' => 'newPassword', 'message' => 'Пароли не совпадают.'],
         ];
+
+        if ($hasUsername) {
+            $rules[] = ['username', 'required'];
+            $rules[] = ['username', 'trim'];
+            $rules[] = ['username', 'string', 'min' => 2, 'max' => 255];
+            $rules[] = [
+                'username',
+                'unique',
+                'targetClass' => $userClass,
+                'targetAttribute' => 'username',
+                'filter' => ['!=', 'id', $this->user->id],
+                'message' => 'Это имя пользователя уже занято.',
+            ];
+        }
+
+        return $rules;
     }
 
     public function validateCurrentPassword(string $attribute): void
@@ -91,7 +98,9 @@ class ProfileForm extends Model
             return false;
         }
 
-        $this->user->username = $this->username;
+        if ($this->user->hasProperty('username') || $this->user->canSetProperty('username')) {
+            $this->user->username = $this->username;
+        }
 
         if (!empty($this->newPassword)) {
             if (method_exists($this->user, 'setPassword')) {

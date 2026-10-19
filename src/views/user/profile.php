@@ -18,7 +18,7 @@ $this->params['breadcrumbs'] = [
     ['label' => $this->title],
 ];
 
-$avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? 'A'), 0, 1));
+$avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->email ?? 'A'), 0, 1));
 ?>
 
 <div class="profile-page">
@@ -184,6 +184,7 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? 'A'), 0, 1)
                         </div>
 
                         <div class="row">
+                            <?php if ($user->hasProperty('username') || $user->canGetProperty('username')): ?>
                             <div class="col-12 col-md-6" style="margin-bottom: 14px;">
                                 <?= $form->field($model, 'username', [
                                     'labelOptions' => ['class' => 'form-label'],
@@ -191,6 +192,9 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? 'A'), 0, 1)
                                 ]) ?>
                             </div>
                             <div class="col-12 col-md-6" style="margin-bottom: 14px;">
+                            <?php else: ?>
+                            <div class="col-12" style="margin-bottom: 14px;">
+                            <?php endif; ?>
                                 <?= $form->field($model, 'email', [
                                     'labelOptions' => ['class' => 'form-label'],
                                     'inputOptions' => ['class' => 'form-control', 'type' => 'email', 'placeholder' => 'example@domain.com'],
@@ -244,8 +248,8 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? 'A'), 0, 1)
                             Отмена
                         </a>
                     </div>
+                    <?php ActiveForm::end(); ?>
 
-                    
                     <!-- Секция: Двухфакторная аутентификация (2FA) -->
                     <div style="margin-bottom: 24px; padding-top: 18px; border-top: 1px solid var(--stroke, #e7edfb);">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;">
@@ -362,8 +366,6 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? 'A'), 0, 1)
                         <?php endif; ?>
                         <?php endif; ?>
                     </div>
-
-                    <?php ActiveForm::end(); ?>
                 </div>
             </div>
         </div>

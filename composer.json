@@ -16,5 +16,8 @@
         "psr-4": {
             "larikmc\\admin\\": "src/"
         }
+    },
+    "extra": {
+        "bootstrap": "larikmc\\admin\\Bootstrap"
     }
 }
