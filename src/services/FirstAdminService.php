@@ -166,9 +166,11 @@ class FirstAdminService extends Component
                     $user->setAttribute($this->emailField, $email);
                 }
 
-                if ($user->hasAttribute($this->usernameField)) {
-                    // If username field exists and is distinct from email, derive default from email prefix
-                    $defaultUsername = strstr($email, '@', true) ?: $email;
+                // If table schema has 'username' column, always ensure it is populated (not null)
+                $defaultUsername = strstr($email, '@', true) ?: $email;
+                if ($user->hasAttribute('username')) {
+                    $user->setAttribute('username', $defaultUsername);
+                } elseif ($user->hasAttribute($this->usernameField)) {
                     $user->setAttribute($this->usernameField, $defaultUsername);
                 }
 
