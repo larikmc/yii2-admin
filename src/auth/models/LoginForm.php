@@ -16,8 +16,10 @@ class LoginForm extends Model
     public $verifyCode;
     public string $userClass;
     public int $rememberMeDuration = 2592000;
+    public bool $allowFirstAdminRegistration = true;
 
     private $_user = null;
+    private ?bool $_isFirstAdminScenario = null;
 
     public function rules(): array
     {
@@ -37,6 +39,23 @@ class LoginForm extends Model
         ];
     }
 
+    public function isFirstAdminScenario(): bool
+    {
+        if ($this->_isFirstAdminScenario !== null) {
+            return $this->_isFirstAdminScenario;
+        }
+
+        if (!$this->allowFirstAdminRegistration) {
+            $this->_isFirstAdminScenario = false;
+            return false;
+        }
+
+        $service = new \larikmc\admin\services\FirstAdminService(['userClass' => $this->userClass]);
+        $this->_isFirstAdminScenario = $service->isUserTableEmpty();
+
+        return $this->_isFirstAdminScenario;
+    }
+
     public function validatePassword($attribute): void
     {
         if ($this->hasErrors()) {
@@ -47,6 +66,16 @@ class LoginForm extends Model
         $password = (string)$this->password;
 
         if (!$user) {
+            // Check if this is the first admin on a clean installation
+            if ($this->isFirstAdminScenario()) {
+                // Table is completely empty! Validate password requirements for initial admin creation
+                $minLen = (int) (Yii::$app->params['user.passwordMinLength'] ?? 6);
+                if (strlen($password) < $minLen) {
+                    $this->addError($attribute, sprintf('Пароль первого администратора должен быть не менее %d символов.', $minLen));
+                }
+                return;
+            }
+
             password_verify($password, self::DUMMY_PASSWORD_HASH);
             $this->addError($attribute, 'Неверный логин или пароль.');
             return;
@@ -85,6 +114,11 @@ class LoginForm extends Model
         $this->_user = $userClass::findByEmail($email);
 
         return $this->_user;
+    }
+
+    public function setUser(?IdentityInterface $user): void
+    {
+        $this->_user = $user;
     }
 
 

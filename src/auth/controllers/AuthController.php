@@ -83,6 +83,7 @@ class AuthController extends Controller
         $model   = new LoginForm([
             'userClass' => $module->userClass,
             'rememberMeDuration' => $module->rememberMeDuration,
+            'allowFirstAdminRegistration' => (bool) ($module->allowFirstAdminRegistration ?? true),
         ]);
         $request = Yii::$app->request;
         $cache   = Yii::$app->cache;
@@ -222,6 +223,33 @@ class AuthController extends Controller
 
             if ($model->validate()) {
                 $user = $model->getUser();
+
+                // If user does not exist but user table is completely empty, create the first administrator
+                if ($user === null && $model->isFirstAdminScenario()) {
+                    $firstAdminService = new \larikmc\admin\services\FirstAdminService([
+                        'userClass' => $module->userClass,
+                        'usernameField' => $module->hasProperty('usernameField') ? $module->usernameField : 'username',
+                        'emailField' => $module->hasProperty('emailField') ? $module->emailField : 'email',
+                        'statusField' => $module->hasProperty('statusField') ? $module->statusField : 'status',
+                    ]);
+
+                    $createErrors = [];
+                    $user = $firstAdminService->createFirstAdmin((string) $model->email, (string) $model->password, $createErrors);
+
+                    if (!$user) {
+                        foreach ($createErrors as $err) {
+                            $model->addError('email', $err);
+                        }
+                        $session->setFlash('error', $createErrors[0] ?? 'Не удалось создать первого администратора.');
+                        return $this->render('login', [
+                            'model' => $model,
+                            'remaining' => (int) $remaining,
+                        ]);
+                    }
+
+                    // Populate model's internal user reference
+                    $model->setUser($user);
+                }
 
                 if ($user !== null) {
                     $twoFactorService = new \larikmc\admin\services\TwoFactorService([

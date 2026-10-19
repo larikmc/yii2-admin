@@ -340,6 +340,156 @@ class TwoFactorTest extends TestCase
         $this->assertFalse($secondResult, 'Резервный код не может быть использован дважды!');
         $this->assertEquals(7, $service->getRemainingBackupCodesCount($userId));
     }
+
+    public function testFirstAdminServiceCreatesAdminWhenTableEmpty(): void
+    {
+        $db = Yii::$app->db;
+        $db->createCommand("CREATE TABLE IF NOT EXISTS test_user (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username VARCHAR(255),
+            email VARCHAR(255),
+            password_hash VARCHAR(255),
+            auth_key VARCHAR(255),
+            status INTEGER DEFAULT 10
+        )")->execute();
+
+        $db->createCommand("DELETE FROM test_user")->execute();
+
+        $service = new \larikmc\admin\services\FirstAdminService([
+            'userClass' => TestActiveRecordUser::class,
+        ]);
+
+        $this->assertTrue($service->isUserTableEmpty(), 'Таблица должна определяться как пустая');
+
+        $errors = [];
+        $admin = $service->createFirstAdmin('superadmin@site.loc', 'StrongPassword123!', $errors);
+
+        $this->assertEmpty($errors, 'Errors occurred: ' . implode(', ', $errors));
+        $this->assertNotNull($admin, 'Первый администратор должен успешно создаться');
+        $this->assertEquals('superadmin@site.loc', $admin->email);
+        $this->assertNotEmpty($admin->getId());
+        $this->assertFalse($service->isUserTableEmpty(), 'После создания первого пользователя таблица не должна быть пустой');
+
+        // Verify RBAC role assignment
+        $auth = Yii::$app->authManager;
+        $assignments = $auth->getAssignments($admin->getId());
+        $this->assertArrayHasKey('admin', $assignments, 'Пользователю должна быть назначена роль admin');
+
+        // Subsequent attempt to create first admin MUST be rejected
+        $errorsSecond = [];
+        $secondAdmin = $service->createFirstAdmin('another@site.loc', 'AnotherPassword123!', $errorsSecond);
+        $this->assertNull($secondAdmin, 'Повторное создание первого администратора должно быть отклонено');
+        $this->assertNotEmpty($errorsSecond);
+    }
+
+    public function testLoginFormFirstAdminAutoCreationFlow(): void
+    {
+        $db = Yii::$app->db;
+        $db->createCommand("DELETE FROM test_user")->execute();
+
+        // 1. With allowFirstAdminRegistration = true and empty table:
+        $loginForm = new \larikmc\admin\auth\models\LoginForm([
+            'userClass' => TestActiveRecordUser::class,
+            'email' => 'newadmin@domain.com',
+            'password' => 'SecurePass123!',
+            'allowFirstAdminRegistration' => true,
+        ]);
+
+        $this->assertTrue($loginForm->isFirstAdminScenario());
+        $this->assertTrue($loginForm->validate(), 'Форма логина должна успешно проходить валидацию в сценарии первого администратора');
+
+        // Simulate creation via service as AuthController does
+        $service = new \larikmc\admin\services\FirstAdminService(['userClass' => TestActiveRecordUser::class]);
+        $createdUser = $service->createFirstAdmin((string) $loginForm->email, (string) $loginForm->password);
+        $this->assertNotNull($createdUser);
+        $loginForm->setUser($createdUser);
+
+        $this->assertTrue($loginForm->login());
+        $this->assertEquals($createdUser->getId(), Yii::$app->user->getId());
+
+        // 2. Now users exist in DB! Another login with non-existent user must FAIL:
+        $secondLoginForm = new \larikmc\admin\auth\models\LoginForm([
+            'userClass' => TestActiveRecordUser::class,
+            'email' => 'hacker@domain.com',
+            'password' => 'AnyPassword123!',
+            'allowFirstAdminRegistration' => true,
+        ]);
+
+        $this->assertFalse($secondLoginForm->isFirstAdminScenario());
+        $this->assertFalse($secondLoginForm->validate(), 'Несуществующий пользователь не должен проходить валидацию при непустой базе');
+        $this->assertArrayHasKey('password', $secondLoginForm->getErrors());
+    }
+
+    public function testDisabledFirstAdminRegistrationBlocksCreation(): void
+    {
+        $db = Yii::$app->db;
+        $db->createCommand("DELETE FROM test_user")->execute();
+
+        $loginForm = new \larikmc\admin\auth\models\LoginForm([
+            'userClass' => TestActiveRecordUser::class,
+            'email' => 'admin@domain.com',
+            'password' => 'SecurePass123!',
+            'allowFirstAdminRegistration' => false,
+        ]);
+
+        $this->assertFalse($loginForm->isFirstAdminScenario(), 'isFirstAdminScenario должен быть false при allowFirstAdminRegistration = false');
+        $this->assertFalse($loginForm->validate());
+    }
+}
+
+class TestActiveRecordUser extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
+{
+    public const STATUS_ACTIVE = 10;
+
+    public static function tableName()
+    {
+        return 'test_user';
+    }
+
+    public static function findIdentity($id)
+    {
+        return static::findOne(['id' => $id]);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return null;
+    }
+
+    public static function findByEmail(string $email)
+    {
+        return static::findOne(['email' => $email]);
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        return $this->auth_key === $authKey;
+    }
+
+    public function validatePassword($password)
+    {
+        return Yii::$app->security->validatePassword($password, $this->password_hash);
+    }
+
+    public function setPassword($password)
+    {
+        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+    }
+
+    public function generateAuthKey()
+    {
+        $this->auth_key = Yii::$app->security->generateRandomString();
+    }
 }
 
 class MockUser extends \yii\base\Model implements \yii\web\IdentityInterface

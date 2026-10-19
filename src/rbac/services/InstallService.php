@@ -24,7 +24,9 @@ class InstallService
     {
         $alreadyInstalled = $this->isInstalled();
         if (!$alreadyInstalled) {
-            $migration = new m000001_create_rbac_tables();
+            $migration = new m000001_create_rbac_tables([
+                'db' => Yii::$app->db,
+            ]);
             ob_start();
             try {
                 if ($migration->safeUp() === false) {
@@ -33,6 +35,7 @@ class InstallService
             } finally {
                 ob_end_clean();
             }
+            Yii::$app->db->schema->refresh();
         }
 
         $this->installSystemData();

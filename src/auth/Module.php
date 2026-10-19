@@ -63,6 +63,13 @@ class Module extends BaseModule
     /** Пользовательский ключ шифрования секретов 2FA */
     public ?string $twoFactorSecretKey = null;
 
+    /** Разрешать автоматическое создание первого администратора при пустой таблице пользователей */
+    public bool $allowFirstAdminRegistration = true;
+
+    public string $usernameField = 'username';
+    public string $emailField = 'email';
+    public string $statusField = 'status';
+
     /**
      * Backward-compatible aliases for legacy config.
      * They are copied to the new split settings in init() when provided.

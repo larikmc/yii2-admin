@@ -61,6 +61,7 @@ class Module extends \yii\base\Module
     public ?int $captchaAfterAttempts = null;
     public ?int $lockDuration = null;
     public ?int $userAttemptsTtl = null;
+    public bool $allowFirstAdminRegistration = true;
     public ?string $lazyloadPlaceholderUrl = null;
     public bool $guardUnknownAdminRoutesForGuests = true;
     public array $guestAllowedPaths = [];
@@ -125,6 +126,10 @@ class Module extends \yii\base\Module
                 'captchaAfterAttempts' => $this->captchaAfterAttempts,
                 'lockDuration' => $this->lockDuration,
                 'userAttemptsTtl' => $this->userAttemptsTtl,
+                'allowFirstAdminRegistration' => $this->allowFirstAdminRegistration,
+                'usernameField' => $this->usernameField,
+                'emailField' => $this->emailField,
+                'statusField' => $this->statusField,
             ],
             'rbac' => [
                 'class' => \larikmc\admin\rbac\Module::class,

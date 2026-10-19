@@ -37,7 +37,9 @@ class m000001_create_rbac_tables extends Migration
                 'updated_at' => $this->integer(),
                 'PRIMARY KEY ([[name]])',
             ], $tableOptions);
-            $this->addForeignKey('fk-auth_item-rule_name', $auth->itemTable, 'rule_name', $auth->ruleTable, 'name', 'SET NULL', 'CASCADE');
+            if ($this->db->driverName !== 'sqlite') {
+                $this->addForeignKey('fk-auth_item-rule_name', $auth->itemTable, 'rule_name', $auth->ruleTable, 'name', 'SET NULL', 'CASCADE');
+            }
             $this->createIndex('idx-auth_item-type', $auth->itemTable, 'type');
         }
 
@@ -47,8 +49,10 @@ class m000001_create_rbac_tables extends Migration
                 'child' => $this->string(64)->notNull(),
                 'PRIMARY KEY ([[parent]], [[child]])',
             ], $tableOptions);
-            $this->addForeignKey('fk-auth_item_child-parent', $auth->itemChildTable, 'parent', $auth->itemTable, 'name', 'CASCADE', 'CASCADE');
-            $this->addForeignKey('fk-auth_item_child-child', $auth->itemChildTable, 'child', $auth->itemTable, 'name', 'CASCADE', 'CASCADE');
+            if ($this->db->driverName !== 'sqlite') {
+                $this->addForeignKey('fk-auth_item_child-parent', $auth->itemChildTable, 'parent', $auth->itemTable, 'name', 'CASCADE', 'CASCADE');
+                $this->addForeignKey('fk-auth_item_child-child', $auth->itemChildTable, 'child', $auth->itemTable, 'name', 'CASCADE', 'CASCADE');
+            }
         }
 
         if ($this->db->schema->getTableSchema($auth->assignmentTable, true) === null) {
@@ -58,7 +62,9 @@ class m000001_create_rbac_tables extends Migration
                 'created_at' => $this->integer(),
                 'PRIMARY KEY ([[item_name]], [[user_id]])',
             ], $tableOptions);
-            $this->addForeignKey('fk-auth_assignment-item_name', $auth->assignmentTable, 'item_name', $auth->itemTable, 'name', 'CASCADE', 'CASCADE');
+            if ($this->db->driverName !== 'sqlite') {
+                $this->addForeignKey('fk-auth_assignment-item_name', $auth->assignmentTable, 'item_name', $auth->itemTable, 'name', 'CASCADE', 'CASCADE');
+            }
             $this->createIndex('idx-auth_assignment-user_id', $auth->assignmentTable, 'user_id');
         }
     }
