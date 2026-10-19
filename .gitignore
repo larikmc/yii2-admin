@@ -2,3 +2,8 @@ composer.lock
 .idea/
 gemini-code-*.html
 .phpunit.result.cache
+scratch/
+docs-local/
+LOCAL_NOTES.md
+*.local.md
+
