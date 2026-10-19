@@ -163,9 +163,10 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 14px;
+    height: 34px;
+    padding: 0 14px;
     border-radius: 10px;
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--toggle-text);
     text-decoration: none;
@@ -191,13 +192,218 @@ body {
     transform: translateX(-2px);
 }
 
-/* Theme Toggle Button */
+/* ==========================================================================
+   Celestial Day/Night Theme Switcher
+   ========================================================================== */
+.auth-theme-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    outline: none;
+    border-radius: 999px;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.auth-theme-switch:hover {
+    transform: translateY(-1px);
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+}
+
+.auth-theme-switch:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.auth-theme-track {
+    position: relative;
+    width: 64px;
+    height: 34px;
+    border-radius: 17px;
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 100%);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(56, 189, 248, 0.2);
+    transition: background 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.45s ease,
+                box-shadow 0.45s ease;
+}
+
+html[data-theme="dark"] .auth-theme-track,
+body.dark .auth-theme-track {
+    background: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%);
+    border-color: rgba(99, 102, 241, 0.35);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(99, 102, 241, 0.2);
+}
+
+/* Thumb */
+.auth-theme-thumb {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18), 0 0 10px rgba(245, 158, 11, 0.55);
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                background 0.45s ease,
+                box-shadow 0.45s ease;
+    z-index: 2;
+}
+
+html[data-theme="dark"] .auth-theme-thumb,
+body.dark .auth-theme-thumb {
+    transform: translateX(30px);
+    background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 0 10px rgba(165, 180, 252, 0.6);
+}
+
+/* Sun & Moon Icons inside Thumb */
+.auth-theme-thumb .material-symbols-rounded {
+    position: absolute;
+    font-size: 17px;
+    line-height: 1;
+    transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+}
+
+.auth-icon-sun {
+    color: #d97706;
+    opacity: 1;
+    transform: rotate(0) scale(1);
+}
+
+.auth-icon-moon {
+    color: #312e81;
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.4);
+}
+
+html[data-theme="dark"] .auth-icon-sun,
+body.dark .auth-icon-sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.4);
+}
+
+html[data-theme="dark"] .auth-icon-moon,
+body.dark .auth-icon-moon {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+}
+
+/* Hover rotations */
+.auth-theme-switch:hover .auth-icon-sun {
+    transform: rotate(35deg) scale(1.1);
+}
+
+html[data-theme="dark"] .auth-theme-switch:hover .auth-icon-moon,
+body.dark .auth-theme-switch:hover .auth-icon-moon {
+    transform: rotate(-20deg) scale(1.1);
+}
+
+/* Clouds (Day decor) */
+.auth-theme-clouds {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    opacity: 0.9;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.45s ease;
+}
+
+.auth-theme-clouds .cloud {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    display: inline-block;
+}
+
+.auth-theme-clouds .cloud--1 {
+    width: 14px;
+    height: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.auth-theme-clouds .cloud--2 {
+    width: 8px;
+    height: 5px;
+    margin-left: -3px;
+    margin-top: -3px;
+}
+
+html[data-theme="dark"] .auth-theme-clouds,
+body.dark .auth-theme-clouds {
+    opacity: 0;
+    transform: translateY(-50%) translateX(10px);
+}
+
+/* Stars (Night decor) */
+.auth-theme-stars {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.45s ease;
+}
+
+.auth-theme-stars .star {
+    background: #ffffff;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 3px #ffffff, 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+.auth-theme-stars .star--1 {
+    width: 3px;
+    height: 3px;
+}
+
+.auth-theme-stars .star--2 {
+    width: 2px;
+    height: 2px;
+    margin-left: 6px;
+    opacity: 0.8;
+}
+
+.auth-theme-stars .star--3 {
+    width: 2.5px;
+    height: 2.5px;
+    margin-left: 2px;
+    opacity: 0.9;
+}
+
+html[data-theme="dark"] .auth-theme-stars,
+body.dark .auth-theme-stars {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* Legacy Theme Toggle Button */
 .auth-theme-toggle {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 7px 14px 7px 10px;
-    border-radius: 999px;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 10px;
     font-size: 13px;
     font-weight: 600;
     color: var(--toggle-text);
@@ -218,12 +424,12 @@ body {
 
 .auth-theme-toggle .material-symbols-rounded {
     font-size: 18px;
-    color: #f59e0b;
+    color: #64748b;
 }
 
 html[data-theme="dark"] .auth-theme-toggle .material-symbols-rounded,
 body.dark .auth-theme-toggle .material-symbols-rounded {
-    color: #60a5fa;
+    color: #f59e0b;
 }
 
 /* Legacy theme toggle support for views with .theme-toggle */
@@ -583,19 +789,24 @@ body.dark .auth-success-note__text {
 
 .auth-captcha-image {
     flex: 0 0 135px;
+    width: 135px;
     min-height: 48px;
+    height: 48px;
     border: 1px solid var(--captcha-border);
     border-radius: 10px;
-    background: var(--captcha-bg);
+    background: #ffffff;
     overflow: hidden;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .auth-captcha-image img {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     cursor: pointer;
 }
 
@@ -706,10 +917,28 @@ body.dark .auth-success-note__text {
     }
 
     .auth-captcha-row {
-        flex-direction: column;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 8px;
     }
 
     .auth-captcha-image {
-        flex: 0 0 52px;
+        flex: 0 0 120px;
+        width: 120px;
+        max-width: 120px;
+        min-height: 46px;
+        height: 46px;
+    }
+
+    .auth-captcha-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .auth-captcha-input .form-control {
+        height: 46px;
+        min-height: 46px;
+        font-size: 14px;
     }
 }

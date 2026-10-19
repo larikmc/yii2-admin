@@ -37,15 +37,18 @@
         // Update toggles in DOM
         document.querySelectorAll('[data-auth-theme-toggle], [data-sz-theme-toggle]').forEach(function (toggle) {
             toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-            var icon = toggle.querySelector('.material-symbols-rounded, .icon');
-            if (icon) {
-                icon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
-            }
-            var label = toggle.querySelector('[data-auth-theme-label]');
-            if (label) {
-                label.textContent = theme === 'dark' ? 'Темная' : 'Светлая';
+            if (!toggle.classList.contains('auth-theme-switch')) {
+                var icon = toggle.querySelector('.material-symbols-rounded, .icon');
+                if (icon) {
+                    icon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+                }
+                var label = toggle.querySelector('[data-auth-theme-label]');
+                if (label) {
+                    label.textContent = theme === 'dark' ? 'Светлая' : 'Темная';
+                }
             }
             toggle.setAttribute('title', theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на темную тему');
+            toggle.setAttribute('aria-label', theme === 'dark' ? 'Светлая тема' : 'Темная тема');
         });
     }
 

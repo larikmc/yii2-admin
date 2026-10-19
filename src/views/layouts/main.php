@@ -443,8 +443,14 @@ $isDarkTheme = (isset($_COOKIE['admin-theme']) && $_COOKIE['admin-theme'] === 'd
         <?php if (!empty($flashes)): ?>
             <div class="sz-toast-stack" data-sz-toast-stack>
                 <?php foreach ($flashes as $type => $message): ?>
-                    <?php $toastType = $typeMap[$type] ?? 'info'; ?>
+                    <?php
+                    if (!isset($typeMap[$type])) {
+                        continue;
+                    }
+                    $toastType = $typeMap[$type];
+                    ?>
                     <?php foreach ((array) $message as $m): ?>
+                        <?php if (!is_scalar($m) || trim((string) $m) === '') continue; ?>
                         <div class="sz-toast sz-toast--<?= Html::encode($toastType) ?>" role="status" data-sz-toast data-duration="2000">
                             <div class="sz-toast__icon">
                                 <span class="material-symbols-rounded">

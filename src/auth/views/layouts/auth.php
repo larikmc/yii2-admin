@@ -46,9 +46,22 @@ $this->beginPage();
         ]
     ) ?>
 
-    <button type="button" class="auth-theme-toggle" data-auth-theme-toggle aria-pressed="false" title="Переключить тему">
-        <span class="material-symbols-rounded">dark_mode</span>
-        <span data-auth-theme-label>Тема</span>
+    <button type="button" class="auth-theme-switch" data-auth-theme-toggle aria-pressed="false" title="Переключить тему" aria-label="Переключить тему">
+        <span class="auth-theme-track">
+            <span class="auth-theme-stars" aria-hidden="true">
+                <span class="star star--1"></span>
+                <span class="star star--2"></span>
+                <span class="star star--3"></span>
+            </span>
+            <span class="auth-theme-clouds" aria-hidden="true">
+                <span class="cloud cloud--1"></span>
+                <span class="cloud cloud--2"></span>
+            </span>
+            <span class="auth-theme-thumb">
+                <span class="material-symbols-rounded auth-icon-sun">light_mode</span>
+                <span class="material-symbols-rounded auth-icon-moon">dark_mode</span>
+            </span>
+        </span>
     </button>
 </header>
 

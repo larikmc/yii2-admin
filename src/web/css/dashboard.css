@@ -221,7 +221,8 @@ body.is-fluid .app {
     color: #bccce6;
 }
 
-.collapse,
+.brand .collapse,
+.sz-sidebar__header .collapse,
 .sz-sidebar__toggler,
 button#collapse {
     width: 36px;
@@ -240,7 +241,8 @@ button#collapse {
     opacity: 1 !important;
 }
 
-.collapse:hover,
+.brand .collapse:hover,
+.sz-sidebar__header .collapse:hover,
 .sz-sidebar__toggler:hover,
 button#collapse:hover {
     background: #345078;
@@ -251,8 +253,10 @@ button#collapse:hover {
     display: none !important;
 }
 
-.collapse span,
-.sz-sidebar__toggler span {
+.brand .collapse span,
+.sz-sidebar__header .collapse span,
+.sz-sidebar__toggler span,
+button#collapse span {
     font-size: 20px;
     transition: transform .25s ease;
 }

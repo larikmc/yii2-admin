@@ -45,8 +45,6 @@ $this->title = 'Двухфакторная аутентификация';
             'class' => 'form-control',
             'autofocus' => true,
             'autocomplete' => 'one-time-code',
-            'inputmode' => 'numeric',
-            'placeholder' => '123456 или XXXX-XXXX',
             'style' => 'text-align: center; font-size: 20px; letter-spacing: 3px; font-weight: 700;',
         ])->label('Код подтверждения') ?>
 

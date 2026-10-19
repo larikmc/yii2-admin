@@ -21,6 +21,11 @@ All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
 ### Fixed
 - **Dropdown & Navigation Alignment**: Polished sidebar layout and dark theme UI components.
+- **Global Bootstrap Collapse Isolation**: Scoped `.collapse` selectors in `dashboard.css` to `.sz-sidebar__header .collapse` and `.brand .collapse`, eliminating severe layout deformation on generic Bootstrap collapse containers (such as 2FA backup code and confirmation forms).
+- **Toast Notifications Filtering**: Filtered session flashes in main layout to strictly valid alert levels (`success`, `warning`, `danger`, `error`, `info`), preventing raw array data flashes (e.g. backup codes) from spamming separate notifications across the screen.
+- **Auth Screen Theme Switcher**: Replaced static oval button with an interactive Day/Night celestial toggle (sun/moon with animated sliding thumb, clouds and stars) matching `.auth-back-link` height and geometry.
+- **Mobile Captcha Sizing**: Constrained captcha image and verification input row on screens $\le 576\text{px}$ using `object-fit: contain`, preventing bloated stretched image banner distortion.
+- **Two-Factor Authentication Form Input**: Removed distracting multi-format placeholder from 2FA confirmation input for clean user entry.
 
 ## [2.0.8] - 2026-10-18
 
