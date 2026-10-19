@@ -2,6 +2,26 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.0] - 2026-10-19
+
+### Added
+- **Two-Factor Authentication (2FA TOTP)**: Standard RFC 6238 TOTP two-factor authentication compatible with Google Authenticator, Aegis, 1Password, and Bitwarden.
+- **Secure Secret Encryption**: Two-factor secrets and unconsumed backup codes are encrypted at rest using AES-256-CBC via OpenSSL with cryptographically strong keys configured through `admin.2fa.secretKey`. Weak default fallbacks are strictly prohibited.
+- **Single-Use Backup Codes**: 8-character single-use emergency backup recovery codes with hashed and salted verification; automatically invalidated upon use.
+- **Atomic Replay Protection**: Two-layer replay defense combining time window caching (`admin:2fa_used:`) and persistent atomic DB recording (`{{%admin_2fa_used_code}}`) to completely prevent replay attacks within time drift windows.
+- **QR Code Support**: Built-in SVG QR code generation (supporting `bacon/bacon-qr-code`) for scanning in mobile authenticator apps.
+- **Automatic First Administrator Creation**: On a completely clean installation where the user table is empty, the first login attempt seamlessly registers the primary administrator without requiring external tokens, invite links, or manual SQL seeds (`allowFirstAdminRegistration` enabled by default).
+- **Hardened Concurrency Protection**: High-concurrency race condition protection during first administrator creation using dual-layer synchronization: application-level Mutex (`Yii::$app->mutex`) and database row-level locking (`SELECT COUNT(*) ... FOR UPDATE`) inside an isolated transaction.
+- **Emergency CLI Reset**: Built-in console controller command `php yii admin/security/reset-2fa <username|email|id>` to quickly disable 2FA and revoke current sessions during lockout emergencies.
+- **Session Revocation Guard**: Centralized session revocation on 2FA modification, password change, and emergency reset (`auth_key` rotation coupled with session `__auth_key_hash` verification across both session and rememberMe cookie logins).
+
+### Security
+- **Eliminated rootUserId Auto-Admin Privilege**: Replaced implicit hardcoded ID=1 auto-superadmin assumption with safe, explicit role assignment and validation against empty tables.
+- **Prevented RememberMe 2FA Bypass**: Fixed auto-login cookie bypass vulnerability; intermediate 2FA authentication state is strictly enforced before granting full application identity.
+
+### Fixed
+- **Dropdown & Navigation Alignment**: Polished sidebar layout and dark theme UI components.
+
 ## [2.0.8] - 2026-10-18
 
 ### Fixed
