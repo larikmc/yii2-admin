@@ -12,7 +12,7 @@ class AssignmentService
         $auth = Yii::$app->authManager;
         $auth->revokeAll($userId);
 
-        if ((string) $userId === SystemRbacHelper::ROOT_USER_ID && !in_array(SystemRbacHelper::ADMIN_ROLE, $items, true)) {
+        if (SystemRbacHelper::isRootUser($userId) && !in_array(SystemRbacHelper::ADMIN_ROLE, $items, true)) {
             $items[] = SystemRbacHelper::ADMIN_ROLE;
         }
 

@@ -4,6 +4,9 @@
 /** @var larikmc\admin\models\ProfileForm $model */
 /** @var common\models\User $user */
 /** @var array|null $pendingEmailChange */
+/** @var bool $isTwoFactorEnabled */
+/** @var int $backupCodesRemaining */
+/** @var array|null $twoFactorSetupData */
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
@@ -63,6 +66,11 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? 'A'), 0, 1)
                         <span class="badge text-bg-success" style="padding: 6px 12px; font-size: 11px; font-weight: 700;">
                             Активен
                         </span>
+                        <?php if ($isTwoFactorEnabled): ?>
+                            <span class="badge text-bg-info" style="padding: 6px 12px; font-size: 11px; font-weight: 700;">
+                                2FA активен
+                            </span>
+                        <?php endif; ?>
                     </div>
 
                     <div style="
@@ -235,6 +243,124 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? 'A'), 0, 1)
                         <a href="<?= Url::to(['/admin/site/index']) ?>" class="btn btn-secondary">
                             Отмена
                         </a>
+                    </div>
+
+                    
+                    <!-- Секция: Двухфакторная аутентификация (2FA) -->
+                    <div style="margin-bottom: 24px; padding-top: 18px; border-top: 1px solid var(--stroke, #e7edfb);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="material-symbols-rounded" style="color: #10b981; font-size: 20px;">shield</span>
+                                <span style="font-size: 14px; font-weight: 750; color: var(--text, #101e47);">
+                                    Двухфакторная аутентификация (2FA Google Authenticator)
+                                </span>
+                            </div>
+                            <?php if ($isTwoFactorEnabled): ?>
+                                <span class="badge text-bg-success" style="padding: 6px 10px; font-size: 11px;">Включена</span>
+                            <?php else: ?>
+                                <span class="badge text-bg-secondary" style="padding: 6px 10px; font-size: 11px;">Отключена</span>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if (empty($isTwoFactorConfigured)): ?>
+                            <div class="alert alert-warning" style="border-radius: 12px; padding: 14px 16px; margin-top: 10px;">
+                                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                                    <span class="material-symbols-rounded" style="color: #d97706; font-size: 22px; flex-shrink: 0;">lock_clock</span>
+                                    <div style="font-size: 12.5px; line-height: 1.45;">
+                                        <strong>Настройка 2FA временно недоступна:</strong> не задан секретный ключ шифрования приложения.<br>
+                                        Администратору сервера необходимо настроить переменную окружения <code>ADMIN_2FA_SECRET_KEY</code> (минимум 32 случайных символа) или указать ключ в конфигурации приложения <code>params['admin.2fa.secretKey']</code>.
+                                    </div>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                        <?php $newBackupCodes = Yii::$app->session->getFlash('2fa_new_backup_codes'); ?>
+                        <?php if (!empty($newBackupCodes) && is_array($newBackupCodes)): ?>
+                            <div class="alert alert-warning" style="border-radius: 12px; padding: 16px;">
+                                <div style="font-weight: 750; font-size: 13.5px; margin-bottom: 6px; color: #92400e;">
+                                    Сохраните ваши одноразовые резервные коды!
+                                </div>
+                                <p style="font-size: 12px; margin-bottom: 10px; color: #78350f;">
+                                    Каждый код может быть использован один раз для входа в случае отсутствия доступа к Google Authenticator. Они больше не будут показаны.
+                                </p>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 10px;">
+                                    <?php foreach ($newBackupCodes as $bCode): ?>
+                                        <div style="background: #fff; padding: 6px 10px; border-radius: 6px; font-family: monospace; font-size: 13px; font-weight: 700; text-align: center; border: 1px solid #fde68a;">
+                                            <?= Html::encode($bCode) ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($isTwoFactorEnabled): ?>
+                            <p style="font-size: 12px; color: var(--muted, #647fa9); margin: 0 0 14px 0;">
+                                Ваша учетная запись защищена вторым фактором. При каждом входе требуется код из мобильного приложения TOTP.<br>
+                                Доступно активных резервных кодов: <strong><?= (int) $backupCodesRemaining ?></strong>.
+                            </p>
+
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
+                                <button type="button" class="btn btn-secondary" style="font-size: 12px;" data-bs-toggle="collapse" data-bs-target="#regenBackupCollapse">
+                                    <span class="material-symbols-rounded" style="font-size: 16px;">refresh</span> Перегенерировать резервные коды
+                                </button>
+                                <button type="button" class="btn btn-secondary" style="font-size: 12px; color: #ef4444;" data-bs-toggle="collapse" data-bs-target="#disable2faCollapse">
+                                    <span class="material-symbols-rounded" style="font-size: 16px;">no_accounts</span> Отключить 2FA
+                                </button>
+                            </div>
+
+                            <div class="collapse" id="regenBackupCollapse" style="margin-bottom: 14px;">
+                                <div style="background: var(--surface, #f8fafd); border: 1px solid var(--stroke, #e7edfb); border-radius: 10px; padding: 14px;">
+                                    <?= Html::beginForm(['/admin/user/regenerate-backup-codes'], 'post', ['style' => 'display: flex; gap: 8px; align-items: center; flex-wrap: wrap;']) ?>
+                                        <input type="password" name="password" class="form-control" placeholder="Текущий пароль для подтверждения" style="width: 260px; font-size: 12px;" required>
+                                        <button type="submit" class="btn btn-warning" style="font-size: 12px;">Сгенерировать новые коды</button>
+                                    <?= Html::endForm() ?>
+                                </div>
+                            </div>
+
+                            <div class="collapse" id="disable2faCollapse" style="margin-bottom: 14px;">
+                                <div style="background: var(--surface, #f8fafd); border: 1px solid var(--stroke, #e7edfb); border-radius: 10px; padding: 14px;">
+                                    <?= Html::beginForm(['/admin/user/disable-2fa'], 'post', ['style' => 'display: flex; gap: 8px; align-items: center; flex-wrap: wrap;']) ?>
+                                        <input type="password" name="password" class="form-control" placeholder="Текущий пароль" style="width: 200px; font-size: 12px;" required>
+                                        <input type="text" name="code" class="form-control" placeholder="Код TOTP или резервный" style="width: 190px; font-size: 12px;" required>
+                                        <button type="submit" class="btn btn-danger" style="font-size: 12px;" onclick="return confirm('Вы уверены, что хотите отключить 2FA?');">Подтвердить отключение</button>
+                                    <?= Html::endForm() ?>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <p style="font-size: 12px; color: var(--muted, #647fa9); margin: 0 0 14px 0;">
+                                Подключите двухфакторную аутентификацию для защиты аккаунта от несанкционированного доступа при компрометации пароля.
+                            </p>
+
+                            <?php if (!empty($twoFactorSetupData)): ?>
+                                <div style="background: var(--surface, #f8fafd); border: 1px solid var(--stroke, #e7edfb); border-radius: 12px; padding: 18px; margin-bottom: 14px;">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-md-auto text-center" style="margin-bottom: 14px;">
+                                            <div style="background: #fff; padding: 8px; border-radius: 10px; border: 1px solid var(--stroke, #e7edfb); display: inline-block;">
+                                                <?= $twoFactorSetupData['qrSvg'] ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md">
+                                            <div style="font-size: 13px; font-weight: 700; color: var(--text, #101e47); margin-bottom: 6px;">
+                                                1. Отсканируйте QR-код в приложении
+                                            </div>
+                                            <p style="font-size: 12px; color: var(--muted, #647fa9); margin-bottom: 10px;">
+                                                Используйте Google Authenticator, Яндекс Ключ или 1Password. Если сканирование недоступно, введите секретный ключ вручную:<br>
+                                                <code style="background: #fff; padding: 4px 8px; border-radius: 6px; font-size: 12.5px; border: 1px solid var(--stroke, #e7edfb); display: inline-block; margin-top: 4px;"><?= Html::encode($twoFactorSetupData['secret']) ?></code>
+                                            </p>
+                                            <div style="font-size: 13px; font-weight: 700; color: var(--text, #101e47); margin-bottom: 6px;">
+                                                2. Введите 6-значный код для активации
+                                            </div>
+                                            <?= Html::beginForm(['/admin/user/confirm-2fa'], 'post', ['style' => 'display: flex; gap: 8px; align-items: center; flex-wrap: wrap;']) ?>
+                                                <input type="text" name="code" class="form-control" placeholder="123456" maxlength="6" style="width: 140px; font-size: 14px; text-align: center; font-weight: 700; letter-spacing: 2px;" required>
+                                                <button type="submit" class="btn btn-success" style="font-size: 12px;">
+                                                    <span class="material-symbols-rounded" style="font-size: 16px;">verified</span> Подтвердить и включить 2FA
+                                                </button>
+                                            <?= Html::endForm() ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <?php endif; ?>
                     </div>
 
                     <?php ActiveForm::end(); ?>

@@ -171,7 +171,7 @@ $renderMenuItem = static function (array $item, bool $secondary = false) use ($i
     $url = $item['url'] ?? null;
     if (is_array($url) && ($url[0] ?? null) === '/admin/site/ui-kit') {
         $identity = Yii::$app->user->identity;
-        if ($identity === null || (string) $identity->getId() !== SystemRbacHelper::ROOT_USER_ID) {
+        if ($identity === null || !SystemRbacHelper::isRootUser($identity->getId())) {
             return;
         }
     }

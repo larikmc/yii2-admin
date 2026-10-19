@@ -33,7 +33,7 @@ class AuthController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['login', 'captcha', 'invite', 'request-password-reset', 'reset-password'],
+                        'actions' => ['login', 'captcha', 'invite', 'request-password-reset', 'reset-password', 'two-factor'],
                         'allow' => true,
                     ],
                     [
@@ -220,26 +220,65 @@ class AuthController extends Controller
                 }
             }
 
-            if ($model->login()) {
-                Yii::$app->session->regenerateID(true);
+            if ($model->validate()) {
+                $user = $model->getUser();
 
-                try {
-                    (new InstallService())->installTables();
-                } catch (\Throwable $e) {
-                    Yii::error('Не удалось автоматически инициализировать RBAC: ' . $e->getMessage(), self::LOG_CATEGORY);
+                if ($user !== null) {
+                    $twoFactorService = new \larikmc\admin\services\TwoFactorService([
+                        'secretKey' => (string) ($module->twoFactorSecretKey ?? ''),
+                    ]);
+
+                    $is2faEnabled = $module->enableTwoFactor && $twoFactorService->isTwoFactorEnabled($user->getId());
+
+                    if ($is2faEnabled) {
+                        // Two-step authentication: do NOT create full Yii session yet!
+                        // Store pending 2FA state in session with short TTL
+                        $session->set('auth_2fa_pending_user_id', (string) $user->getId());
+                        $session->set('auth_2fa_pending_remember', $module->rememberMeDuration);
+                        $session->set('auth_2fa_pending_expire', time() + 300); // 5 minutes validity
+                        $session->remove('auth_2fa_attempts');
+
+                        // Clear brute-force counters on successful credentials
+                        $cache->delete($ipAttemptsKey);
+                        $cache->delete($ipLockKey);
+                        if ($hasEmail) {
+                            $cache->delete($emailAttemptsKey);
+                            $cache->delete($emailLockKey);
+                        }
+
+                        Yii::info(sprintf('Первый фактор успешно пройден для %s. Ожидание 2FA (TOTP).', $this->maskEmail($emailNorm)), self::LOG_CATEGORY);
+
+                        return $this->redirect($this->getAuthRoute('two-factor'));
+                    }
                 }
 
-                // Success: clear IP counters/locks
-                $cache->delete($ipAttemptsKey);
-                $cache->delete($ipLockKey);
+                if ($model->login()) {
+                    Yii::$app->session->regenerateID(true);
+                    if ($user !== null) {
+                        Yii::$app->session->set('auth_2fa_passed_user_id', (string) $user->getId());
+                        if (method_exists($user, 'getAuthKey')) {
+                            Yii::$app->session->set('auth_2fa_token', hash('sha256', (string) $user->getAuthKey()));
+                        }
+                    }
 
-                // Success: clear email counters/locks (for that email)
-                if ($hasEmail) {
-                    $cache->delete($emailAttemptsKey);
-                    $cache->delete($emailLockKey);
+                    try {
+                        (new InstallService())->installTables();
+                    } catch (\Throwable $e) {
+                        Yii::error('Не удалось автоматически инициализировать RBAC: ' . $e->getMessage(), self::LOG_CATEGORY);
+                    }
+
+                    // Success: clear IP counters/locks
+                    $cache->delete($ipAttemptsKey);
+                    $cache->delete($ipLockKey);
+
+                    // Success: clear email counters/locks (for that email)
+                    if ($hasEmail) {
+                        $cache->delete($emailAttemptsKey);
+                        $cache->delete($emailLockKey);
+                    }
+
+                    return $this->goBack();
                 }
-
-                return $this->goBack();
             }
 
             Yii::warning(sprintf(
@@ -357,8 +396,125 @@ class AuthController extends Controller
      */
     public function actionLogout()
     {
+        $session = Yii::$app->session;
+        $session->remove('auth_2fa_pending_user_id');
+        $session->remove('auth_2fa_pending_remember');
+        $session->remove('auth_2fa_pending_expire');
+        $session->remove('auth_2fa_attempts');
+        $session->remove('auth_2fa_passed_user_id');
+        $session->remove('auth_2fa_token');
+
         Yii::$app->user->logout();
         return $this->redirect($this->getAuthRoute('login'));
+    }
+
+    /**
+     * Two-Factor Authentication verification step
+     */
+    public function actionTwoFactor()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect(['/admin/site/index']);
+        }
+
+        $session = Yii::$app->session;
+        $userId = $session->get('auth_2fa_pending_user_id');
+        $expire = (int) $session->get('auth_2fa_pending_expire', 0);
+
+        if (empty($userId) || $expire < time()) {
+            $session->remove('auth_2fa_pending_user_id');
+            $session->remove('auth_2fa_pending_remember');
+            $session->remove('auth_2fa_pending_expire');
+            $session->remove('auth_2fa_attempts');
+            $session->setFlash('warning', 'Время ожидания проверки второго фактора истекло. Пожалуйста, выполните вход повторно.');
+            return $this->redirect($this->getAuthRoute('login'));
+        }
+
+        /** @var Module $module */
+        $module = $this->module;
+        $userClass = $module->userClass;
+        $user = $userClass::findIdentity($userId);
+
+        if (!$user) {
+            $session->remove('auth_2fa_pending_user_id');
+            return $this->redirect($this->getAuthRoute('login'));
+        }
+
+        $model = new \larikmc\admin\auth\models\TwoFactorForm();
+        $twoFactorService = new \larikmc\admin\services\TwoFactorService([
+            'secretKey' => (string) ($module->twoFactorSecretKey ?? ''),
+        ]);
+
+        $attempts = (int) $session->get('auth_2fa_attempts', 0);
+        $max2faAttempts = 5;
+
+        if ($attempts >= $max2faAttempts) {
+            $session->remove('auth_2fa_pending_user_id');
+            $session->remove('auth_2fa_pending_remember');
+            $session->remove('auth_2fa_pending_expire');
+            $session->remove('auth_2fa_attempts');
+            Yii::warning("Превышено количество попыток ввода TOTP для пользователя ID: {$userId}", self::LOG_CATEGORY);
+            $session->setFlash('error', 'Превышено количество попыток ввода кода безопасности. Пожалуйста, выполните вход заново.');
+            return $this->redirect($this->getAuthRoute('login'));
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $valid = $twoFactorService->verifyTotpOrBackupCode($userId, (string) $model->code);
+
+            if ($valid) {
+                // Success 2FA!
+                $rememberDuration = (int) $session->get('auth_2fa_pending_remember', $module->rememberMeDuration);
+
+                // Clean temporary 2FA state
+                $session->remove('auth_2fa_pending_user_id');
+                $session->remove('auth_2fa_pending_remember');
+                $session->remove('auth_2fa_pending_expire');
+                $session->remove('auth_2fa_attempts');
+
+                // Perform final login
+                if (Yii::$app->user->login($user, $rememberDuration)) {
+                    Yii::$app->session->regenerateID(true);
+                    Yii::$app->session->set('auth_2fa_passed_user_id', (string) $userId);
+                    if (method_exists($user, 'getAuthKey')) {
+                        Yii::$app->session->set('auth_2fa_token', hash('sha256', (string) $user->getAuthKey()));
+                    }
+
+                    try {
+                        (new InstallService())->installTables();
+                    } catch (\Throwable $e) {
+                        Yii::error('Не удалось автоматически инициализировать RBAC: ' . $e->getMessage(), self::LOG_CATEGORY);
+                    }
+
+                    Yii::info("Успешная двухфакторная аутентификация для пользователя ID: {$userId}", self::LOG_CATEGORY);
+                    return $this->goBack();
+                }
+
+                $session->setFlash('error', 'Не удалось завершить авторизацию.');
+                return $this->redirect($this->getAuthRoute('login'));
+            }
+
+            $attempts++;
+            $session->set('auth_2fa_attempts', $attempts);
+            $remainingAttempts = max(0, $max2faAttempts - $attempts);
+
+            Yii::warning("Неверный код 2FA для пользователя ID: {$userId}. Попытка {$attempts} из {$max2faAttempts}", self::LOG_CATEGORY);
+
+            if ($remainingAttempts <= 0) {
+                $session->remove('auth_2fa_pending_user_id');
+                $session->remove('auth_2fa_pending_remember');
+                $session->remove('auth_2fa_pending_expire');
+                $session->remove('auth_2fa_attempts');
+                $session->setFlash('error', 'Превышено количество попыток ввода кода. Сессия сброшена.');
+                return $this->redirect($this->getAuthRoute('login'));
+            }
+
+            $model->addError('code', "Неверный код подтверждения или код уже использован. Осталось попыток: {$remainingAttempts}.");
+        }
+
+        return $this->render('two-factor', [
+            'model' => $model,
+            'user' => $user,
+        ]);
     }
 
     public function actionInvite(string $token = '')
@@ -410,12 +566,14 @@ class AuthController extends Controller
 
                 $userId = $user->getId();
                 if ($userId !== null && $service->consumeToken($token, $userId) && Yii::$app->user->login($user, $module->rememberMeDuration)) {
+                    Yii::$app->session->set('auth_2fa_passed_user_id', (string) $userId);
                     Yii::$app->session->setFlash('success', 'Аккаунт администратора создан.');
                     return $this->redirect(['/admin/site/index']);
                 }
 
                 if ($userId !== null) {
                     Yii::$app->user->login($user, $module->rememberMeDuration);
+                    Yii::$app->session->set('auth_2fa_passed_user_id', (string) $userId);
                 }
                 Yii::$app->session->setFlash('warning', 'Аккаунт создан, но роль администратора не назначилась.');
                 return $this->redirect(['/admin/site/index']);

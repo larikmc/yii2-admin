@@ -24,7 +24,17 @@ class UserController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['profile', 'confirm-email', 'verify-email-code', 'cancel-email-change', 'resend-email-change'],
+                        'actions' => [
+                            'profile',
+                            'confirm-email',
+                            'verify-email-code',
+                            'cancel-email-change',
+                            'resend-email-change',
+                            'enable-2fa',
+                            'confirm-2fa',
+                            'disable-2fa',
+                            'regenerate-backup-codes',
+                        ],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -38,6 +48,10 @@ class UserController extends Controller
                     'verify-email-code' => ['post'],
                     'cancel-email-change' => ['post'],
                     'resend-email-change' => ['post'],
+                    'enable-2fa' => ['post'],
+                    'confirm-2fa' => ['post'],
+                    'disable-2fa' => ['post'],
+                    'regenerate-backup-codes' => ['post'],
                 ],
             ],
         ];
@@ -63,15 +77,52 @@ class UserController extends Controller
                 Yii::$app->session->setFlash('success', 'Настройки профиля успешно сохранены.');
             }
 
+            // If user updated their password, authKey was regenerated, so update current session's token
+            if (!empty($model->newPassword) && method_exists($user, 'getAuthKey')) {
+                Yii::$app->session->set('auth_2fa_token', hash('sha256', (string) $user->getAuthKey()));
+            }
+
             return $this->refresh();
         }
 
         $pendingEmailChange = $this->getPendingEmailChange((int) $user->id);
 
+        $twoFactorService = $this->getTwoFactorService();
+        $isTwoFactorConfigured = $twoFactorService->isConfigured();
+        $isTwoFactorEnabled = false;
+        $backupCodesRemaining = 0;
+        $twoFactorSetupData = null;
+
+        if ($isTwoFactorConfigured) {
+            $isTwoFactorEnabled = $twoFactorService->isTwoFactorEnabled($user->getId());
+            $backupCodesRemaining = $isTwoFactorEnabled ? $twoFactorService->getRemainingBackupCodesCount($user->getId()) : 0;
+
+            if (!$isTwoFactorEnabled) {
+                // Generate or fetch secret for initial setup
+                $setupSecret = (string) Yii::$app->session->get('2fa_setup_secret_' . $user->getId(), '');
+                if ($setupSecret === '') {
+                    $setupData = $twoFactorService->generateSecretForSetup($user->getId());
+                    $setupSecret = $setupData['secret'];
+                    Yii::$app->session->set('2fa_setup_secret_' . $user->getId(), $setupSecret);
+                }
+                $accountName = (string) ($user->email ?? $user->username);
+                $qrSvg = $twoFactorService->getQrCodeSvg($setupSecret, $accountName);
+
+                $twoFactorSetupData = [
+                    'secret' => $setupSecret,
+                    'qrSvg' => $qrSvg,
+                ];
+            }
+        }
+
         return $this->render('@larikmc/admin/views/user/profile', [
             'model' => $model,
             'user' => $user,
             'pendingEmailChange' => $pendingEmailChange,
+            'isTwoFactorConfigured' => $isTwoFactorConfigured,
+            'isTwoFactorEnabled' => $isTwoFactorEnabled,
+            'backupCodesRemaining' => $backupCodesRemaining,
+            'twoFactorSetupData' => $twoFactorSetupData,
         ]);
     }
 
@@ -256,5 +307,129 @@ class UserController extends Controller
         if (!empty($token)) {
             $cache->delete('email_change_token_' . $token);
         }
+    }
+
+    public function actionConfirm2fa(): Response
+    {
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new NotFoundHttpException('Пользователь не авторизован.');
+        }
+
+        $code = trim((string) $this->request->post('code', ''));
+        $secret = (string) Yii::$app->session->get('2fa_setup_secret_' . $user->getId(), '');
+
+        if ($secret === '') {
+            Yii::$app->session->setFlash('danger', 'Сессия настройки 2FA устарела. Обновите страницу и попробуйте снова.');
+            return $this->redirect(['profile']);
+        }
+
+        $twoFactorService = $this->getTwoFactorService();
+        if ($twoFactorService->confirmAndEnable($user->getId(), $secret, $code)) {
+            Yii::$app->session->remove('2fa_setup_secret_' . $user->getId());
+            Yii::$app->session->set('auth_2fa_passed_user_id', (string) $user->getId());
+            if (method_exists($user, 'getAuthKey')) {
+                Yii::$app->session->set('auth_2fa_token', hash('sha256', (string) $user->getAuthKey()));
+            }
+            $backupCodes = $twoFactorService->generateBackupCodes($user->getId());
+            Yii::$app->session->setFlash('2fa_new_backup_codes', $backupCodes);
+
+            Yii::info(
+                sprintf('Двухфакторная аутентификация успешно включена пользователем ID #%s (%s)', $user->getId(), $user->username ?? $user->email),
+                'security.auth'
+            );
+
+            Yii::$app->session->setFlash('success', 'Двухфакторная аутентификация успешно включена! Обязательно сохраните ваши резервные коды.');
+        } else {
+            Yii::$app->session->setFlash('danger', 'Неверный 6-значный код подтверждения. Проверьте время на телефоне и введите актуальный код.');
+        }
+
+        return $this->redirect(['profile']);
+    }
+
+    public function actionDisable2fa(): Response
+    {
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new NotFoundHttpException('Пользователь не авторизован.');
+        }
+
+        $password = (string) $this->request->post('password', '');
+        $code = trim((string) $this->request->post('code', ''));
+
+        if ($password === '' || (method_exists($user, 'validatePassword') && !$user->validatePassword($password))) {
+            Yii::$app->session->setFlash('danger', 'Для отключения 2FA необходимо указать правильный текущий пароль учетной записи.');
+            return $this->redirect(['profile']);
+        }
+
+        $twoFactorService = $this->getTwoFactorService();
+        if (!$twoFactorService->verifyTotpOrBackupCode($user->getId(), $code)) {
+            Yii::$app->session->setFlash('danger', 'Неверный код 2FA для подтверждения отключения.');
+            return $this->redirect(['profile']);
+        }
+
+        $twoFactorService->disable($user->getId());
+        if (method_exists($user, 'generateAuthKey')) {
+            $user->generateAuthKey();
+            if (method_exists($user, 'save')) {
+                $user->save(false);
+            }
+        }
+
+        Yii::$app->session->remove('auth_2fa_passed_user_id');
+        Yii::$app->session->remove('auth_2fa_token');
+
+        Yii::warning(
+            sprintf('Двухфакторная аутентификация отключена пользователем ID #%s (%s)', $user->getId(), $user->username ?? $user->email),
+            'security.auth'
+        );
+
+        Yii::$app->session->setFlash('info', 'Двухфакторная аутентификация отключена.');
+        return $this->redirect(['profile']);
+    }
+
+    public function actionRegenerateBackupCodes(): Response
+    {
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new NotFoundHttpException('Пользователь не авторизован.');
+        }
+
+        $password = (string) $this->request->post('password', '');
+        if ($password === '' || (method_exists($user, 'validatePassword') && !$user->validatePassword($password))) {
+            Yii::$app->session->setFlash('danger', 'Для перегенерации кодов подтвердите ваш текущий пароль.');
+            return $this->redirect(['profile']);
+        }
+
+        $twoFactorService = $this->getTwoFactorService();
+        if (!$twoFactorService->isTwoFactorEnabled($user->getId())) {
+            Yii::$app->session->setFlash('danger', '2FA не включен.');
+            return $this->redirect(['profile']);
+        }
+
+        $backupCodes = $twoFactorService->generateBackupCodes($user->getId());
+        Yii::$app->session->setFlash('2fa_new_backup_codes', $backupCodes);
+
+        Yii::warning(
+            sprintf('Сгенерированы новые резервные коды 2FA пользователем ID #%s (%s)', $user->getId(), $user->username ?? $user->email),
+            'security.auth'
+        );
+
+        Yii::$app->session->setFlash('success', 'Сгенерированы новые резервные коды. Предыдущие коды аннулированы.');
+
+        return $this->redirect(['profile']);
+    }
+
+    private function getTwoFactorService(): \larikmc\admin\services\TwoFactorService
+    {
+        $adminModule = Yii::$app->hasModule('admin') ? Yii::$app->getModule('admin') : null;
+        $secretKey = '';
+        if ($adminModule !== null && property_exists($adminModule, 'twoFactorSecretKey') && !empty($adminModule->twoFactorSecretKey)) {
+            $secretKey = (string) $adminModule->twoFactorSecretKey;
+        }
+
+        return new \larikmc\admin\services\TwoFactorService([
+            'secretKey' => $secretKey,
+        ]);
     }
 }

@@ -69,7 +69,7 @@ class LoginForm extends Model
         );
     }
 
-    protected function getUser(): ?IdentityInterface
+    public function getUser(): ?IdentityInterface
     {
         if ($this->_user !== null) {
             return $this->_user;

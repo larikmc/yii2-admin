@@ -17,6 +17,7 @@ class Module extends \yii\base\Module
         'auth/invite',
         'auth/request-password-reset',
         'auth/reset-password',
+        'auth/two-factor',
         'site/error',
         'admin/login',
         'admin/logout',
@@ -26,6 +27,7 @@ class Module extends \yii\base\Module
         'admin/auth/invite',
         'admin/auth/request-password-reset',
         'admin/auth/reset-password',
+        'admin/auth/two-factor',
         'admin/site/error',
     ];
 
@@ -33,6 +35,7 @@ class Module extends \yii\base\Module
     public $defaultRoute = 'site/index';
     public $menu = [];
     public $secondaryMenu = [];
+    public ?string $rootUserId = null;
     public string $userClass = '';
     public string $userModel = '';
     public string $userIdField = 'id';
@@ -51,6 +54,9 @@ class Module extends \yii\base\Module
     public int $maxDelaySeconds = 10;
     public int $rememberMeDuration = 2592000;
     public string $securityLogFile = '@runtime/logs/app.log';
+    public bool $enableTwoFactor = true;
+    public bool $enforceTwoFactorForAdmins = false;
+    public ?string $twoFactorSecretKey = null;
     public ?int $maxUserAttempts = null;
     public ?int $captchaAfterAttempts = null;
     public ?int $lockDuration = null;
@@ -73,12 +79,14 @@ class Module extends \yii\base\Module
                 'auth/invite' => 'admin/auth/auth/invite',
                 'auth/request-password-reset' => 'admin/auth/auth/request-password-reset',
                 'auth/reset-password' => 'admin/auth/auth/reset-password',
+                'auth/two-factor' => 'admin/auth/auth/two-factor',
             ], false);
         }
 
         if ($this->guardUnknownAdminRoutesForGuests) {
             Yii::$app->on(\yii\base\Application::EVENT_BEFORE_REQUEST, function (): void {
                 $this->guardGuestRequest();
+                $this->guardTwoFactorRequest();
             });
         }
 
@@ -110,6 +118,9 @@ class Module extends \yii\base\Module
                 'maxDelaySeconds' => $this->maxDelaySeconds,
                 'rememberMeDuration' => $this->rememberMeDuration,
                 'securityLogFile' => $this->securityLogFile,
+                'enableTwoFactor' => $this->enableTwoFactor,
+                'enforceTwoFactorForAdmins' => $this->enforceTwoFactorForAdmins,
+                'twoFactorSecretKey' => $this->twoFactorSecretKey,
                 'maxUserAttempts' => $this->maxUserAttempts,
                 'captchaAfterAttempts' => $this->captchaAfterAttempts,
                 'lockDuration' => $this->lockDuration,
@@ -147,6 +158,11 @@ class Module extends \yii\base\Module
         $normalizedPath = preg_replace('#^admin/#', '', $pathInfo) ?? $pathInfo;
 
         if ($pathInfo === '' || $pathInfo === 'admin') {
+            // Check if there is a pending 2FA authentication in session
+            if ($app->has('session') && $app->session->has('auth_2fa_pending_user_id')) {
+                $app->response->redirect(['/admin/auth/two-factor']);
+                $app->end();
+            }
             $app->user->loginRequired();
             $app->end();
         }
@@ -162,5 +178,83 @@ class Module extends \yii\base\Module
 
         $app->user->loginRequired();
         $app->end();
+    }
+
+    private function guardTwoFactorRequest(): void
+    {
+        $app = Yii::$app;
+        if (!$this->enableTwoFactor || !$app->has('user') || !$app->has('request') || $app->user->isGuest) {
+            return;
+        }
+
+        $pathInfo = trim((string) $app->request->pathInfo, '/');
+        $normalizedPath = preg_replace('#^admin/#', '', $pathInfo) ?? $pathInfo;
+
+        // Only guard routes belonging to admin panel
+        $isAdminRoute = ($pathInfo === 'admin' || str_starts_with($pathInfo, 'admin/')
+            || $normalizedPath === 'login' || $normalizedPath === 'logout'
+            || str_starts_with($normalizedPath, 'auth/') || str_starts_with($normalizedPath, 'rbac/')
+            || str_starts_with($normalizedPath, 'user/') || str_starts_with($normalizedPath, 'site/'));
+
+        if (!$isAdminRoute) {
+            return;
+        }
+
+        // Exclude logout from 2FA guard so user can always log out
+        if ($normalizedPath === 'logout' || $normalizedPath === 'auth/logout' || $pathInfo === 'admin/auth/logout') {
+            return;
+        }
+
+        $userId = $app->user->getId();
+        if ($userId === null) {
+            return;
+        }
+
+        $twoFactorService = new \larikmc\admin\services\TwoFactorService([
+            'secretKey' => (string) ($this->twoFactorSecretKey ?? ''),
+        ]);
+
+        if (!$twoFactorService->isTwoFactorEnabled($userId)) {
+            return;
+        }
+
+        $session = $app->has('session') ? $app->session : null;
+        $passedUserId = $session ? $session->get('auth_2fa_passed_user_id') : null;
+        $sessionAuthToken = $session ? $session->get('auth_2fa_token') : null;
+
+        // Verify session validity and token bound to current identity's authKey
+        $identity = $app->user->identity;
+        $expectedToken = null;
+        if ($identity && method_exists($identity, 'getAuthKey')) {
+            $expectedToken = hash('sha256', (string) $identity->getAuthKey());
+        }
+
+        $isSessionValid = ($passedUserId !== null && (string) $passedUserId === (string) $userId);
+        if ($isSessionValid && $expectedToken !== null) {
+            // Centralized session revocation: if user's authKey changed (password change, 2FA reset, etc.),
+            // any active session holding the old token is immediately invalidated!
+            if (empty($sessionAuthToken) || !hash_equals($expectedToken, (string) $sessionAuthToken)) {
+                $isSessionValid = false;
+                Yii::warning("Сессия 2FA аннулирована для пользователя ID {$userId} из-за смены authKey.", 'security.auth');
+            }
+        }
+
+        if (!$isSessionValid) {
+            // User was authenticated via cookie/rememberMe or authKey changed,
+            // must re-verify 2FA in this browser session!
+            $rememberDuration = (int) $this->rememberMeDuration;
+            $app->user->logout(false); // remove active identity without destroying frontend session data
+
+            if ($session) {
+                $session->remove('auth_2fa_passed_user_id');
+                $session->remove('auth_2fa_token');
+                $session->set('auth_2fa_pending_user_id', (string) $userId);
+                $session->set('auth_2fa_pending_remember', $rememberDuration);
+                $session->set('auth_2fa_pending_expire', time() + 300);
+            }
+
+            $app->response->redirect(['/admin/auth/two-factor']);
+            $app->end();
+        }
     }
 }

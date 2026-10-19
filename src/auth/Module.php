@@ -54,6 +54,15 @@ class Module extends BaseModule
     /** Путь к лог-файлу приложения для security dashboard */
     public string $securityLogFile = '@runtime/logs/app.log';
 
+    /** Включение двухфакторной аутентификации */
+    public bool $enableTwoFactor = true;
+
+    /** Обязательный 2FA для администраторов */
+    public bool $enforceTwoFactorForAdmins = false;
+
+    /** Пользовательский ключ шифрования секретов 2FA */
+    public ?string $twoFactorSecretKey = null;
+
     /**
      * Backward-compatible aliases for legacy config.
      * They are copied to the new split settings in init() when provided.

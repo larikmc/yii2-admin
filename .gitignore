@@ -1,3 +1,4 @@
 composer.lock
 .idea/
 gemini-code-*.html
+.phpunit.result.cache

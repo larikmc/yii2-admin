@@ -60,9 +60,12 @@ class InstallService
             $auth->addChild($role, $permission);
         }
 
-        $assignments = $auth->getAssignments(SystemRbacHelper::ROOT_USER_ID);
-        if (!isset($assignments[SystemRbacHelper::ADMIN_ROLE])) {
-            $auth->assign($role, SystemRbacHelper::ROOT_USER_ID);
+        $rootUserId = SystemRbacHelper::getRootUserId();
+        if ($rootUserId !== null && $rootUserId !== '') {
+            $assignments = $auth->getAssignments($rootUserId);
+            if (!isset($assignments[SystemRbacHelper::ADMIN_ROLE])) {
+                $auth->assign($role, $rootUserId);
+            }
         }
     }
 }
