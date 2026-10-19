@@ -114,18 +114,40 @@ class FirstAdminService extends Component
         }
 
         $db = is_subclass_of($class, ActiveRecord::class) ? $class::getDb() : Yii::$app->db;
+        $mutex = Yii::$app->has('mutex') ? Yii::$app->mutex : null;
+        $mutexKey = 'first_admin_creation_lock_' . md5($class);
+        $acquiredMutex = false;
+
+        if ($mutex) {
+            $acquiredMutex = $mutex->acquire($mutexKey, 10);
+            if (!$acquiredMutex) {
+                $errors[] = 'Другой процесс в данный момент выполняет первоначальную настройку администратора.';
+                return null;
+            }
+        }
+
         $transaction = $db->beginTransaction();
 
         try {
             // Concurrency check within transaction
             if (is_subclass_of($class, ActiveRecord::class)) {
                 $tableName = $class::tableName();
-                $count = (new \yii\db\Query())
-                    ->from($tableName)
-                    ->count('*', $db);
 
-                if ((int) $count > 0) {
+                // For MySQL/MariaDB we can lock table or read with exclusive lock
+                if ($db->driverName === 'mysql') {
+                    $rawCount = $db->createCommand("SELECT COUNT(*) FROM {$tableName} FOR UPDATE")->queryScalar();
+                    $count = (int) $rawCount;
+                } else {
+                    $count = (int) (new \yii\db\Query())
+                        ->from($tableName)
+                        ->count('*', $db);
+                }
+
+                if ($count > 0) {
                     $transaction->rollBack();
+                    if ($acquiredMutex && $mutex) {
+                        $mutex->release($mutexKey);
+                    }
                     $errors[] = 'В системе уже зарегистрированы пользователи. Автоматическая первоначальная регистрация отклонена.';
                     return null;
                 }
@@ -240,6 +262,10 @@ class FirstAdminService extends Component
             Yii::error('Исключение при создании первого администратора: ' . $e->getMessage(), self::LOG_CATEGORY);
             $errors[] = 'Произошла непредвиденная ошибка при инициализации администратора: ' . $e->getMessage();
             return null;
+        } finally {
+            if ($acquiredMutex && $mutex) {
+                $mutex->release($mutexKey);
+            }
         }
     }
 }
