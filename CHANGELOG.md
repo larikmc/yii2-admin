@@ -2,6 +2,12 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.1] - 2026-10-20
+
+### Fixed
+- **Automatic Yii2 Default GridView ActionColumn Styling**: Default Yii2-generated `ActionColumn` buttons and FontAwesome SVG icons (`eye-open`, `pencil`, `trash`) are now automatically styled into the unified segmented button-group (`.btn-group-action` style), without requiring manual view modifications or custom `sz-row-action` classes.
+- **Delete Button Danger Hover**: Auto-detected `data-method="post"` and `data-confirm` action buttons in default GridView tables now seamlessly transition to danger/red hover state in both light and dark themes.
+
 ## [2.1.0] - 2026-10-19
 
 ### Added

@@ -1592,16 +1592,20 @@ html.dark .grid-view .table thead tr.filters td {
     font-weight: 700;
 }
 
-.grid-view .action-column {
+.grid-view .action-column,
+.grid-view table tbody tr > td:last-child {
     white-space: nowrap;
     width: 132px;
     min-width: 132px;
-    text-align: right;
+    text-align: center;
     font-size: 0;
 }
 
 .grid-view .action-column a,
-.grid-view a.sz-row-action {
+.grid-view a.sz-row-action,
+.grid-view table tbody tr > td:last-child a:has(svg),
+.grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded),
+.grid-view table tbody tr > td:last-child a:has(.icon) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1629,27 +1633,51 @@ html.dark .grid-view .table thead tr.filters td {
     line-height: 1;
 }
 
+.grid-view .action-column a svg,
+.grid-view a.sz-row-action svg,
+.grid-view table tbody tr > td:last-child a svg {
+    width: 15px !important;
+    height: 15px !important;
+    max-width: 15px !important;
+    max-height: 15px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    fill: currentColor !important;
+}
+
 .grid-view .action-column a:first-child,
-.grid-view a.sz-row-action:first-child {
+.grid-view a.sz-row-action:first-child,
+.grid-view table tbody tr > td:last-child a:has(svg):first-of-type,
+.grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):first-of-type,
+.grid-view table tbody tr > td:last-child a:has(.icon):first-of-type {
     border-top-left-radius: 9px;
     border-bottom-left-radius: 9px;
 }
 
 .grid-view .action-column a:last-child,
-.grid-view a.sz-row-action:last-child {
+.grid-view a.sz-row-action:last-child,
+.grid-view table tbody tr > td:last-child a:has(svg):last-of-type,
+.grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):last-of-type,
+.grid-view table tbody tr > td:last-child a:has(.icon):last-of-type {
     border-right: 1px solid #d7e5fa;
     border-top-right-radius: 9px;
     border-bottom-right-radius: 9px;
 }
 
 .grid-view .action-column a:only-child,
-.grid-view a.sz-row-action:only-child {
+.grid-view a.sz-row-action:only-child,
+.grid-view table tbody tr > td:last-child a:has(svg):only-of-type,
+.grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):only-of-type,
+.grid-view table tbody tr > td:last-child a:has(.icon):only-of-type {
     border-right: 1px solid #d7e5fa;
     border-radius: 9px;
 }
 
 .grid-view .action-column a:hover,
-.grid-view a.sz-row-action:hover {
+.grid-view a.sz-row-action:hover,
+.grid-view table tbody tr > td:last-child a:has(svg):hover,
+.grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):hover,
+.grid-view table tbody tr > td:last-child a:has(.icon):hover {
     background: #e9f3ff;
     color: #1f63c5;
 }
@@ -1658,7 +1686,10 @@ html.dark .grid-view .table thead tr.filters td {
 .grid-view .action-column a[data-confirm],
 .grid-view a.sz-row-action[data-method="post"],
 .grid-view a.sz-row-action[data-confirm],
-.grid-view a.sz-row-action.del {
+.grid-view a.sz-row-action.del,
+.grid-view table tbody tr > td:last-child a[data-method="post"],
+.grid-view table tbody tr > td:last-child a[data-confirm],
+.grid-view table tbody tr > td:last-child a.del {
     color: #4b76b5;
     background: #fff;
     border-color: #d7e5fa;
@@ -1668,13 +1699,19 @@ html.dark .grid-view .table thead tr.filters td {
 .grid-view .action-column a[data-confirm]:hover,
 .grid-view a.sz-row-action[data-method="post"]:hover,
 .grid-view a.sz-row-action[data-confirm]:hover,
-.grid-view a.sz-row-action.del:hover {
+.grid-view a.sz-row-action.del:hover,
+.grid-view table tbody tr > td:last-child a[data-method="post"]:hover,
+.grid-view table tbody tr > td:last-child a[data-confirm]:hover,
+.grid-view table tbody tr > td:last-child a.del:hover {
     background: #ffebef;
     color: #ce3157;
 }
 
 body.dark .grid-view .action-column a,
-body.dark .grid-view a.sz-row-action {
+body.dark .grid-view a.sz-row-action,
+body.dark .grid-view table tbody tr > td:last-child a:has(svg),
+body.dark .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded),
+body.dark .grid-view table tbody tr > td:last-child a:has(.icon) {
     border-color: #405573;
     background: #25354e;
     color: #aec5e9;
@@ -1684,12 +1721,21 @@ body.dark .grid-view a.sz-row-action {
 body.dark .grid-view .action-column a:last-child,
 body.dark .grid-view a.sz-row-action:last-child,
 body.dark .grid-view .action-column a:only-child,
-body.dark .grid-view a.sz-row-action:only-child {
+body.dark .grid-view a.sz-row-action:only-child,
+body.dark .grid-view table tbody tr > td:last-child a:has(svg):last-of-type,
+body.dark .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):last-of-type,
+body.dark .grid-view table tbody tr > td:last-child a:has(.icon):last-of-type,
+body.dark .grid-view table tbody tr > td:last-child a:has(svg):only-of-type,
+body.dark .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):only-of-type,
+body.dark .grid-view table tbody tr > td:last-child a:has(.icon):only-of-type {
     border-right-color: #405573;
 }
 
 body.dark .grid-view .action-column a:hover,
-body.dark .grid-view a.sz-row-action:hover {
+body.dark .grid-view a.sz-row-action:hover,
+body.dark .grid-view table tbody tr > td:last-child a:has(svg):hover,
+body.dark .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):hover,
+body.dark .grid-view table tbody tr > td:last-child a:has(.icon):hover {
     background: #30496e;
     color: #ffffff;
 }
@@ -1698,7 +1744,10 @@ body.dark .grid-view .action-column a[data-method="post"]:hover,
 body.dark .grid-view .action-column a[data-confirm]:hover,
 body.dark .grid-view a.sz-row-action[data-method="post"]:hover,
 body.dark .grid-view a.sz-row-action[data-confirm]:hover,
-body.dark .grid-view a.sz-row-action.del:hover {
+body.dark .grid-view a.sz-row-action.del:hover,
+body.dark .grid-view table tbody tr > td:last-child a[data-method="post"]:hover,
+body.dark .grid-view table tbody tr > td:last-child a[data-confirm]:hover,
+body.dark .grid-view table tbody tr > td:last-child a.del:hover {
     background: #63354c;
     color: #ffd2dc;
 }
