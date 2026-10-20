@@ -3437,13 +3437,16 @@ body.dark .btn-group-action a.del:hover {
     padding: 0 !important;
 }
 
-.page-item {
+.page-item,
+.pagination li {
     list-style: none !important;
     padding: 0 !important;
     margin: 0 !important;
 }
 
-.page-link {
+.page-link,
+.pagination li a,
+.pagination li span {
     width: 32px !important;
     height: 32px !important;
     min-width: 32px !important;
@@ -3464,32 +3467,56 @@ body.dark .btn-group-action a.del:hover {
     transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 
-body.dark .page-link {
+body.dark .page-link,
+body.dark .pagination li a,
+body.dark .pagination li span {
     background: #1d2c46 !important;
     border-color: #354660 !important;
     color: #9cb2d8 !important;
 }
 
-.page-item.active .page-link {
+.page-item.active .page-link,
+.pagination li.active a,
+.pagination li.active span {
     background: #397ce5 !important;
     color: #ffffff !important;
     border-color: #397ce5 !important;
 }
 
-body.dark .page-item.active .page-link {
+body.dark .page-item.active .page-link,
+body.dark .pagination li.active a,
+body.dark .pagination li.active span {
     background: #397ce5 !important;
     color: #ffffff !important;
     border-color: #397ce5 !important;
 }
 
-.page-link:hover:not(.active) {
+.page-link:hover:not(.active),
+.pagination li:not(.active):not(.disabled) a:hover {
     background: #eef4ff !important;
     color: #2865be !important;
 }
 
-body.dark .page-link:hover:not(.active) {
+body.dark .page-link:hover:not(.active),
+body.dark .pagination li:not(.active):not(.disabled) a:hover {
     background: #2a4163 !important;
     color: #dbe8ff !important;
+}
+
+.pagination li.disabled span,
+.pagination li.disabled a {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+    background: transparent !important;
+    color: var(--muted, #647fa9) !important;
+    border-color: var(--stroke, #e7edfb) !important;
+}
+
+body.dark .pagination li.disabled span,
+body.dark .pagination li.disabled a {
+    background: transparent !important;
+    color: #556b8d !important;
+    border-color: #2b3d56 !important;
 }
 
 #tableSummary,

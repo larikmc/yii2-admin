@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.2] - 2026-10-20
+
+### Fixed
+- **Unified GridView Pagination Styling**: Default Yii2 `LinkPager` (`.pagination li a` / `.pagination li span`) now seamlessly adopts the compact, rounded UI kit design (`32px` square buttons, 8px border radius, smooth hover, primary active state and dimmed disabled states) in both light and dark themes without requiring custom LinkPager widget configurations.
+
 ## [2.1.1] - 2026-10-20
 
 ### Fixed
