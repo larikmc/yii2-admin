@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.3] - 2026-10-20
+
+### Fixed
+- **GridView Pagination Spacing**: Added top margin (`margin-top: 16px`) to `.pagination` below tables to provide clean visual separation between the grid view container and page switch buttons.
+
 ## [2.1.2] - 2026-10-20
 
 ### Fixed

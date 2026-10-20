@@ -3433,7 +3433,7 @@ body.dark .btn-group-action a.del:hover {
     align-items: center !important;
     gap: 5px !important;
     list-style: none !important;
-    margin: 0 !important;
+    margin: 16px 0 0 0 !important;
     padding: 0 !important;
 }
 
