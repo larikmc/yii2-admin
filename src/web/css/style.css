@@ -3080,7 +3080,8 @@ body.dark .card-subtitle {
 .form-select {
     width: 100%;
     min-width: 0;
-    height: 39px;
+    min-height: 42px;
+    height: 42px;
     border: 1px solid var(--input-border, #dbe7f8);
     border-radius: 10px;
     background: var(--panel, #ffffff);
@@ -3126,6 +3127,8 @@ body.dark .form-control::placeholder {
    ========================================================================== */
 .input-group.date .input-group-text,
 .input-group.date .input-group-addon {
+    min-height: 42px;
+    height: 42px;
     border-color: var(--input-border, #dbe7f8);
     background: var(--panel, #ffffff);
     color: var(--muted, #647fa9);
@@ -3327,8 +3330,8 @@ html.dark .datepicker table tr td.disabled:hover {
 .select2-container--krajee .select2-selection--single {
     border-radius: 10px !important;
     border: 1px solid var(--input-border, #dbe7f8) !important;
-    min-height: 39px !important;
-    height: 39px !important;
+    min-height: 42px !important;
+    height: 42px !important;
     display: flex !important;
     align-items: center !important;
     background-color: var(--panel, #ffffff);
@@ -3339,8 +3342,8 @@ html.dark .datepicker table tr td.disabled:hover {
 .grid-view .filters .select2-container--krajee-bs5 .select2-selection--single,
 .grid-view .filters .select2-container--bootstrap5 .select2-selection--single,
 .grid-view .filters .select2-container--krajee .select2-selection--single {
-    min-height: 39px !important;
-    height: 39px !important;
+    min-height: 42px !important;
+    height: 42px !important;
 }
 
 .select2-container--krajee-bs5 .select2-selection--multiple,
@@ -3348,7 +3351,7 @@ html.dark .datepicker table tr td.disabled:hover {
 .select2-container .select2-selection--multiple {
     border-radius: 10px !important;
     border: 1px solid var(--input-border, #dbe7f8) !important;
-    min-height: 39px !important;
+    min-height: 42px !important;
     background-color: var(--panel, #ffffff);
     display: flex !important;
     align-items: center !important;
