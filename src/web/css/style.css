@@ -3122,6 +3122,203 @@ body.dark .form-control::placeholder {
 }
 
 /* ==========================================================================
+   Bootstrap Datepicker & Kartik DatePicker (Light & Dark)
+   ========================================================================== */
+.input-group.date .input-group-text,
+.input-group.date .input-group-addon {
+    border-color: var(--input-border, #dbe7f8);
+    background: var(--panel, #ffffff);
+    color: var(--muted, #647fa9);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    font-size: 13px;
+    transition: border-color .15s, background-color .15s, color .15s;
+}
+
+.input-group.date .input-group-text:first-child,
+.input-group.date .input-group-addon:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.input-group.date .input-group-text:last-child,
+.input-group.date .input-group-addon:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.input-group.date .form-control:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.input-group.date .kv-dp-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* Dark Theme for DatePicker Addons */
+body.dark .input-group.date .input-group-text,
+body.dark .input-group.date .input-group-addon,
+html.dark .input-group.date .input-group-text,
+html.dark .input-group.date .input-group-addon {
+    background: #142136 !important;
+    border-color: #354660 !important;
+    color: #7997c4 !important;
+}
+
+body.dark .input-group.date .input-group-text:hover,
+body.dark .input-group.date .input-group-addon:hover,
+html.dark .input-group.date .input-group-text:hover,
+html.dark .input-group.date .input-group-addon:hover {
+    background: #1c2b42 !important;
+    color: #dce8ff !important;
+}
+
+/* Dark Theme for DatePicker Dropdown & Calendar */
+body.dark .datepicker,
+html.dark .datepicker {
+    background: #19273f !important;
+    border: 1px solid #354660 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45) !important;
+    color: #dce8ff !important;
+    padding: 10px !important;
+}
+
+body.dark .datepicker-dropdown:before,
+html.dark .datepicker-dropdown:before {
+    border-bottom-color: #354660 !important;
+}
+
+body.dark .datepicker-dropdown:after,
+html.dark .datepicker-dropdown:after {
+    border-bottom-color: #19273f !important;
+}
+
+body.dark .datepicker-dropdown.datepicker-orient-top:before,
+html.dark .datepicker-dropdown.datepicker-orient-top:before {
+    border-top-color: #354660 !important;
+}
+
+body.dark .datepicker-dropdown.datepicker-orient-top:after,
+html.dark .datepicker-dropdown.datepicker-orient-top:after {
+    border-top-color: #19273f !important;
+}
+
+body.dark .datepicker table tr th,
+html.dark .datepicker table tr th {
+    color: #dce8ff !important;
+    font-weight: 600 !important;
+}
+
+body.dark .datepicker table tr th.dow,
+html.dark .datepicker table tr th.dow {
+    color: #7997c4 !important;
+    font-size: 11.5px !important;
+}
+
+body.dark .datepicker .datepicker-switch:hover,
+body.dark .datepicker .prev:hover,
+body.dark .datepicker .next:hover,
+body.dark .datepicker tfoot tr th:hover,
+html.dark .datepicker .datepicker-switch:hover,
+html.dark .datepicker .prev:hover,
+html.dark .datepicker .next:hover,
+html.dark .datepicker tfoot tr th:hover {
+    background: #243550 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+}
+
+body.dark .datepicker table tr td,
+html.dark .datepicker table tr td {
+    color: #dce8ff !important;
+    border-radius: 8px !important;
+}
+
+body.dark .datepicker table tr td.day:hover,
+body.dark .datepicker table tr td.focused,
+html.dark .datepicker table tr td.day:hover,
+html.dark .datepicker table tr td.focused {
+    background: #243550 !important;
+    color: #ffffff !important;
+}
+
+body.dark .datepicker table tr td.old,
+body.dark .datepicker table tr td.new,
+html.dark .datepicker table tr td.old,
+html.dark .datepicker table tr td.new {
+    color: #4a6184 !important;
+}
+
+body.dark .datepicker table tr td.today,
+body.dark .datepicker table tr td.today:hover,
+html.dark .datepicker table tr td.today,
+html.dark .datepicker table tr td.today:hover {
+    background: rgba(245, 158, 11, 0.2) !important;
+    border: 1px solid #f59e0b !important;
+    color: #fbbf24 !important;
+}
+
+body.dark .datepicker table tr td.active,
+body.dark .datepicker table tr td.active:hover,
+html.dark .datepicker table tr td.active,
+html.dark .datepicker table tr td.active:hover {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+}
+
+body.dark .datepicker table tr td.range,
+html.dark .datepicker table tr td.range {
+    background: #1c2e4a !important;
+    color: #dce8ff !important;
+}
+
+body.dark .datepicker table tr td span,
+html.dark .datepicker table tr td span {
+    border-radius: 8px !important;
+    color: #dce8ff !important;
+}
+
+body.dark .datepicker table tr td span:hover,
+body.dark .datepicker table tr td span.focused,
+html.dark .datepicker table tr td span:hover,
+html.dark .datepicker table tr td span.focused {
+    background: #243550 !important;
+    color: #ffffff !important;
+}
+
+body.dark .datepicker table tr td span.active,
+body.dark .datepicker table tr td span.active:hover,
+html.dark .datepicker table tr td span.active,
+html.dark .datepicker table tr td span.active:hover {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    text-shadow: none !important;
+}
+
+body.dark .datepicker table tr td span.old,
+body.dark .datepicker table tr td span.new,
+html.dark .datepicker table tr td span.old,
+html.dark .datepicker table tr td span.new {
+    color: #4a6184 !important;
+}
+
+body.dark .datepicker table tr td.disabled,
+body.dark .datepicker table tr td.disabled:hover,
+html.dark .datepicker table tr td.disabled,
+html.dark .datepicker table tr td.disabled:hover {
+    color: #354660 !important;
+    cursor: not-allowed !important;
+}
+
+/* ==========================================================================
    Select2 & Kartik Select2 Support (Light & Dark)
    ========================================================================== */
 .select2-container .select2-selection--single,
