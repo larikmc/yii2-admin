@@ -17,10 +17,11 @@ echo AdminPage::widget([
     'title' => $this->title,
     'tabs' => $this->params['rbacTabs'] ?? [],
     'showHeader' => false,
-    'content' => '<div class="sz-actions-bar"><div class="sz-actions-bar__inner">'
-        . Html::a('Создать роль', ['create'], ['class' => 'btn btn-success'])
-        . '</div></div>'
-        . GridView::widget([
+    'actions' => [
+        Html::a('Создать роль', ['create'], ['class' => 'btn btn-success']),
+    ],
+    'actionsPosition' => 'below_tabs',
+    'content' => GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [

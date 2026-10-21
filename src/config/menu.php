@@ -34,7 +34,7 @@ return [
             'visible' => static function (): bool {
                 $identity = Yii::$app->user->identity;
 
-                return $identity !== null && SystemRbacHelper::isRootUser($identity->getId());
+                return SystemRbacHelper::canAccessUiKit($identity);
             },
         ],
     ],

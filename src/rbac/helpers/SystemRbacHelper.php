@@ -37,6 +37,26 @@ class SystemRbacHelper
         return $rootId !== null && (string) $userId === (string) $rootId;
     }
 
+    public static function canAccessUiKit(?\yii\web\IdentityInterface $identity = null): bool
+    {
+        $identity = $identity ?? (\Yii::$app->has('user') ? \Yii::$app->user->identity : null);
+        if ($identity === null) {
+            return false;
+        }
+
+        if (self::isRootUser($identity->getId())) {
+            return true;
+        }
+
+        if (\Yii::$app->has('user')) {
+            if (\Yii::$app->user->can(self::ADMIN_ROLE) || \Yii::$app->user->can(self::ADMIN_PANEL_PERMISSION)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static function isProtectedRole(string $name): bool
     {
         return $name === self::ADMIN_ROLE;

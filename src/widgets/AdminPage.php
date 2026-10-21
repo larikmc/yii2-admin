@@ -44,9 +44,14 @@ class AdminPage extends Widget
             $tabs = AdminTabs::widget($tabsOptions);
         }
 
-        $headerActions = $this->actionsPosition === 'header' ? $actions : '';
-        $bodyActions = $this->actionsPosition === 'below_title' ? Html::tag('div', $actions, ['class' => 'mb-4']) : '';
-        $tabsActions = $this->actionsPosition === 'below_tabs' ? Html::tag('div', $actions, ['class' => 'mb-3']) : '';
+        $actionsPosition = $this->actionsPosition;
+        if ($actionsPosition === 'header' && !$this->showHeader && $tabs !== '') {
+            $actionsPosition = 'below_tabs';
+        }
+
+        $headerActions = $actionsPosition === 'header' ? $actions : '';
+        $bodyActions = $actionsPosition === 'below_title' ? Html::tag('div', $actions, ['class' => 'mb-4']) : '';
+        $tabsActions = $actionsPosition === 'below_tabs' ? Html::tag('div', $actions, ['class' => 'sz-page__actions mb-3']) : '';
 
         $headerBlock = '';
         if ($this->showHeader) {
