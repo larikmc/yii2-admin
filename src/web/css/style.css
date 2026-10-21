@@ -3325,13 +3325,33 @@ html.dark .datepicker table tr td.disabled:hover {
 .select2-container--krajee-bs5 .select2-selection--single,
 .select2-container--bootstrap5 .select2-selection--single,
 .select2-container--krajee .select2-selection--single {
-    border-radius: 9px !important;
-    border: 1px solid var(--stroke, #e7edfb) !important;
-    min-height: 34px !important;
-    height: 34px !important;
+    border-radius: 10px !important;
+    border: 1px solid var(--input-border, #dbe7f8) !important;
+    min-height: 39px !important;
+    height: 39px !important;
     display: flex !important;
     align-items: center !important;
-    background-color: #fff;
+    background-color: var(--panel, #ffffff);
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.grid-view .filters .select2-container .select2-selection--single,
+.grid-view .filters .select2-container--krajee-bs5 .select2-selection--single,
+.grid-view .filters .select2-container--bootstrap5 .select2-selection--single,
+.grid-view .filters .select2-container--krajee .select2-selection--single {
+    min-height: 39px !important;
+    height: 39px !important;
+}
+
+.select2-container--krajee-bs5 .select2-selection--multiple,
+.select2-container--bootstrap5 .select2-selection--multiple,
+.select2-container .select2-selection--multiple {
+    border-radius: 10px !important;
+    border: 1px solid var(--input-border, #dbe7f8) !important;
+    min-height: 39px !important;
+    background-color: var(--panel, #ffffff);
+    display: flex !important;
+    align-items: center !important;
     transition: border-color .15s, box-shadow .15s;
 }
 
@@ -3357,8 +3377,12 @@ body.dark .select2-container--krajee-bs5 .select2-selection--single,
 body.dark .select2-container--bootstrap5 .select2-selection--single,
 body.dark .select2-container--krajee .select2-selection--single,
 body.dark .select2-container--krajee-bs5.is-focused .select2-selection--single,
+body.dark .select2-container--krajee-bs5 .select2-selection--multiple,
+body.dark .select2-container--bootstrap5 .select2-selection--multiple,
+body.dark .select2-container .select2-selection--multiple,
 html.dark .select2-container .select2-selection--single,
-html.dark .select2-container--krajee-bs5 .select2-selection--single {
+html.dark .select2-container--krajee-bs5 .select2-selection--single,
+html.dark .select2-container .select2-selection--multiple {
     background: #142136 !important;
     border-color: #354660 !important;
     color: #dce8ff !important;
