@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.13] - 2026-10-26
+
+### Fixed
+- **Filter Presets Margin Zero**: Set `margin: 0 !important` on `.stat-filter-presets` and `.karandash-filter-presets` so they do not inherit the default `14px` tab bottom margin when embedded inside flex toolbars.
+
 ## [2.1.12] - 2026-10-26
 
 ### Fixed
