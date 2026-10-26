@@ -139,42 +139,23 @@ echo Html::a(
       </div>
     </div>
 
-    <!-- Секция: ДВА ВАРИАНТА ТАБОВ -->
+    <!-- Секция: ВКЛАДКИ (AdminTabs) В СТИЛЕ ПОСЕЩАЕМОСТИ САЙТОВ -->
     <div class="col-12">
       <div class="card">
         <div class="card-header">
           <div>
-            <h3 class="card-title">Варианты вкладок (AdminTabs)</h3>
-            <p class="card-subtitle">Классический стиль с подчеркиванием и монолитные цельные кнопки-пилюли.</p>
+            <h3 class="card-title">Вкладки разделов (AdminTabs)</h3>
+            <p class="card-subtitle">Единый стиль сегментированных вкладок (.nav-pills-solid), как в разделе Посещаемость сайтов.</p>
           </div>
         </div>
         <div class="card-body">
-          <div class="row" style="margin-bottom:0;">
-            <!-- Вариант 1: Классические табы с подчеркиванием -->
-            <div class="col-6" style="margin-bottom:0;">
-              <span style="display:block;font-size:11px;font-weight:750;color:#658bc1;text-transform:uppercase;margin-bottom:10px;letter-spacing:1px;">Вариант 1 · Подчёркивание (.nav-tabs)</span>
-              <ul class="nav-tabs" id="demoTabsLine">
-                <li><button class="nav-link active" data-tab-line="0" type="button">Обзор системы</button></li>
-                <li><button class="nav-link" data-tab-line="1" type="button">Логирование</button></li>
-                <li><button class="nav-link" data-tab-line="2" type="button">Параметры</button></li>
-              </ul>
-              <div id="demoTabContentLine" class="demo-tab-description">
-                Классическое оформление с линией-индикатором активного раздела.
-              </div>
-            </div>
-
-            <!-- Вариант 2: Цельные кнопки (Segmented Pills) -->
-            <div class="col-6" style="margin-bottom:0;">
-              <span style="display:block;font-size:11px;font-weight:750;color:#658bc1;text-transform:uppercase;margin-bottom:10px;letter-spacing:1px;">Вариант 2 · Цельные кнопки (.nav-pills-solid)</span>
-              <ul class="nav-pills-solid" id="demoTabsPills">
-                <li><button class="nav-link active" data-tab-pill="0" type="button">Обзор системы</button></li>
-                <li><button class="nav-link" data-tab-pill="1" type="button">Логирование</button></li>
-                <li><button class="nav-link" data-tab-pill="2" type="button">Параметры</button></li>
-              </ul>
-              <div id="demoTabContentPill" class="demo-tab-description">
-                Сегментированные цельные кнопки на общей подложке: активный таб выделяется выпуклой плашкой.
-              </div>
-            </div>
+          <ul class="nav-pills-solid" id="demoTabs">
+            <li><button class="nav-link active" data-tab="0" type="button">Обзор системы</button></li>
+            <li><button class="nav-link" data-tab="1" type="button">Логирование</button></li>
+            <li><button class="nav-link" data-tab="2" type="button">Параметры</button></li>
+          </ul>
+          <div id="demoTabContent" class="demo-tab-description">
+            Обзор системы: оперативные сводки, активность пользователей и статус модулей.
           </div>
         </div>
       </div>
@@ -334,37 +315,20 @@ $this->registerJs(<<<'JS'
   const $ = id => document.getElementById(id);
   const safe = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  // Табы Вариант 1 (Линейные)
-  const tabTextsLine = [
-    'Классическое оформление с линией-индикатором активного раздела.',
-    'Логирование событий: история действий администраторов и системных триггеров.',
-    'Параметры и конфигурация: редактирование основных констант приложения.'
+  // Табы разделов (AdminTabs)
+  const tabTexts = [
+    'Обзор системы: оперативные сводки, активность пользователей и статус модулей.',
+    'Логирование событий: история действий администраторов, журнал аудита и системные триггеры.',
+    'Параметры и конфигурация: редактирование основных констант приложения и системных переключателей.'
   ];
-  const demoTabsLine = $('demoTabsLine');
-  if (demoTabsLine) {
-    demoTabsLine.addEventListener('click', e => {
-      const btn = e.target.closest('[data-tab-line]');
+  const demoTabs = $('demoTabs');
+  if (demoTabs) {
+    demoTabs.addEventListener('click', e => {
+      const btn = e.target.closest('[data-tab]');
       if (!btn) return;
-      demoTabsLine.querySelectorAll('.nav-link').forEach(b => b.classList.toggle('active', b === btn));
-      const lineContent = $('demoTabContentLine');
-      if (lineContent) lineContent.textContent = tabTextsLine[Number(btn.dataset.tabLine)];
-    });
-  }
-
-  // Табы Вариант 2 (Цельные кнопки-пилюли)
-  const tabTextsPill = [
-    'Сегментированные цельные кнопки на общей подложке: активный таб выделяется выпуклой плашкой.',
-    'История и аудит: отслеживание модификаций контента и прав доступа RBAC.',
-    'Расширенные свойства: системные переключатели модулей и кэширования.'
-  ];
-  const demoTabsPills = $('demoTabsPills');
-  if (demoTabsPills) {
-    demoTabsPills.addEventListener('click', e => {
-      const btn = e.target.closest('[data-tab-pill]');
-      if (!btn) return;
-      demoTabsPills.querySelectorAll('.nav-link').forEach(b => b.classList.toggle('active', b === btn));
-      const pillContent = $('demoTabContentPill');
-      if (pillContent) pillContent.textContent = tabTextsPill[Number(btn.dataset.tabPill)];
+      demoTabs.querySelectorAll('.nav-link').forEach(b => b.classList.toggle('active', b === btn));
+      const tabContent = $('demoTabContent');
+      if (tabContent) tabContent.textContent = tabTexts[Number(btn.dataset.tab)];
     });
   }
 

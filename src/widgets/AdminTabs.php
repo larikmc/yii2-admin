@@ -20,10 +20,7 @@ class AdminTabs extends Widget
             return '';
         }
 
-        $baseNavClass = $this->navClass;
-        if ($baseNavClass === null) {
-            $baseNavClass = $this->style === 'pills' ? 'nav-pills-solid' : 'nav nav-tabs mb-3';
-        }
+        $baseNavClass = $this->navClass ?? 'nav-pills-solid';
 
         $hasPanels = $this->hasPanels();
         $widgetId = $this->getId();

@@ -51,7 +51,7 @@ class AdminPage extends Widget
 
         $headerActions = $actionsPosition === 'header' ? $actions : '';
         $bodyActions = $actionsPosition === 'below_title' ? Html::tag('div', $actions, ['class' => 'mb-4']) : '';
-        $tabsActions = $actionsPosition === 'below_tabs' ? Html::tag('div', $actions, ['class' => 'sz-page__actions mb-3']) : '';
+        $tabsActions = ($actionsPosition === 'below_tabs' && $actions !== '') ? Html::tag('div', $actions, ['class' => 'sz-page__actions mb-3']) : '';
 
         $headerBlock = '';
         if ($this->showHeader) {
