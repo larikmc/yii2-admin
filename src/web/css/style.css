@@ -2423,20 +2423,22 @@ html.dark .sz-toast__progress {
     margin: 0 auto;
     text-align: center;
     padding: 44px 32px 40px;
-    border-radius: 20px;
-    background: var(--sz-card-bg, #ffffff);
-    border: 1px solid var(--sz-line, #e2e8f0);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+    border-radius: var(--sz-radius-md, 22px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(251, 252, 255, 0.88));
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 20px 44px rgba(34, 42, 70, 0.08);
+    backdrop-filter: blur(14px);
     position: relative;
     overflow: hidden;
 }
 
 html.dark .sz-error-card,
 body.dark .sz-error-card {
-    background: rgba(21, 26, 45, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(16px);
+    background: #1d2c46 !important;
+    border: 1px solid #354660 !important;
+    box-shadow: var(--sz-shadow, 0 14px 34px rgba(0, 0, 0, 0.28)) !important;
+    backdrop-filter: none;
+    color: #dce8ff !important;
 }
 
 .sz-error-card__visual {
@@ -2456,10 +2458,10 @@ body.dark .sz-error-card {
     align-items: center;
     justify-content: center;
     margin-bottom: 12px;
-    background: rgba(59, 130, 246, 0.12);
-    color: #3b82f6;
-    border: 1px solid rgba(59, 130, 246, 0.25);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+    background: rgba(49, 137, 247, 0.12);
+    color: var(--sz-primary, #3189f7);
+    border: 1px solid rgba(49, 137, 247, 0.25);
+    box-shadow: 0 8px 24px rgba(49, 137, 247, 0.15);
 }
 
 .sz-error-card__icon-badge span {
@@ -2467,17 +2469,31 @@ body.dark .sz-error-card {
 }
 
 .sz-error-card__icon-badge--404 {
-    background: rgba(239, 68, 68, 0.12);
-    color: #f87171;
-    border-color: rgba(239, 68, 68, 0.25);
-    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2);
+    background: rgba(226, 78, 108, 0.12);
+    color: var(--sz-danger, #e24e6c);
+    border-color: rgba(226, 78, 108, 0.25);
+    box-shadow: 0 8px 24px rgba(226, 78, 108, 0.15);
+}
+
+html.dark .sz-error-card__icon-badge--404,
+body.dark .sz-error-card__icon-badge--404 {
+    background: rgba(226, 78, 108, 0.22);
+    color: #ff7597;
+    border-color: rgba(226, 78, 108, 0.35);
 }
 
 .sz-error-card__icon-badge--403 {
-    background: rgba(245, 158, 11, 0.12);
-    color: #fbbf24;
-    border-color: rgba(245, 158, 11, 0.25);
-    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
+    background: rgba(238, 166, 60, 0.12);
+    color: var(--sz-warning, #eea63c);
+    border-color: rgba(238, 166, 60, 0.25);
+    box-shadow: 0 8px 24px rgba(238, 166, 60, 0.15);
+}
+
+html.dark .sz-error-card__icon-badge--403,
+body.dark .sz-error-card__icon-badge--403 {
+    background: rgba(238, 166, 60, 0.22);
+    color: #ffc266;
+    border-color: rgba(238, 166, 60, 0.35);
 }
 
 .sz-error-card__code {
@@ -2485,7 +2501,7 @@ body.dark .sz-error-card {
     font-weight: 900;
     line-height: 1;
     letter-spacing: -0.04em;
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+    background: linear-gradient(135deg, #3189f7 0%, #6366f1 50%, #e24e6c 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     user-select: none;
@@ -2496,36 +2512,36 @@ body.dark .sz-error-card {
     font-size: 22px;
     font-weight: 700;
     line-height: 1.3;
-    color: #1e293b;
+    color: var(--sz-text, #14294d);
 }
 
 html.dark .sz-error-card__title,
 body.dark .sz-error-card__title {
-    color: #f8fafc;
+    color: #eff4ff !important;
 }
 
 .sz-error-card__message {
     font-size: 15px;
     line-height: 1.6;
     margin: 0 0 8px;
-    color: #475569;
+    color: var(--sz-text, #14294d);
 }
 
 html.dark .sz-error-card__message,
 body.dark .sz-error-card__message {
-    color: #cbd5e1;
+    color: #dce8ff !important;
 }
 
 .sz-error-card__hint {
-    font-size: 13px;
+    font-size: 13.5px;
     line-height: 1.5;
     margin: 0 0 24px;
-    color: #64748b;
+    color: var(--sz-muted, #7b93be);
 }
 
 html.dark .sz-error-card__hint,
 body.dark .sz-error-card__hint {
-    color: #94a3b8;
+    color: #9cb2d8 !important;
 }
 
 .sz-error-card__actions {
@@ -2542,13 +2558,40 @@ body.dark .sz-error-card__hint {
     justify-content: center;
     gap: 8px;
     font-weight: 600;
-    padding: 9px 20px;
-    border-radius: 10px;
+    padding: 10px 22px;
+    border-radius: var(--sz-radius-sm, 14px);
     font-size: 14px;
 }
 
 .sz-btn-icon .material-symbols-rounded {
     font-size: 18px;
+}
+
+.sz-error-card .btn-outline-secondary {
+    border: 1px solid var(--sz-line-strong, rgba(40, 52, 82, 0.18));
+    color: var(--sz-text, #14294d);
+    background: var(--sz-bg-soft, rgba(255, 255, 255, 0.72));
+    transition: all 0.2s ease;
+}
+
+.sz-error-card .btn-outline-secondary:hover {
+    background: var(--sz-surface-strong, #ffffff);
+    color: var(--sz-primary, #3189f7);
+    border-color: var(--sz-primary, #3189f7);
+}
+
+html.dark .sz-error-card .btn-outline-secondary,
+body.dark .sz-error-card .btn-outline-secondary {
+    background: #243756 !important;
+    border-color: #3c5272 !important;
+    color: #dce8ff !important;
+}
+
+html.dark .sz-error-card .btn-outline-secondary:hover,
+body.dark .sz-error-card .btn-outline-secondary:hover {
+    background: #2b4164 !important;
+    color: #ffffff !important;
+    border-color: var(--sz-primary, #3189f7) !important;
 }
 
 /* Fallback for standard Yii2 .site-error */

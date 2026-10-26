@@ -2,6 +2,14 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.18] - 2026-10-26
+
+### Fixed & Enhanced
+- **Seamless Admin Theme Consistency for Error Page**: Aligned `.sz-error-card` with native `.sz-panel` design language and CSS tokens (`--sz-surface`, `--sz-line`, `--sz-text`, `--sz-muted`) across both themes:
+  - **Light Theme**: Soft translucent gradient (`linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(251, 252, 255, 0.88))`) with fine glass border and soft shadow, matching standard panels.
+  - **Dark Theme**: Deep surface `#1d2c46` with `#354660` border, matching dark admin panels.
+  - Secondary button («Назад») now uses admin panel surface styling and hover transitions in both Light and Dark themes.
+
 ## [2.1.17] - 2026-10-26
 
 ### Fixed

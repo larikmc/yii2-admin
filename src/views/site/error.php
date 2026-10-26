@@ -44,7 +44,7 @@ $this->params['pageSubtitle'] = 'Код ответа: HTTP ' . $code;
 ?>
 
 <div class="sz-error-wrapper">
-    <div class="sz-error-card">
+    <div class="sz-panel sz-error-card">
         <div class="sz-error-card__visual">
             <div class="sz-error-card__icon-badge sz-error-card__icon-badge--<?= (int) $code ?>">
                 <span class="material-symbols-rounded"><?= Html::encode($icon) ?></span>
