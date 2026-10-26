@@ -113,6 +113,7 @@ class UserController extends Controller
                 $twoFactorSetupData = [
                     'secret' => $setupSecret,
                     'qrSvg' => $qrSvg,
+                    'otpAuthUri' => $twoFactorService->getOtpAuthUri($setupSecret, $accountName),
                 ];
             }
         }

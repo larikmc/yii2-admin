@@ -2,6 +2,19 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.23] - 2026-10-26
+
+### Fixed & Enhanced
+- **Built-in Zero-Dependency QR Code Generator for 2FA**:
+  - Bundled standalone, zero-dependency client-side QR generator (`src/web/js/qrcode.min.js`) into `AppAsset`.
+  - Added progressive enhancement in `src/views/user/profile.php` and `TwoFactorService::getOtpAuthUri()`: if server-side `bacon/bacon-qr-code` is not installed on hosting or fallback SVG is returned, client-side JavaScript instantly renders a clean, scannable QR code directly from the `otpauth://` URI.
+  - Fixes "QR Code Library required" placeholder on remote hosting and offline environments with zero external composer dependencies.
+- **Fixed Layout Overflow & 2FA Key Management Modal**:
+  - Replaced the bottom-collapsing `#twoFactorKeyDetails` container with a centered Bootstrap 5 modal (`#twoFactorKeyModal`).
+  - Added `word-break: break-all` and centered dialog positioning (`modal-dialog-centered`), eliminating horizontal and vertical off-screen overflow caused by long server directory paths.
+- **Enhanced Toast & Alert Viewport Containment**:
+  - Added viewport constraints (`max-width: calc(100vw - 32px)`, `word-break: break-word`, `overflow-wrap: anywhere`) to `.sz-toast-stack`, `.sz-toast`, and `.toast` in `style.css` to prevent notifications from sliding outside the screen.
+
 ## [2.1.22] - 2026-10-26
 
 ### Fixed & Enhanced

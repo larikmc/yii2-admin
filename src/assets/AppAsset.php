@@ -16,6 +16,7 @@ class AppAsset extends AssetBundle
         'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0',
     ];
     public $js = [
+        'js/qrcode.min.js',
         'js/dashboard.js',
         'js/lazyloader.js',
         'js/image-viewer-admin.js',

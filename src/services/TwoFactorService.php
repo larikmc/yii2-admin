@@ -119,8 +119,13 @@ class TwoFactorService extends Component
 
     public function getQrCodeSvg(string $secret, string $accountName): string
     {
-        $uri = $this->getTotp()->getOtpAuthUri($secret, $accountName, $this->issuer);
+        $uri = $this->getOtpAuthUri($secret, $accountName);
         return $this->getTotp()->generateQrCodeSvg($uri, 200);
+    }
+
+    public function getOtpAuthUri(string $secret, string $accountName): string
+    {
+        return $this->getTotp()->getOtpAuthUri($secret, $accountName, $this->issuer);
     }
 
     public function confirmAndEnable(string|int $userId, string $secret, string $code): bool

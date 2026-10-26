@@ -367,8 +367,10 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
                                                 max-width: 140px;
                                             ">
                                                 <div style="width: 124px; height: 124px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                                                    <style>.twofa-qr-box svg { width: 100% !important; height: 100% !important; display: block; }</style>
-                                                    <div class="twofa-qr-box" style="width: 124px; height: 124px;">
+                                                    <style>
+                                                        .twofa-qr-box svg, .twofa-qr-box canvas, .twofa-qr-box img { width: 100% !important; height: 100% !important; display: block; border-radius: 4px; }
+                                                    </style>
+                                                    <div class="twofa-qr-box" id="twofaQrBox" data-otpauth="<?= Html::encode($twoFactorSetupData['otpAuthUri'] ?? '') ?>" style="width: 124px; height: 124px; display: flex; align-items: center; justify-content: center;">
                                                         <?= $twoFactorSetupData['qrSvg'] ?>
                                                     </div>
                                                 </div>
@@ -428,39 +430,10 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
                                 <span class="d-none d-md-inline" style="font-family: monospace; font-size: 11px; opacity: 0.85;">(<?= Html::encode($twoFactorKeyInfo['keyMasked'] ?? '') ?>)</span>
                             </div>
                             <div style="display: flex; gap: 6px; align-items: center;">
-                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#twoFactorKeyDetails" style="font-size: 11px; padding: 3px 8px;">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#twoFactorKeyModal" style="font-size: 11px; padding: 3px 8px;">
                                     <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: -2px;">tune</span>
                                     Управление ключом
                                 </button>
-                            </div>
-                        </div>
-
-                        <div class="collapse mt-2" id="twoFactorKeyDetails">
-                            <div style="background: var(--sz-surface-strong, #fff); border: 1px solid var(--sz-line, #e7edfb); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--sz-text, #101e47);">
-                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                    <div>
-                                        <strong>Параметры ключа шифрования 2FA:</strong>
-                                        <div style="font-size: 11px; color: var(--sz-muted, #647fa9); margin-top: 2px; line-height: 1.45;">
-                                            Источник: <?= Html::encode($twoFactorKeyInfo['sourceLabel'] ?? '') ?><br>
-                                            <?php if (!empty($twoFactorKeyInfo['filePath'])): ?>
-                                                Файл ключа: <code><?= Html::encode($twoFactorKeyInfo['filePath']) ?></code><br>
-                                            <?php endif; ?>
-                                            Длина ключа: <?= (int) ($twoFactorKeyInfo['keyLength'] ?? 0) ?> символов (SHA-256)
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <?= Html::a(
-                                            '<span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">refresh</span> Сгенерировать новый мастер-ключ',
-                                            ['/admin/user/regenerate-two-factor-key'],
-                                            [
-                                                'class' => 'btn btn-sm btn-outline-warning',
-                                                'style' => 'font-size: 11.5px;',
-                                                'data-method' => 'post',
-                                                'data-confirm' => 'Внимание! При смене мастер-ключа шифрования ранее настроенная 2FA у существующих пользователей может потребовать повторного подключения. Продолжить?',
-                                            ]
-                                        ) ?>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -469,4 +442,106 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
         </div>
     </div>
 </div>
+
+<?php if (!empty($twoFactorKeyInfo)): ?>
+    <!-- Модальное окно управления мастер-ключом 2FA -->
+    <div class="modal fade" id="twoFactorKeyModal" tabindex="-1" aria-labelledby="twoFactorKeyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: var(--sz-surface, #ffffff); border: 1px solid var(--sz-line, #e7edfb); border-radius: 14px; box-shadow: 0 20px 44px rgba(0,0,0,0.2);">
+                <div class="modal-header py-3 px-4" style="border-bottom: 1px solid var(--sz-line, #e7edfb);">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="material-symbols-rounded" style="color: #10b981; font-size: 22px;">key</span>
+                        <h5 class="modal-title m-0" id="twoFactorKeyModalLabel" style="font-size: 15px; font-weight: 750; color: var(--sz-text, #101e47);">
+                            Управление мастер-ключом 2FA
+                        </h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body p-4" style="font-size: 13px; color: var(--sz-text, #101e47);">
+                    <div class="mb-3">
+                        <div style="font-size: 11px; color: var(--sz-muted, #647fa9); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">
+                            Источник ключа:
+                        </div>
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #059669; font-size: 12px; font-weight: 600; padding: 5px 10px;">
+                            <?= Html::encode($twoFactorKeyInfo['sourceLabel'] ?? 'Готов к работе') ?>
+                        </span>
+                    </div>
+
+                    <?php if (!empty($twoFactorKeyInfo['filePath'])): ?>
+                        <div class="mb-3">
+                            <div style="font-size: 11px; color: var(--sz-muted, #647fa9); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">
+                                Путь к файлу ключа:
+                            </div>
+                            <code style="word-break: break-all; overflow-wrap: anywhere; font-family: monospace; font-size: 12px; background: var(--sz-bg-soft, #f4f8ff); color: var(--sz-text, #101e47); padding: 6px 10px; border-radius: 6px; display: block; border: 1px solid var(--sz-line, #e7edfb); user-select: all;">
+                                <?= Html::encode($twoFactorKeyInfo['filePath']) ?>
+                            </code>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="mb-3">
+                        <div style="font-size: 11px; color: var(--sz-muted, #647fa9); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">
+                            Отпечаток ключа (SHA-256):
+                        </div>
+                        <div style="font-family: monospace; font-size: 12.5px; font-weight: 700; color: var(--sz-text, #101e47);">
+                            <?= Html::encode($twoFactorKeyInfo['keyMasked'] ?? '') ?>
+                            <span style="font-size: 11.5px; color: var(--sz-muted, #647fa9); font-weight: 400;">(длина: <?= (int) ($twoFactorKeyInfo['keyLength'] ?? 0) ?> символов)</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info py-2 px-3 m-0" style="font-size: 11.5px; border-radius: 8px; line-height: 1.45;">
+                        Мастер-ключ используется для шифрования секретов двухфакторной аутентификации в базе данных.
+                    </div>
+                </div>
+                <div class="modal-footer py-2 px-4" style="border-top: 1px solid var(--sz-line, #e7edfb); display: flex; justify-content: space-between;">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="font-size: 12px;">Закрыть</button>
+                    <?= Html::a(
+                        '<span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px; margin-right: 4px;">refresh</span> Сгенерировать новый ключ',
+                        ['/admin/user/regenerate-two-factor-key'],
+                        [
+                            'class' => 'btn btn-warning btn-sm',
+                            'style' => 'font-size: 12px; font-weight: 600;',
+                            'data-method' => 'post',
+                            'data-confirm' => 'Внимание! При смене мастер-ключа шифрования ранее настроенная 2FA у существующих пользователей может потребовать повторного подключения. Продолжить?',
+                        ]
+                    ) ?>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php
+$qrJs = <<<JS
+(function() {
+    function renderQrIfNeeded() {
+        var box = document.getElementById('twofaQrBox');
+        if (!box) return;
+        var uri = box.getAttribute('data-otpauth');
+        if (!uri) return;
+
+        var text = (box.textContent || '').trim();
+        var hasValidSvg = box.querySelector('svg path') && !text.includes('QR Code Library required');
+
+        if (!hasValidSvg && typeof QRCode !== 'undefined') {
+            box.innerHTML = '';
+            new QRCode(box, {
+                text: uri,
+                width: 124,
+                height: 124,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderQrIfNeeded);
+    } else {
+        renderQrIfNeeded();
+    }
+})();
+JS;
+$this->registerJs($qrJs, \yii\web\View::POS_READY);
+?>
 
