@@ -15,8 +15,13 @@ $primaryMenu = $module->menu ?? [];
 $secondaryMenu = $module->secondaryMenu ?? [];
 $currentRoute = '/' . Yii::$app->controller->route;
 $identity = Yii::$app->user->identity;
-$pageTitle = $this->title ?: 'Админ-панель';
-$isDashboard = Yii::$app->controller->module->id === 'admin'
+$isErrorPage = (Yii::$app->controller->id === 'site' && Yii::$app->controller->action->id === 'error');
+$pageTitle = $this->title ?: ($isErrorPage ? 'Страница не найдена' : 'Админ-панель');
+if ($isErrorPage && ($pageTitle === 'Not Found (#404)' || $pageTitle === 'Not Found' || $pageTitle === '#404')) {
+    $pageTitle = 'Страница не найдена';
+}
+$isDashboard = !$isErrorPage
+    && Yii::$app->controller->module->id === 'admin'
     && Yii::$app->controller->id === 'site'
     && Yii::$app->controller->action->id === 'index';
 $topbarActions = $this->params['topbarActions'] ?? [];
@@ -64,7 +69,11 @@ $normalizeRoute = static function (string $route) use ($adminModuleId): string {
 $currentNorm = $normalizeRoute($rawCurrentRoute);
 $requestedNorm = $normalizeRoute($requestedRoute);
 
-$isActive = static function (array $item) use ($currentRoute, $rawCurrentRoute, $currentNorm, $requestedNorm, $normalizeRoute): bool {
+$isActive = static function (array $item) use ($currentRoute, $rawCurrentRoute, $currentNorm, $requestedNorm, $normalizeRoute, $isErrorPage): bool {
+    if ($isErrorPage) {
+        return false;
+    }
+
     if (isset($item['active'])) {
         return (bool) (is_callable($item['active']) ? $item['active']() : $item['active']);
     }

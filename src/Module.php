@@ -85,6 +85,13 @@ class Module extends \yii\base\Module
             ], false);
         }
 
+        if (Yii::$app->has('errorHandler')) {
+            $errorHandler = Yii::$app->getErrorHandler();
+            if ($errorHandler->errorAction === 'site/error' || $errorHandler->errorAction === null) {
+                $errorHandler->errorAction = $this->id . '/site/error';
+            }
+        }
+
         if ($this->guardUnknownAdminRoutesForGuests) {
             Yii::$app->on(\yii\base\Application::EVENT_BEFORE_REQUEST, function (): void {
                 $this->guardGuestRequest();

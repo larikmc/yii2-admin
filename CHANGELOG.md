@@ -2,6 +2,14 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.15] - 2026-10-26
+
+### Added & Modernized
+- **Modern 404 / 403 / 500 Error Page**: Complete redesign of `views/site/error.php` into a modern card component featuring gradient status codes, contextual rounded icon badges (`search_off`, `lock`, `error_outline`), clean typography, action buttons («На главную» and «Назад»), and comprehensive theme support for both Light and Dark modes.
+- **Automatic ErrorHandler Routing**: `Bootstrap::bootstrap($app)` and `Module::init()` automatically switch default `site/error` to `admin/site/error` so all 404/403/500 errors in admin panels automatically render the polished admin error view.
+- **Theme-Adaptive Alert & Fallback Styles**: Added Dark/Light theme rules for `.alert-danger` and fallback `.site-error` containers in `style.css`, eliminating jarring unstyled Bootstrap pink alert banners.
+- **Layout Menu State on Errors**: When an error page is displayed, sidebar items are no longer mistakenly highlighted as active, and the topbar title shows friendly Russian error titles instead of raw technical strings.
+
 ## [2.1.14] - 2026-10-26
 
 ### Fixed

@@ -24,6 +24,13 @@ class Bootstrap implements BootstrapInterface
                     'admin/logout' => 'admin/auth/auth/logout',
                 ], false);
             }
+
+            if ($app->has('errorHandler')) {
+                $errorHandler = $app->getErrorHandler();
+                if ($errorHandler->errorAction === 'site/error' || $errorHandler->errorAction === null) {
+                    $errorHandler->errorAction = 'admin/site/error';
+                }
+            }
         }
     }
 }

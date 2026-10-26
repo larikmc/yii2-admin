@@ -3,40 +3,72 @@
 /** @var yii\web\View $this */
 /** @var string $name */
 /** @var string $message */
-/** @var Exception $exception */
+/** @var Exception|null $exception */
 
 use yii\bootstrap5\Html;
 
-$this->title = $name;
 $code = $exception instanceof \yii\web\HttpException ? (int) $exception->statusCode : 500;
-$safeMessage = trim((string) $message) !== '' ? $message : 'Произошла ошибка при обработке запроса.';
+if ($code === 0 && preg_match('/#(\d+)/', (string) $name, $m)) {
+    $code = (int) $m[1];
+}
+if ($code === 0) {
+    $code = 500;
+}
+
 $isForbidden = $code === 403;
 $isNotFound = $code === 404;
 
-$hint = 'Попробуйте вернуться на предыдущую страницу или обновить раздел.';
-if ($isForbidden) {
-    $hint = 'У вас недостаточно прав для этого действия. Обратитесь к главному администратору.';
-} elseif ($isNotFound) {
-    $hint = 'Страница не найдена. Проверьте ссылку или перейдите в нужный раздел через меню.';
+if ($isNotFound) {
+    $displayTitle = 'Страница не найдена';
+    $this->title = 'Ошибка 404 — Страница не найдена';
+    $icon = 'search_off';
+    $hint = 'Запрошенная страница не существует, была перемещена или удалена.';
+} elseif ($isForbidden) {
+    $displayTitle = 'Доступ ограничен';
+    $this->title = 'Ошибка 403 — Доступ ограничен';
+    $icon = 'lock';
+    $hint = 'У вашей учетной записи недостаточно прав для просмотра этого раздела.';
+} else {
+    $displayTitle = 'Внутренняя ошибка сервера';
+    $this->title = 'Ошибка ' . $code . ' — Внутренняя ошибка';
+    $icon = 'error_outline';
+    $hint = 'Произошла непредвиденная ошибка на стороне сервера при обработке запроса.';
 }
+
+$safeMessage = trim((string) $message) !== '' ? $message : 'Действие не может быть выполнено.';
+
+$this->params['breadcrumbs'] = [
+    ['label' => 'Ошибка ' . $code],
+];
+$this->params['pageSubtitle'] = 'Код ответа: HTTP ' . $code;
 ?>
 
-<section class="sz-panel sz-error-page">
-    <div class="sz-error-page__top">
-        <p class="sz-error-page__code">#<?= Html::encode((string) $code) ?></p>
-        <h2 class="sz-error-page__title"><?= Html::encode($name) ?></h2>
-    </div>
+<div class="sz-error-wrapper">
+    <div class="sz-error-card">
+        <div class="sz-error-card__visual">
+            <div class="sz-error-card__icon-badge sz-error-card__icon-badge--<?= (int) $code ?>">
+                <span class="material-symbols-rounded"><?= Html::encode($icon) ?></span>
+            </div>
+            <div class="sz-error-card__code"><?= (int) $code ?></div>
+        </div>
 
-    <div class="alert alert-danger sz-error-page__alert" role="alert">
-        <?= nl2br(Html::encode($safeMessage)) ?>
-    </div>
+        <h2 class="sz-error-card__title"><?= Html::encode($displayTitle) ?></h2>
 
-    <p class="sz-error-page__hint"><?= Html::encode($hint) ?></p>
+        <div class="sz-error-card__message">
+            <?= nl2br(Html::encode($safeMessage)) ?>
+        </div>
 
-    <div class="sz-actions-bar">
-        <div class="sz-actions-bar__inner">
-            <?= Html::a('На главную', ['/admin/site/index'], ['class' => 'btn btn-primary']) ?>
-            <button type="button" class="btn btn-outline-secondary" onclick="window.history.back();">Назад</button>
+        <p class="sz-error-card__hint"><?= Html::encode($hint) ?></p>
+
+        <div class="sz-error-card__actions">
+            <?= Html::a(
+                '<span class="material-symbols-rounded">home</span> На главную',
+                ['/admin/site/index'],
+                ['class' => 'btn btn-primary sz-btn-icon']
+            ) ?>
+            <button type="button" class="btn btn-outline-secondary sz-btn-icon" onclick="window.history.back();">
+                <span class="material-symbols-rounded">arrow_back</span> Назад
+            </button>
         </div>
     </div>
-</section>
+</div>
