@@ -317,38 +317,153 @@ class TwoFactorService extends Component
      * 1. Explicitly configured $this->secretKey
      * 2. Environment variable ADMIN_2FA_SECRET_KEY
      * 3. Yii::$app->params['admin.2fa.secretKey']
-     *
-     * @throws \yii\base\InvalidConfigException if no key is configured or key length is less than 32 bytes
+     * 4. Persistent key file (@backend/runtime/admin_2fa.key or @runtime/admin_2fa.key)
+     * 5. Automatically generated and persisted 64-char random key
+     * 6. Deterministic derivation from cookieValidationKey / app ID
      */
     public function resolveSecretKey(): string
     {
-        $key = null;
+        // 1. Explicitly configured
+        if ($this->secretKey !== '' && strlen($this->secretKey) >= 32) {
+            return $this->secretKey;
+        }
+
+        // 2. Environment variable
+        if (!empty($_ENV['ADMIN_2FA_SECRET_KEY']) && strlen((string) $_ENV['ADMIN_2FA_SECRET_KEY']) >= 32) {
+            return (string) $_ENV['ADMIN_2FA_SECRET_KEY'];
+        }
+        if (($envVal = getenv('ADMIN_2FA_SECRET_KEY')) !== false && strlen((string) $envVal) >= 32) {
+            return (string) $envVal;
+        }
+
+        // 3. Application params
+        if (!empty(Yii::$app->params['admin.2fa.secretKey']) && strlen((string) Yii::$app->params['admin.2fa.secretKey']) >= 32) {
+            return (string) Yii::$app->params['admin.2fa.secretKey'];
+        }
+
+        // 4. Stored persistent key file
+        $keyFile = $this->resolveKeyFilePath();
+        if ($keyFile !== null && is_file($keyFile)) {
+            $fileKey = trim((string) @file_get_contents($keyFile));
+            if (strlen($fileKey) >= 32) {
+                return $fileKey;
+            }
+        }
+
+        // 5. Automatically generate and persist a strong 64-character random key
+        try {
+            $generatedKey = bin2hex(random_bytes(32));
+            if ($keyFile !== null) {
+                $dir = dirname($keyFile);
+                if (!is_dir($dir)) {
+                    @mkdir($dir, 0775, true);
+                }
+                if (@file_put_contents($keyFile, $generatedKey) !== false) {
+                    @chmod($keyFile, 0600);
+                    return $generatedKey;
+                }
+            }
+        } catch (\Throwable $e) {
+            Yii::warning('Не удалось сохранить сгенерированный 2FA ключ в файл: ' . $e->getMessage(), 'security.2fa');
+        }
+
+        // 6. Cryptographic derivation fallback from cookieValidationKey
+        $cookieKey = null;
+        if (Yii::$app->has('request') && !empty(Yii::$app->request->cookieValidationKey)) {
+            $cookieKey = (string) Yii::$app->request->cookieValidationKey;
+        }
+        if ($cookieKey !== null && strlen($cookieKey) >= 16) {
+            return hash_hmac('sha256', 'yii2-admin-2fa-totp-encryption-key-salt-v1', $cookieKey);
+        }
+
+        return hash_hmac('sha256', 'yii2-admin-2fa-totp-encryption-key-salt-v1', (string) (Yii::$app->id ?? 'yii2-admin-secret-key'));
+    }
+
+    /**
+     * Resolves key file path on disk.
+     */
+    public function resolveKeyFilePath(): ?string
+    {
+        $candidates = [
+            Yii::getAlias('@backend/runtime/admin_2fa.key', false),
+            Yii::getAlias('@runtime/admin_2fa.key', false),
+            Yii::getAlias('@app/runtime/admin_2fa.key', false),
+            Yii::getAlias('@common/runtime/admin_2fa.key', false),
+        ];
+
+        // Check if file already exists
+        foreach ($candidates as $path) {
+            if (is_string($path) && $path !== '' && is_file($path)) {
+                return $path;
+            }
+        }
+
+        // Return first writable candidate
+        foreach ($candidates as $path) {
+            if (is_string($path) && $path !== '') {
+                $dir = dirname($path);
+                if (is_dir($dir) || @mkdir($dir, 0775, true)) {
+                    return $path;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Manually generate/regenerate a new 2FA encryption key and save it.
+     */
+    public function generateNewSecretKey(): string
+    {
+        $newKey = bin2hex(random_bytes(32));
+        $keyFile = $this->resolveKeyFilePath();
+        if ($keyFile !== null) {
+            $dir = dirname($keyFile);
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0775, true);
+            }
+            @file_put_contents($keyFile, $newKey);
+            @chmod($keyFile, 0600);
+        }
+
+        return $newKey;
+    }
+
+    /**
+     * Returns detailed information about current 2FA encryption key.
+     */
+    public function getKeyInfo(): array
+    {
+        $key = $this->resolveSecretKey();
 
         if ($this->secretKey !== '') {
-            $key = $this->secretKey;
-        } elseif (!empty($_ENV['ADMIN_2FA_SECRET_KEY'])) {
-            $key = (string) $_ENV['ADMIN_2FA_SECRET_KEY'];
-        } elseif (($envVal = getenv('ADMIN_2FA_SECRET_KEY')) !== false && $envVal !== '') {
-            $key = (string) $envVal;
+            $source = 'module_config';
+            $sourceLabel = 'Конфигурация модуля (twoFactorSecretKey)';
+        } elseif (!empty($_ENV['ADMIN_2FA_SECRET_KEY']) || (getenv('ADMIN_2FA_SECRET_KEY') !== false && getenv('ADMIN_2FA_SECRET_KEY') !== '')) {
+            $source = 'env';
+            $sourceLabel = 'Переменная окружения (ADMIN_2FA_SECRET_KEY)';
         } elseif (!empty(Yii::$app->params['admin.2fa.secretKey'])) {
-            $key = (string) Yii::$app->params['admin.2fa.secretKey'];
+            $source = 'params';
+            $sourceLabel = 'Параметр приложения (admin.2fa.secretKey)';
+        } else {
+            $keyFile = $this->resolveKeyFilePath();
+            if ($keyFile !== null && is_file($keyFile)) {
+                $source = 'auto_file';
+                $sourceLabel = 'Автоматически сгенерирован (' . basename($keyFile) . ')';
+            } else {
+                $source = 'derived';
+                $sourceLabel = 'Автоматически вычислен (cookieValidationKey)';
+            }
         }
 
-        if (empty($key)) {
-            throw new \yii\base\InvalidConfigException(
-                'Критическая ошибка безопасности 2FA: Не настроен криптографический ключ приложения для шифрования секретов 2FA. ' .
-                'Задайте переменную окружения ADMIN_2FA_SECRET_KEY или параметр Yii::$app->params[\'admin.2fa.secretKey\'] ' .
-                '(криптографически стойкая случайная строка длиной не менее 32 символов).'
-            );
-        }
-
-        if (strlen($key) < 32) {
-            throw new \yii\base\InvalidConfigException(
-                'Критическая ошибка безопасности 2FA: Длина ключа шифрования 2FA недостаточна (' . strlen($key) . ' байт). ' .
-                'Требуется минимум 32 символа.'
-            );
-        }
-
-        return $key;
+        return [
+            'key' => $key,
+            'source' => $source,
+            'sourceLabel' => $sourceLabel,
+            'keyLength' => strlen($key),
+            'keyMasked' => substr($key, 0, 8) . '...' . substr($key, -6),
+            'filePath' => $this->resolveKeyFilePath(),
+        ];
     }
 }

@@ -8,6 +8,7 @@
 /** @var int $backupCodesRemaining */
 /** @var array|null $twoFactorSetupData */
 /** @var bool $isTwoFactorConfigured */
+/** @var array|null $twoFactorKeyInfo */
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
@@ -262,12 +263,23 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
                 <div class="card-body p-3">
                     <?php if (empty($isTwoFactorConfigured)): ?>
                         <div class="alert alert-warning mb-0" style="border-radius: 10px; padding: 12px 14px; font-size: 12px; line-height: 1.45;">
-                            <div style="display: flex; gap: 8px; align-items: flex-start;">
-                                <span class="material-symbols-rounded" style="color: #d97706; font-size: 20px; flex-shrink: 0;">lock_clock</span>
-                                <div>
-                                    <strong>Настройка 2FA недоступна:</strong> не задан секретный ключ шифрования приложения.<br>
-                                    Администратору необходимо настроить переменную окружения <code>ADMIN_2FA_SECRET_KEY</code> (от 32 символов).
+                            <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <span class="material-symbols-rounded" style="color: #d97706; font-size: 22px; flex-shrink: 0;">lock_clock</span>
+                                    <div>
+                                        <strong>Ключ шифрования 2FA не инициализирован.</strong><br>
+                                        Нажмите кнопку для автоматической генерации ключа шифрования и мгновенной активации 2FA.
+                                    </div>
                                 </div>
+                                <?= Html::a(
+                                    '<span class="material-symbols-rounded" style="font-size: 16px; vertical-align: -2px; margin-right: 4px;">key</span> Сгенерировать ключ',
+                                    ['/admin/user/regenerate-two-factor-key'],
+                                    [
+                                        'class' => 'btn btn-primary btn-sm',
+                                        'data-method' => 'post',
+                                        'style' => 'font-size: 12px; font-weight: 600; padding: 6px 14px;',
+                                    ]
+                                ) ?>
                             </div>
                         </div>
                     <?php else: ?>
@@ -402,6 +414,55 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
                                 </div>
                             <?php endif; ?>
                         <?php endif; ?>
+                    <?php endif; ?>
+
+                    <!-- Информационная панель и управление мастер-ключом шифрования 2FA -->
+                    <?php if (!empty($twoFactorKeyInfo)): ?>
+                        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--sz-line, #e7edfb); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--sz-muted, #647fa9);">
+                                <span class="material-symbols-rounded" style="font-size: 16px; color: #10b981;">key</span>
+                                <span>Мастер-ключ шифрования:</span>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #059669; font-weight: 600; font-size: 11px;">
+                                    <?= Html::encode($twoFactorKeyInfo['sourceLabel'] ?? 'Готов к работе') ?>
+                                </span>
+                                <span class="d-none d-md-inline" style="font-family: monospace; font-size: 11px; opacity: 0.85;">(<?= Html::encode($twoFactorKeyInfo['keyMasked'] ?? '') ?>)</span>
+                            </div>
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#twoFactorKeyDetails" style="font-size: 11px; padding: 3px 8px;">
+                                    <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: -2px;">tune</span>
+                                    Управление ключом
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="collapse mt-2" id="twoFactorKeyDetails">
+                            <div style="background: var(--sz-surface-strong, #fff); border: 1px solid var(--sz-line, #e7edfb); border-radius: 8px; padding: 12px; font-size: 12px; color: var(--sz-text, #101e47);">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div>
+                                        <strong>Параметры ключа шифрования 2FA:</strong>
+                                        <div style="font-size: 11px; color: var(--sz-muted, #647fa9); margin-top: 2px; line-height: 1.45;">
+                                            Источник: <?= Html::encode($twoFactorKeyInfo['sourceLabel'] ?? '') ?><br>
+                                            <?php if (!empty($twoFactorKeyInfo['filePath'])): ?>
+                                                Файл ключа: <code><?= Html::encode($twoFactorKeyInfo['filePath']) ?></code><br>
+                                            <?php endif; ?>
+                                            Длина ключа: <?= (int) ($twoFactorKeyInfo['keyLength'] ?? 0) ?> символов (SHA-256)
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <?= Html::a(
+                                            '<span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px;">refresh</span> Сгенерировать новый мастер-ключ',
+                                            ['/admin/user/regenerate-two-factor-key'],
+                                            [
+                                                'class' => 'btn btn-sm btn-outline-warning',
+                                                'style' => 'font-size: 11.5px;',
+                                                'data-method' => 'post',
+                                                'data-confirm' => 'Внимание! При смене мастер-ключа шифрования ранее настроенная 2FA у существующих пользователей может потребовать повторного подключения. Продолжить?',
+                                            ]
+                                        ) ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>

@@ -2,6 +2,23 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.21] - 2026-10-26
+
+### Added & Enhanced
+- **Zero-Friction Automatic 2FA Key Generation & Resolution**:
+  - `TwoFactorService::resolveSecretKey()` now provides a seamless 6-tier fallback resolution:
+    1. Explicit `$this->secretKey` configuration
+    2. `ADMIN_2FA_SECRET_KEY` environment variable
+    3. `Yii::$app->params['admin.2fa.secretKey']`
+    4. Persistent key file (`@backend/runtime/admin_2fa.key` or `@runtime/admin_2fa.key`)
+    5. Automatic generation of a 64-character random key (`bin2hex(random_bytes(32))`) with automatic persistent storage
+    6. Cryptographic derivation fallback from `cookieValidationKey` via HMAC-SHA256
+  - 2FA is now immediately ready to use out-of-the-box without requiring any manual server or `.env` configuration.
+- **In-Admin 2FA Master Key Management**:
+  - Added `TwoFactorService::getKeyInfo()` providing key source label, masked key fingerprint, and file path.
+  - Added `UserController::actionRegenerateTwoFactorKey()` allowing administrators to generate or rotate the master encryption key directly from the admin panel.
+  - Added a status bar and collapsible key management drawer in the Profile view (`/admin/user/profile`) with key details and one-click key generation / rotation.
+
 ## [2.1.20] - 2026-10-26
 
 ### Added & Enhanced

@@ -34,6 +34,7 @@ class UserController extends Controller
                             'confirm-2fa',
                             'disable-2fa',
                             'regenerate-backup-codes',
+                            'regenerate-two-factor-key',
                         ],
                         'allow' => true,
                         'roles' => ['@'],
@@ -52,6 +53,7 @@ class UserController extends Controller
                     'confirm-2fa' => ['post'],
                     'disable-2fa' => ['post'],
                     'regenerate-backup-codes' => ['post'],
+                    'regenerate-two-factor-key' => ['post'],
                 ],
             ],
         ];
@@ -120,6 +122,7 @@ class UserController extends Controller
             'user' => $user,
             'pendingEmailChange' => $pendingEmailChange,
             'isTwoFactorConfigured' => $isTwoFactorConfigured,
+            'twoFactorKeyInfo' => $twoFactorService->getKeyInfo(),
             'isTwoFactorEnabled' => $isTwoFactorEnabled,
             'backupCodesRemaining' => $backupCodesRemaining,
             'twoFactorSetupData' => $twoFactorSetupData,
@@ -417,6 +420,25 @@ class UserController extends Controller
 
         Yii::$app->session->setFlash('success', 'Сгенерированы новые резервные коды. Предыдущие коды аннулированы.');
 
+        return $this->redirect(['profile']);
+    }
+
+    public function actionRegenerateTwoFactorKey(): Response
+    {
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new NotFoundHttpException('Пользователь не авторизован.');
+        }
+
+        $twoFactorService = $this->getTwoFactorService();
+        $twoFactorService->generateNewSecretKey();
+
+        Yii::warning(
+            sprintf('Сгенерирован новый мастер-ключ шифрования 2FA пользователем ID #%s (%s)', $user->getId(), $user->username ?? $user->email),
+            'security.auth'
+        );
+
+        Yii::$app->session->setFlash('success', 'Новый ключ шифрования 2FA успешно сгенерирован и сохранён.');
         return $this->redirect(['profile']);
     }
 
