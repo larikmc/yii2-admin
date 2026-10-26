@@ -2,6 +2,14 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.22] - 2026-10-26
+
+### Fixed & Enhanced
+- **Strict Frontend Isolation in Global Application Bootstrap**:
+  - `Bootstrap::bootstrap($app)` now detects whether `larikmc\admin\Module` is registered in the current application (`$app->getModules()`) before injecting URL rules or modifying `errorHandler->errorAction`.
+  - In applications where the admin module is not installed (e.g. `frontend`), `Bootstrap` gracefully skips rule injection and leaves the frontend error handler intact, eliminating `Unable to resolve the request "admin/site/index"` and `admin/site/error` on root frontend visits.
+  - Removed generic empty string route `'' => $moduleId . '/site/index'` from `Module::getDefaultUrlRules()`, ensuring application-level `defaultRoute` is cleanly respected.
+
 ## [2.1.21] - 2026-10-26
 
 ### Added & Enhanced

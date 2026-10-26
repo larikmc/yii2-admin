@@ -292,7 +292,6 @@ class Module extends \yii\base\Module
     {
         return [
             // Главная / Дашборд
-            '' => $moduleId . '/site/index',
             'dashboard' => $moduleId . '/site/index',
             $moduleId => $moduleId . '/site/index',
             $moduleId . '/dashboard' => $moduleId . '/site/index',
