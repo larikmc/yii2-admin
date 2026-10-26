@@ -428,8 +428,13 @@ class TwoFactorService extends Component
             if (!is_dir($dir)) {
                 @mkdir($dir, 0775, true);
             }
-            @file_put_contents($keyFile, $newKey);
+            $written = @file_put_contents($keyFile, $newKey);
+            if ($written === false) {
+                throw new Exception("Не удалось записать файл ключа 2FA по пути: {$keyFile}. Проверьте права на запись.");
+            }
             @chmod($keyFile, 0600);
+        } else {
+            throw new Exception("Не удалось определить путь для сохранения ключа 2FA (@runtime/admin_2fa.key).");
         }
 
         return $newKey;

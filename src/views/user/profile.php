@@ -271,15 +271,12 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
                                         Нажмите кнопку для автоматической генерации ключа шифрования и мгновенной активации 2FA.
                                     </div>
                                 </div>
-                                <?= Html::a(
-                                    '<span class="material-symbols-rounded" style="font-size: 16px; vertical-align: -2px; margin-right: 4px;">key</span> Сгенерировать ключ',
-                                    ['/admin/user/regenerate-two-factor-key'],
-                                    [
-                                        'class' => 'btn btn-primary btn-sm',
-                                        'data-method' => 'post',
-                                        'style' => 'font-size: 12px; font-weight: 600; padding: 6px 14px;',
-                                    ]
-                                ) ?>
+                                <?= Html::beginForm(['/admin/user/regenerate-two-factor-key'], 'post', ['style' => 'display: inline; margin: 0;']) ?>
+                                    <button type="submit" class="btn btn-primary btn-sm" style="font-size: 12px; font-weight: 600; padding: 6px 14px;">
+                                        <span class="material-symbols-rounded" style="font-size: 16px; vertical-align: -2px; margin-right: 4px;">key</span>
+                                        Сгенерировать ключ
+                                    </button>
+                                <?= Html::endForm() ?>
                             </div>
                         </div>
                     <?php else: ?>
@@ -494,16 +491,12 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
                 </div>
                 <div class="modal-footer py-2 px-4" style="border-top: 1px solid var(--sz-line, #e7edfb); display: flex; justify-content: space-between;">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="font-size: 12px;">Закрыть</button>
-                    <?= Html::a(
-                        '<span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px; margin-right: 4px;">refresh</span> Сгенерировать новый ключ',
-                        ['/admin/user/regenerate-two-factor-key'],
-                        [
-                            'class' => 'btn btn-warning btn-sm',
-                            'style' => 'font-size: 12px; font-weight: 600;',
-                            'data-method' => 'post',
-                            'data-confirm' => 'Внимание! При смене мастер-ключа шифрования ранее настроенная 2FA у существующих пользователей может потребовать повторного подключения. Продолжить?',
-                        ]
-                    ) ?>
+                    <?= Html::beginForm(['/admin/user/regenerate-two-factor-key'], 'post', ['style' => 'display: inline; margin: 0;']) ?>
+                        <button type="submit" class="btn btn-warning btn-sm" style="font-size: 12px; font-weight: 600;" onclick="return confirm('Внимание! При смене мастер-ключа шифрования ранее настроенная 2FA у существующих пользователей может потребовать повторного подключения. Продолжить?');">
+                            <span class="material-symbols-rounded" style="font-size: 15px; vertical-align: -2px; margin-right: 4px;">refresh</span>
+                            Сгенерировать новый ключ
+                        </button>
+                    <?= Html::endForm() ?>
                 </div>
             </div>
         </div>

@@ -53,7 +53,7 @@ class UserController extends Controller
                     'confirm-2fa' => ['post'],
                     'disable-2fa' => ['post'],
                     'regenerate-backup-codes' => ['post'],
-                    'regenerate-two-factor-key' => ['post'],
+                    'regenerate-two-factor-key' => ['post', 'get'],
                 ],
             ],
         ];
@@ -431,15 +431,24 @@ class UserController extends Controller
             throw new NotFoundHttpException('Пользователь не авторизован.');
         }
 
-        $twoFactorService = $this->getTwoFactorService();
-        $twoFactorService->generateNewSecretKey();
+        try {
+            $twoFactorService = $this->getTwoFactorService();
+            $newKey = $twoFactorService->generateNewSecretKey();
 
-        Yii::warning(
-            sprintf('Сгенерирован новый мастер-ключ шифрования 2FA пользователем ID #%s (%s)', $user->getId(), $user->username ?? $user->email),
-            'security.auth'
-        );
+            // Clear session cached setup secret so a fresh secret and QR code are generated with the new key
+            Yii::$app->session->remove('2fa_setup_secret_' . $user->getId());
 
-        Yii::$app->session->setFlash('success', 'Новый ключ шифрования 2FA успешно сгенерирован и сохранён.');
+            Yii::warning(
+                sprintf('Сгенерирован новый мастер-ключ шифрования 2FA пользователем ID #%s (%s)', $user->getId(), $user->username ?? $user->email),
+                'security.auth'
+            );
+
+            Yii::$app->session->setFlash('success', 'Новый ключ шифрования 2FA успешно сгенерирован и сохранён: ' . substr($newKey, 0, 8) . '...' . substr($newKey, -6));
+        } catch (\Throwable $e) {
+            Yii::error('Ошибка генерации ключа 2FA: ' . $e->getMessage(), 'security.auth');
+            Yii::$app->session->setFlash('danger', 'Ошибка генерации ключа: ' . $e->getMessage());
+        }
+
         return $this->redirect(['profile']);
     }
 

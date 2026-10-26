@@ -2,6 +2,18 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.26] - 2026-10-26
+
+### Fixed & Enhanced
+- **Reliable 2FA Key Regeneration Native Form**:
+  - Replaced `Html::a(...)` pseudo-links (`data-method="post"`) with native HTML `<form method="post">` buttons and explicit `onclick="return confirm(...)"` dialogs in both the unconfigured warning alert and the `#twoFactorKeyModal` footer.
+  - Fixes the issue where clicking "Сгенерировать новый ключ" inside the detached modal was ignored by JavaScript event delegation.
+- **Support for Both POST and GET in VerbFilter**:
+  - Allowed both `['post', 'get']` in `UserController::behaviors()` for `regenerate-two-factor-key`, preventing 405 Method Not Allowed errors if triggered directly.
+- **Automatic Setup Secret Invalidation & Error Handling**:
+  - Added session cache invalidation (`2fa_setup_secret_...`) upon key regeneration, ensuring the TOTP secret and QR code on screen immediately re-generate and encrypt with the new master key.
+  - Added write failure checks in `TwoFactorService::generateNewSecretKey()` and try-catch handling in `UserController` with user-facing flash alerts.
+
 ## [2.1.25] - 2026-10-26
 
 ### Fixed & Enhanced
