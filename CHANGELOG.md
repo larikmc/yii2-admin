@@ -2,13 +2,18 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.10] - 2026-10-26
+
+### Fixed
+- **Active Tab Styling Alignment**: Aligned dark theme active tab background gradient and ambient glow with the Primary Action button (`linear-gradient(125deg, #3189f7, #3466d8)` and `box-shadow: 0 4px 14px rgba(49, 137, 247, 0.35)`).
+
 ## [2.1.9] - 2026-10-26
 
 ### Changed
 - **Unified Segmented Tabs Design**: Migrated all admin tab variants (`.nav-pills-solid`, `.sz-tabs__nav`, `AdminTabs`, and `.nav-tabs`) to a unified, modern capsule-segmented style modeled after the analytics dashboard (`an-segments`).
 - **UI Kit Modernization**: Removed obsolete underline and flat pill variants in the UI Kit (`admin/site/ui-kit`), presenting a single unified interactive segmented tab component.
 - **Tabs Spacing Optimization**: Fixed excessive spacing below tabs in `AdminPage` by eliminating phantom empty `sz-page__actions` container rendering and setting tab bottom margin to `14px`.
-- **Theme Consistency**: Crisp white active pill with soft blue elevation in light theme (`#1e40af` text), and vibrant accent blue active state (`#2563eb`) with white text in dark theme.
+- **Theme Consistency**: Crisp white active pill with soft blue elevation in light theme (`#1e40af` text), and matching Primary Action blue gradient (`linear-gradient(125deg, #3189f7, #3466d8)`) with ambient glow in dark theme.
 
 ## [2.1.3] - 2026-10-20
 

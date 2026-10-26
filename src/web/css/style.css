@@ -4253,9 +4253,22 @@ body.dark .nav-tabs a.active,
 html.dark .nav-tabs a.active,
 body.dark .nav-tabs button.active,
 html.dark .nav-tabs button.active {
-    background: #2563eb !important;
+    background: linear-gradient(125deg, #3189f7, #3466d8) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+    box-shadow: 0 4px 14px rgba(49, 137, 247, 0.35) !important;
+}
+
+body.dark .nav-pills-solid .nav-link.active:hover,
+html.dark .nav-pills-solid .nav-link.active:hover,
+body.dark .sz-tabs__nav .nav-link.active:hover,
+html.dark .sz-tabs__nav .nav-link.active:hover,
+body.dark .an-segments a.active:hover,
+html.dark .an-segments a.active:hover,
+body.dark .nav-tabs .nav-link.active:hover,
+html.dark .nav-tabs .nav-link.active:hover {
+    background: linear-gradient(125deg, #3189f7, #3466d8) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(49, 137, 247, 0.55) !important;
 }
 
 .demo-tab-description {
