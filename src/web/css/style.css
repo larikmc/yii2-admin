@@ -2431,10 +2431,9 @@ html.dark .sz-toast__progress {
     overflow: hidden;
 }
 
-body.theme-dark .sz-error-card,
-.theme-dark .sz-error-card,
-body:not(.theme-light) .sz-error-card {
-    background: rgba(21, 26, 45, 0.88);
+html.dark .sz-error-card,
+body.dark .sz-error-card {
+    background: rgba(21, 26, 45, 0.92);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(16px);
@@ -2500,9 +2499,8 @@ body:not(.theme-light) .sz-error-card {
     color: #1e293b;
 }
 
-body.theme-dark .sz-error-card__title,
-.theme-dark .sz-error-card__title,
-body:not(.theme-light) .sz-error-card__title {
+html.dark .sz-error-card__title,
+body.dark .sz-error-card__title {
     color: #f8fafc;
 }
 
@@ -2513,9 +2511,8 @@ body:not(.theme-light) .sz-error-card__title {
     color: #475569;
 }
 
-body.theme-dark .sz-error-card__message,
-.theme-dark .sz-error-card__message,
-body:not(.theme-light) .sz-error-card__message {
+html.dark .sz-error-card__message,
+body.dark .sz-error-card__message {
     color: #cbd5e1;
 }
 
@@ -2526,9 +2523,8 @@ body:not(.theme-light) .sz-error-card__message {
     color: #64748b;
 }
 
-body.theme-dark .sz-error-card__hint,
-.theme-dark .sz-error-card__hint,
-body:not(.theme-light) .sz-error-card__hint {
+html.dark .sz-error-card__hint,
+body.dark .sz-error-card__hint {
     color: #94a3b8;
 }
 
@@ -2590,12 +2586,10 @@ body:not(.theme-light) .sz-error-card__hint {
     color: #991b1b;
 }
 
-body.theme-dark .alert.alert-danger,
-.theme-dark .alert.alert-danger,
-body:not(.theme-light) .alert.alert-danger,
-body.theme-dark .sz-error-page__alert,
-.theme-dark .sz-error-page__alert,
-body:not(.theme-light) .sz-error-page__alert {
+html.dark .alert.alert-danger,
+body.dark .alert.alert-danger,
+html.dark .sz-error-page__alert,
+body.dark .sz-error-page__alert {
     background-color: rgba(239, 68, 68, 0.12) !important;
     border-color: rgba(239, 68, 68, 0.28) !important;
     color: #fca5a5 !important;

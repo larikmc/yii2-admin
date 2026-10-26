@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.16] - 2026-10-26
+
+### Fixed
+- **Light/Dark Theme Class Specificity**: Corrected dark mode selectors in `style.css` to `html.dark` / `body.dark`, ensuring crisp white card background with soft shadow in Light theme, and deep blurred glassmorphic surface in Dark theme.
+
 ## [2.1.15] - 2026-10-26
 
 ### Added & Modernized
