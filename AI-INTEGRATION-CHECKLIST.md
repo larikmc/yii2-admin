@@ -4,6 +4,16 @@
 
 Цель: чтобы модель не забывала базовые UI-правила и не требовала повторных уточнений про фон, заголовки, badges и grouped action-кнопки.
 
+## 0) Zero-Configuration: правила в urlManager и errorHandler НЕ ТРЕБУЮТСЯ
+
+1. **Не прописывать правила админки в `urlManager['rules']`**:
+   - Все маршруты админки (`dashboard`, `login`, `logout`, `auth/*`, `rbac/*`, `profile`, `ui-kit`, `error`, `clear-cache`) регистрируются **автоматически** в самом пакете (`Bootstrap` и `Module::getDefaultUrlRules()`).
+   - Секция `'rules'` в файле `backend/config/main.php` должна содержать **ТОЛЬКО** проектные маршруты (например, каталога, новостей, заказов).
+2. **Не переопределять `errorHandler['errorAction']`**:
+   - Пакет автоматически перенаправляет ошибки на встроенный шаблон `admin/site/error`.
+3. **Не создавать дублирующих `baseUrl` путей**:
+   - При `baseUrl = '/admin'`, генерация `Url::to(['/admin/site/ui-kit'])` и короткий путь `/admin/ui-kit` работают из коробки без дублирования `/admin/admin/...`.
+
 ## 1) Что сделать в первую очередь
 
 1. Прочитать `README.md` (включая подробный раздел "UI guide") полностью.
@@ -87,11 +97,12 @@
 ## 6) Типовые ошибки, которые нельзя повторять
 
 1. Добавлять второй заголовок внутри `AdminPage`, забыв `'showHeader' => false`.
-2. Использовать `ActionColumn` шаблон с пробелами (`'{view} {update} {delete}'`).
-3. Не ломать стандартную разметку таблицы и пагинации внешними стилями.
-4. Стилизовать delete как обычную кнопку без danger-hover.
-5. Возвращать старые статусные классы вместо bootstrap badges.
-6. Править локальную страницу без проверки, что asset bundle вообще подключен.
+2. Копировать или вручную прописывать правила админки в `backend/config/main.php` в `urlManager['rules']`.
+3. Использовать `ActionColumn` шаблон с пробелами (`'{view} {update} {delete}'`).
+4. Не ломать стандартную разметку таблицы и пагинации внешними стилями.
+5. Стилизовать delete как обычную кнопку без danger-hover.
+6. Возвращать старые статусные классы вместо bootstrap badges.
+7. Править локальную страницу без проверки, что asset bundle вообще подключен.
 
 ## 7) Короткий промпт для любой нейросети
 
@@ -99,10 +110,11 @@
 
 > Интегрируй изменения строго по `AI-INTEGRATION-CHECKLIST.md` и разделу "UI guide" в `README.md`.
 > Обязательно:
-> 1) один H1 только в topbar (внутри контента без дубля, для `AdminPage` ставь `showHeader=false`),
-> 2) bootstrap buttons и `.badge.text-bg-*`,
-> 3) grouped action-кнопки `view/edit/delete` с `sz-row-action`, template без пробелов,
-> 4) delete hover = red (danger),
-> 5) визуально сверяйся с `/admin/site/ui-kit`.
+> 1) Никаких лишних правил админки в `urlManager['rules']` (Zero-Config архитектура),
+> 2) один H1 только в topbar (внутри контента без дубля, для `AdminPage` ставь `showHeader=false`),
+> 3) bootstrap buttons и `.badge.text-bg-*`,
+> 4) grouped action-кнопки `view/edit/delete` с `sz-row-action`, template без пробелов,
+> 5) delete hover = red (danger),
+> 6) визуально сверяйся с `/admin/site/ui-kit`.
 > В конце дай отчет по каждому пункту DoD.
 

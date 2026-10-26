@@ -2,6 +2,16 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.19] - 2026-10-26
+
+### Added & Architecture
+- **Zero-Configuration Default URL Rules**: Added `Module::getDefaultUrlRules($moduleId)` providing a complete, turnkey routing suite for all admin module subsystems (Dashboard, Auth, 2FA, RBAC, Profile, UI Kit, Cache, Errors) out-of-the-box.
+- **Automatic Rule Injection in Bootstrap**: `Bootstrap::bootstrap($app)` automatically registers `getDefaultUrlRules('admin')` into `urlManager` during application bootstrapping, removing the need for manual admin rule configuration in `backend/config/main.php`.
+- **Guest Whitelist Completeness**: Included all auth variations (`auth/auth/*`, `admin/auth/auth/*`, `error`, `admin/error`) in `Module::DEFAULT_GUEST_ALLOWED_PATHS` ensuring guest visitors and error handlers never experience infinite redirect loops.
+- **Comprehensive Documentation for AI & Developers**:
+  - Restructured `README.md` to highlight the Plug-and-Play / Zero-Boilerplate architecture, minimal `backend/config/main.php` configuration, and full route catalog table.
+  - Updated `AI-INTEGRATION-CHECKLIST.md` with explicit instructions preventing AI agents and neural networks from duplicating admin rules in application configs.
+
 ## [2.1.18] - 2026-10-26
 
 ### Fixed & Enhanced

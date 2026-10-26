@@ -117,9 +117,15 @@ composer require larikmc/yii2-admin
 }
 ```
 
-## Базовая конфигурация backend
+## Базовая конфигурация backend (Zero-Configuration / Plug-and-Play)
 
-Пример для `backend/config/main.php`:
+Модуль спроектирован по принципу **Zero-Boilerplate**:
+- **Все маршруты модуля** (дашборд, вход/выход, RBAC, профиль, UI Kit, очистка кеша, ошибки) регистрируются **автоматически** через `BootstrapInterface` и `Module::init()`.
+- **Вам НЕ нужно копировать правила модуля в `urlManager['rules']`!** Секция `rules` в конфиге вашего приложения остаётся свободной только для ваших проектных сущностей (каталог, статьи, заказы).
+- **Обработчик ошибок `errorHandler`** автоматически перенаправляется на оформленный шаблон `admin/site/error`, если не переопределен.
+- **Гостевой доступ защищён**: неавторизованные пользователи при попытке открыть внутренние разделы админки автоматически перенаправляются на `/admin/login`.
+
+Пример минимальной и достаточной конфигурации для `backend/config/main.php`:
 
 ```php
 'defaultRoute' => 'admin/site/index',
@@ -135,23 +141,15 @@ composer require larikmc/yii2-admin
         'statusField' => 'status',
         'rbacAccessRoles' => [],
 
-        // Настройки авторизации
+        // Настройки авторизации (опционально, показаны значения по умолчанию)
         'maxUserAttempts' => 5,
         'captchaAfterAttempts' => 3,
         'lockDuration' => 120,
         'userAttemptsTtl' => 120,
         'maxDelaySeconds' => 10,
 
-        // Необязательно: свой placeholder для lazyload.
-        // Если не задано, используется стандартный src/web/img/load.svg из расширения.
-        'lazyloadPlaceholderUrl' => null,
-
-        // По умолчанию пакет сам защищает гостя от случайных /admin/... URL
-        // и отправляет на loginUrl. Можно отключить при необходимости.
+        // Автоматическая защита гостя от случайных /admin/... URL (включена по умолчанию)
         'guardUnknownAdminRoutesForGuests' => true,
-
-        // Дополнительные guest-роуты, если в проекте есть свои публичные
-        // backend-страницы внутри /admin.
         'guestAllowedPaths' => [],
     ],
 ],
@@ -170,47 +168,67 @@ composer require larikmc/yii2-admin
     'urlManager' => [
         'enablePrettyUrl' => true,
         'showScriptName' => false,
+        // ВНИМАНИЕ: правила для панели управления здесь прописывать НЕ НУЖНО!
+        // Модуль сам регистрирует все свои маршруты.
+        // Здесь указываются ИСКЛЮЧИТЕЛЬНО проектные правила вашего сайта:
         'rules' => [
-            '' => 'admin/site/index',
-            'admin/error' => 'admin/site/error',
-            'login' => 'admin/auth/auth/login',
-            'auth/login' => 'admin/auth/auth/login',
-            'auth/logout' => 'admin/auth/auth/logout',
-            'auth/captcha' => 'admin/auth/auth/captcha',
-            'auth/invite' => 'admin/auth/auth/invite',
-            'auth/request-password-reset' => 'admin/auth/auth/request-password-reset',
-            'auth/reset-password' => 'admin/auth/auth/reset-password',
-            'auth/security-log' => 'admin/auth/auth/security-log',
-            'auth/clear-security-log' => 'admin/auth/auth/clear-security-log',
-            'rbac' => 'admin/rbac/default/index',
-            'rbac/<controller:[\w-]+>' => 'admin/rbac/<controller>/index',
-            'rbac/<controller:[\w-]+>/<action:[\w-]+>' => 'admin/rbac/<controller>/<action>',
-            'rbac/<controller:[\w-]+>/<action:[\w-]+>/<id:\d+>' => 'admin/rbac/<controller>/<action>',
-            'rbac/<controller:[\w-]+>/<action:[\w-]+>/<name:[\w-]+>' => 'admin/rbac/<controller>/<action>',
+            // 'catalog/<id:\d+>' => 'catalog/view',
         ],
     ],
-    'errorHandler' => [
-        // Обязательно: чтобы 403/404/500 внутри админки рендерились шаблоном расширения.
-        'errorAction' => '/admin/site/error',
-    ],
+    // 'errorHandler' настраивать не обязательно: модуль автоматически подставит
+    // 'admin/site/error' вместо стандартного 'site/error'.
 ],
 ```
 
-Примечание по `rules`: порядок важен. Сохраняйте этот блок целиком, а project-specific правила добавляйте так, чтобы не ломать маршруты `auth/*` и `rbac/*`.
+---
 
-### Error page (обязательно)
+## Встроенный каталог маршрутов (Default URL Rules)
 
-Чтобы использовался шаблон ошибки из расширения (`@larikmc/admin/views/site/error.php`), в приложении должен быть задан:
+При загрузке приложения модуль автоматически регистрирует следующие правила в `urlManager`:
 
-```php
-'components' => [
-    'errorHandler' => [
-        'errorAction' => '/admin/site/error',
-    ],
-],
-```
+| Внешний URL (при `baseUrl = '/admin'`) | Внутренний маршрут Yii2 | Доступ гостя | Назначение |
+|---|---|:---:|---|
+| `/admin` или `/admin/dashboard` | `admin/site/index` | ❌ | Главная страница / Дашборд |
+| `/admin/login` | `admin/auth/auth/login` | ✅ | Форма входа в панель управления |
+| `/admin/logout` | `admin/auth/auth/logout` | ❌ (POST) | Завершение сеанса |
+| `/admin/auth/request-password-reset` | `admin/auth/auth/request-password-reset` | ✅ | Запрос ссылки на сброс пароля |
+| `/admin/auth/reset-password?token=...` | `admin/auth/auth/reset-password` | ✅ | Форма установки нового пароля |
+| `/admin/auth/invite?token=...` | `admin/auth/auth/invite` | ✅ | Регистрация нового администратора по инвайту |
+| `/admin/auth/two-factor` | `admin/auth/auth/two-factor` | ✅ | Ввод 6-значного кода 2FA (TOTP) |
+| `/admin/auth/captcha` | `admin/auth/auth/captcha` | ✅ | Графическая капча при частых попытках входа |
+| `/admin/auth/security-log` | `admin/auth/auth/security-log` | ❌ (admin) | Журнал безопасности и блокировок IP/email |
+| `/admin/profile` | `admin/user/profile` | ❌ | Профиль, смена пароля и управление 2FA |
+| `/admin/site/ui-kit` (или `/admin/ui-kit`) | `admin/site/ui-kit` | ❌ | Витрина UI Kit (кнопки, вкладки, бейджи, карточки) |
+| `/admin/rbac` | `admin/rbac/default/index` | ❌ (admin) | Главный экран управления доступом |
+| `/admin/rbac/user` | `admin/rbac/user/index` | ❌ (admin) | Список пользователей и назначение ролей |
+| `/admin/rbac/role` | `admin/rbac/role/index` | ❌ (admin) | Управление ролями RBAC |
+| `/admin/rbac/permission` | `admin/rbac/permission/index` | ❌ (admin) | Управление действиями (permissions) |
+| `/admin/rbac/invite` | `admin/rbac/invite/index` | ❌ (admin) | Генерация одноразовых ссылок-приглашений |
+| `/admin/clear-cache` | `admin/site/clear-cache` | ❌ (admin) | Очистка системного кеша |
+| `/admin/error` (или `/admin/site/error`) | `admin/site/error` | ✅ (ошибки) | Оформленная страница ошибок 404, 403, 500 (светлая/тёмная тема) |
 
-Без этого Yii может показывать стандартную страницу ошибки вместо оформленной страницы админки.
+> [!TIP]
+> Все маршруты одинаково корректно разрешаются как в короткой форме (`/admin/login`, `/admin/ui-kit`, `/admin/profile`), так и в полной (`/admin/auth/auth/login`, `/admin/site/ui-kit`, `/admin/user/profile`).
+> Генерация ссылок через `Url::to(['/admin/site/ui-kit'])` создаёт чистый URL `/admin/ui-kit` без задвоения `/admin/admin/...`.
+
+---
+
+## Для нейросетей (AI / LLM) и разработчиков
+
+Если вы используете AI-ассистентов (Antigravity, Cursor, Copilot, ChatGPT, Claude) для расширения проекта:
+
+1. **Не прописывайте правила админки в `urlManager`:**
+   Никогда не добавляйте в `backend/config/main.php` правила вида `'login' => ...`, `'rbac/...' => ...`, `'auth/...' => ...`. Модуль внедряет их автоматически через метод `Module::getDefaultUrlRules()`.
+2. **Не трогайте `errorHandler`:**
+   Модуль автоматически перехватывает `errorAction` и передаёт управление на `admin/site/error`.
+3. **Единый заголовок H1:**
+   На странице всегда должен быть ровно один `H1` — в шапке (topbar). При использовании виджета `AdminPage` всегда передавайте `'showHeader' => false`.
+4. **Эталон дизайна:**
+   Визуальным источником правды для всех компонентов, цветов, карточек, фильтров и бейджей является экран `/admin/site/ui-kit` и чеклист `AI-INTEGRATION-CHECKLIST.md`.
+5. **Темизация (Light/Dark):**
+   Все встроенные экраны поддерживают автопереключение тем. Селекторы в CSS: `html.dark` и `body.dark`.
+
+---
 
 ### Важные пути для входа (рекомендуемый вариант)
 
@@ -218,31 +236,14 @@ composer require larikmc/yii2-admin
 
 - `https://your-domain/admin/login`
 
-используйте такую связку:
+используйте стандартную связку:
 
 1. `request.baseUrl = '/admin'`
-2. `user.loginUrl = ['/login']`
-3. правило `urlManager`: `'login' => 'admin/auth/auth/login'`
-4. правило `urlManager`: `'auth/captcha' => 'admin/auth/auth/captcha'`
+2. `user.loginUrl = ['/login']` (или `['/admin/login']`)
 
 Пакет сам включает стандартный guest-whitelist для auth/error маршрутов.
 
-Если у вас есть собственная глобальная проверка доступа в `on beforeRequest`, обязательно добавьте в whitelist:
-
-- `login`
-- `auth/login`
-- `auth/captcha`
-- `auth/request-password-reset`
-- `auth/reset-password`
-- `auth/invite`
-- `admin/login`
-- `admin/auth/login`
-- `admin/auth/captcha`
-- `admin/auth/request-password-reset`
-- `admin/auth/reset-password`
-- `admin/auth/invite`
-
-Иначе можно получить цикл редиректов (`ERR_TOO_MANY_REDIRECTS`) на странице входа.
+Если у вас есть собственная дополнительная проверка доступа в `on beforeRequest`, убедитесь, что она не блокирует гостевые маршруты из `Module::DEFAULT_GUEST_ALLOWED_PATHS`.
 
 ### Защита от случайных `/admin/...` URL у гостя
 
@@ -473,7 +474,7 @@ composer require larikmc/yii2-admin
 - `GET /admin/auth/security-log`
 - `POST /admin/auth/clear-security-log`
 
-Внутри пакета используются короткие маршруты `/auth/*`, поэтому их нужно пробросить через `urlManager`.
+Все маршруты (`/auth/*`, `/admin/auth/*`, `/login`, `/logout` и др.) регистрируются автоматически по умолчанию и не требуют ручной настройки `urlManager`.
 
 ### Восстановление пароля
 
@@ -561,18 +562,13 @@ composer require larikmc/yii2-admin
 
 ### Показывается дефолтная страница ошибки Yii вместо админской
 
-Проверьте, что в конфиге приложения задано:
-
+Начиная с версии `2.1.15`, модуль автоматически переключает стандартный `site/error` на `admin/site/error`. Если у вас отображается стандартная страница Yii:
+1. Убедитесь, что в конфигурации `errorHandler` не задан принудительно сторонний `errorAction`.
+2. Если вы настраиваете его вручную, укажите:
 ```php
 'errorHandler' => [
-    'errorAction' => '/admin/site/error',
+    'errorAction' => 'admin/site/error',
 ],
-```
-
-Также проверьте rule:
-
-```php
-'admin/error' => 'admin/site/error',
 ```
 
 ### Пропали стили в админке или отображается "голый" UI

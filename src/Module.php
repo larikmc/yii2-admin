@@ -18,6 +18,14 @@ class Module extends \yii\base\Module
         'auth/request-password-reset',
         'auth/reset-password',
         'auth/two-factor',
+        'auth/auth/login',
+        'auth/auth/logout',
+        'auth/auth/captcha',
+        'auth/auth/invite',
+        'auth/auth/request-password-reset',
+        'auth/auth/reset-password',
+        'auth/auth/two-factor',
+        'error',
         'site/error',
         'admin/login',
         'admin/logout',
@@ -28,6 +36,14 @@ class Module extends \yii\base\Module
         'admin/auth/request-password-reset',
         'admin/auth/reset-password',
         'admin/auth/two-factor',
+        'admin/auth/auth/login',
+        'admin/auth/auth/logout',
+        'admin/auth/auth/captcha',
+        'admin/auth/auth/invite',
+        'admin/auth/auth/request-password-reset',
+        'admin/auth/auth/reset-password',
+        'admin/auth/auth/two-factor',
+        'admin/error',
         'admin/site/error',
     ];
 
@@ -75,20 +91,7 @@ class Module extends \yii\base\Module
         Yii::setAlias('@larikmc/admin/rbac', __DIR__ . '/rbac');
 
         if (Yii::$app->has('urlManager')) {
-            $moduleId = $this->id;
-            Yii::$app->getUrlManager()->addRules([
-                'login' => $moduleId . '/auth/auth/login',
-                $moduleId . '/login' => $moduleId . '/auth/auth/login',
-                $moduleId . '/logout' => $moduleId . '/auth/auth/logout',
-                $moduleId . '/auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
-                'auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
-                'ui-kit' => $moduleId . '/site/ui-kit',
-                'site/ui-kit' => $moduleId . '/site/ui-kit',
-                $moduleId . '/site/ui-kit' => $moduleId . '/site/ui-kit',
-                'profile' => $moduleId . '/user/profile',
-                'user/profile' => $moduleId . '/user/profile',
-                $moduleId . '/user/profile' => $moduleId . '/user/profile',
-            ], false);
+            Yii::$app->getUrlManager()->addRules(self::getDefaultUrlRules($this->id), false);
         }
 
         if (Yii::$app->has('errorHandler')) {
@@ -275,5 +278,85 @@ class Module extends \yii\base\Module
             $app->response->redirect(['/admin/auth/two-factor']);
             $app->end();
         }
+    }
+
+    /**
+     * Полный набор URL-правил модуля по умолчанию.
+     * Автоматически регистрируется в Bootstrap и Module::init(),
+     * исключая необходимость ручной настройки urlManager в конфигурации проекта.
+     *
+     * @param string $moduleId Идентификатор модуля (по умолчанию 'admin')
+     * @return array<string, string>
+     */
+    public static function getDefaultUrlRules(string $moduleId = 'admin'): array
+    {
+        return [
+            // Главная / Дашборд
+            '' => $moduleId . '/site/index',
+            'dashboard' => $moduleId . '/site/index',
+            $moduleId => $moduleId . '/site/index',
+            $moduleId . '/dashboard' => $moduleId . '/site/index',
+            $moduleId . '/site/index' => $moduleId . '/site/index',
+
+            // Аутентификация: короткие и стандартные маршруты
+            'login' => $moduleId . '/auth/auth/login',
+            'logout' => $moduleId . '/auth/auth/logout',
+            $moduleId . '/login' => $moduleId . '/auth/auth/login',
+            $moduleId . '/logout' => $moduleId . '/auth/auth/logout',
+
+            // Журнал безопасности
+            'auth/security-log' => $moduleId . '/auth/auth/security-log',
+            'auth/clear-security-log' => $moduleId . '/auth/auth/clear-security-log',
+            $moduleId . '/auth/security-log' => $moduleId . '/auth/auth/security-log',
+            $moduleId . '/auth/clear-security-log' => $moduleId . '/auth/auth/clear-security-log',
+
+            // Действия авторизации (captcha, request-password-reset, reset-password, 2fa, invite)
+            'auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
+            'auth/auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
+            $moduleId . '/auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
+            $moduleId . '/auth/auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
+
+            // Управление доступом (RBAC)
+            'rbac' => $moduleId . '/rbac/default/index',
+            $moduleId . '/rbac' => $moduleId . '/rbac/default/index',
+            'rbac/<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => $moduleId . '/rbac/<controller>/<action>',
+            'rbac/<controller:[\w\-]+>/<action:[\w\-]+>/<name:[^/]+>' => $moduleId . '/rbac/<controller>/<action>',
+            'rbac/<controller:[\w\-]+>/<action:[\w\-]+>' => $moduleId . '/rbac/<controller>/<action>',
+            'rbac/<controller:[\w\-]+>' => $moduleId . '/rbac/<controller>/index',
+            $moduleId . '/rbac/<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => $moduleId . '/rbac/<controller>/<action>',
+            $moduleId . '/rbac/<controller:[\w\-]+>/<action:[\w\-]+>/<name:[^/]+>' => $moduleId . '/rbac/<controller>/<action>',
+            $moduleId . '/rbac/<controller:[\w\-]+>/<action:[\w\-]+>' => $moduleId . '/rbac/<controller>/<action>',
+            $moduleId . '/rbac/<controller:[\w\-]+>' => $moduleId . '/rbac/<controller>/index',
+
+            // UI Kit
+            'ui-kit' => $moduleId . '/site/ui-kit',
+            'site/ui-kit' => $moduleId . '/site/ui-kit',
+            $moduleId . '/ui-kit' => $moduleId . '/site/ui-kit',
+            $moduleId . '/site/ui-kit' => $moduleId . '/site/ui-kit',
+
+            // Профиль администратора и безопасность аккаунта
+            'profile' => $moduleId . '/user/profile',
+            'user/profile' => $moduleId . '/user/profile',
+            $moduleId . '/profile' => $moduleId . '/user/profile',
+            $moduleId . '/user/profile' => $moduleId . '/user/profile',
+            'user/<action:[\w\-]+>' => $moduleId . '/user/<action>',
+            $moduleId . '/user/<action:[\w\-]+>' => $moduleId . '/user/<action>',
+
+            // Управление кешем
+            'clear-cache' => $moduleId . '/site/clear-cache',
+            'flush-cache' => $moduleId . '/site/flush-cache',
+            'site/clear-cache' => $moduleId . '/site/clear-cache',
+            'site/flush-cache' => $moduleId . '/site/flush-cache',
+            $moduleId . '/clear-cache' => $moduleId . '/site/clear-cache',
+            $moduleId . '/flush-cache' => $moduleId . '/site/flush-cache',
+            $moduleId . '/site/clear-cache' => $moduleId . '/site/clear-cache',
+            $moduleId . '/site/flush-cache' => $moduleId . '/site/flush-cache',
+
+            // Страницы ошибок
+            'error' => $moduleId . '/site/error',
+            'site/error' => $moduleId . '/site/error',
+            $moduleId . '/error' => $moduleId . '/site/error',
+            $moduleId . '/site/error' => $moduleId . '/site/error',
+        ];
     }
 }
