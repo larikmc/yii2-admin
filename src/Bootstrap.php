@@ -22,6 +22,12 @@ class Bootstrap implements BootstrapInterface
                     'admin/auth/<action:[\w\-]+>' => 'admin/auth/auth/<action>',
                     'admin/login' => 'admin/auth/auth/login',
                     'admin/logout' => 'admin/auth/auth/logout',
+                    'ui-kit' => 'admin/site/ui-kit',
+                    'site/ui-kit' => 'admin/site/ui-kit',
+                    'admin/site/ui-kit' => 'admin/site/ui-kit',
+                    'profile' => 'admin/user/profile',
+                    'user/profile' => 'admin/user/profile',
+                    'admin/user/profile' => 'admin/user/profile',
                 ], false);
             }
 

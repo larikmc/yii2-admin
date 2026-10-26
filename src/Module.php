@@ -82,6 +82,12 @@ class Module extends \yii\base\Module
                 $moduleId . '/logout' => $moduleId . '/auth/auth/logout',
                 $moduleId . '/auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
                 'auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
+                'ui-kit' => $moduleId . '/site/ui-kit',
+                'site/ui-kit' => $moduleId . '/site/ui-kit',
+                $moduleId . '/site/ui-kit' => $moduleId . '/site/ui-kit',
+                'profile' => $moduleId . '/user/profile',
+                'user/profile' => $moduleId . '/user/profile',
+                $moduleId . '/user/profile' => $moduleId . '/user/profile',
             ], false);
         }
 

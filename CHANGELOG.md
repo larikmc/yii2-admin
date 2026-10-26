@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.17] - 2026-10-26
+
+### Fixed
+- **Clean URL Generation for UI Kit and Profile**: Registered URL rules for `ui-kit` / `site/ui-kit` and `profile` / `user/profile` in `Bootstrap::bootstrap($app)` and `Module::init()`. This prevents doubled `/admin/admin/...` paths (e.g. `/admin/admin/site/ui-kit`) when the application has `request.baseUrl = '/admin'`.
+
 ## [2.1.16] - 2026-10-26
 
 ### Fixed
