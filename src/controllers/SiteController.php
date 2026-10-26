@@ -36,8 +36,8 @@ class SiteController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['get', 'post'],
-                    'clear-cache' => ['post'],
-                    'flush-cache' => ['post'],
+                    'clear-cache' => ['get', 'post'],
+                    'flush-cache' => ['get', 'post'],
                 ],
             ],
         ];
@@ -294,14 +294,42 @@ class SiteController extends Controller
         $clearedDirectories = [];
 
         try {
-            if (Yii::$app->has('cache')) {
-                $cache = Yii::$app->cache;
-                if (!$cache instanceof DummyCache) {
-                    $cache->flush();
-                    $flushedComponents[] = 'app cache';
+            // 1. Очистка всех компонентов кеша (backend, frontendCache, cacheFrontend, schemaCache и т.д.)
+            $cacheComponentIds = ['cache', 'frontendCache', 'backendCache', 'cacheFrontend', 'cacheBackend', 'schemaCache'];
+            foreach (Yii::$app->getComponents(true) as $id => $definition) {
+                if (stripos((string) $id, 'cache') !== false) {
+                    $cacheComponentIds[] = $id;
+                }
+            }
+            $cacheComponentIds = array_values(array_unique($cacheComponentIds));
+
+            foreach ($cacheComponentIds as $compId) {
+                if (!Yii::$app->has($compId)) {
+                    continue;
+                }
+                try {
+                    $c = Yii::$app->get($compId, false);
+                    if ($c instanceof \yii\caching\CacheInterface && !$c instanceof DummyCache) {
+                        $c->flush();
+                        $flushedComponents[] = $compId;
+                    }
+                } catch (\Throwable $e) {
+                    // Игнорируем недоступные сервисы
                 }
             }
 
+            // 2. Обновление схемы базы данных
+            if (Yii::$app->has('db')) {
+                try {
+                    $db = Yii::$app->get('db');
+                    if ($db instanceof \yii\db\Connection && $db->schema) {
+                        $db->schema->refresh();
+                    }
+                } catch (\Throwable $e) {
+                }
+            }
+
+            // 3. Рекурсивная очистка файловых каталогов кеша frontend, backend, common
             foreach ($this->resolveRuntimeCacheDirectories() as $cacheDir) {
                 if (!is_dir($cacheDir)) {
                     continue;
@@ -311,16 +339,26 @@ class SiteController extends Controller
                 $clearedDirectories[] = $cacheDir;
             }
 
-            if ($flushedComponents === [] && $clearedDirectories === []) {
-                Yii::$app->session->setFlash('warning', 'Кеш не найден: нет настроенного хранилища или каталогов runtime/cache.');
-            } else {
-                Yii::$app->session->setFlash('success', 'Кеш очищен.');
+            $successMsg = 'Кеш успешно очищен (backend и frontend).';
+            if (Yii::$app->request->isAjax) {
+                return $this->asJson([
+                    'success' => true,
+                    'message' => $successMsg,
+                    'flushed' => $flushedComponents,
+                    'cleared' => $clearedDirectories,
+                ]);
             }
+
+            Yii::$app->session->setFlash('success', $successMsg);
         } catch (\Throwable $e) {
-            Yii::$app->session->setFlash('error', 'Не удалось очистить кеш: ' . $e->getMessage());
+            $errMsg = 'Не удалось очистить кеш: ' . $e->getMessage();
+            if (Yii::$app->request->isAjax) {
+                return $this->asJson(['success' => false, 'message' => $errMsg]);
+            }
+            Yii::$app->session->setFlash('error', $errMsg);
         }
 
-        return $this->redirect(Yii::$app->request->referrer ?: ['/']);
+        return $this->redirect(Yii::$app->request->referrer ?: ['/admin']);
     }
 
     public function actionFlushCache()
@@ -334,7 +372,7 @@ class SiteController extends Controller
     protected function resolveRuntimeCacheDirectories(): array
     {
         $directories = [];
-        $aliases = ['@backend', '@frontend', '@common', '@runtime'];
+        $aliases = ['@backend', '@frontend', '@common', '@console', '@app', '@runtime'];
 
         foreach ($aliases as $alias) {
             $basePath = Yii::getAlias($alias, false);
@@ -350,18 +388,31 @@ class SiteController extends Controller
             $directories[] = $candidate;
         }
 
-        return array_values(array_unique($directories));
+        // Относительные пути от корня проекта
+        $appPath = Yii::getAlias('@app', false);
+        if (is_string($appPath) && $appPath !== '') {
+            $root = dirname($appPath);
+            $directories[] = $root . DIRECTORY_SEPARATOR . 'frontend' . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'cache';
+            $directories[] = $root . DIRECTORY_SEPARATOR . 'backend' . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'cache';
+            $directories[] = $root . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'cache';
+            $directories[] = $root . DIRECTORY_SEPARATOR . 'console' . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'cache';
+        }
+
+        return array_values(array_unique(array_filter($directories, 'is_dir')));
     }
 
     protected function clearDirectoryContents(string $directory): void
     {
-        $items = FileHelper::findDirectories($directory, ['recursive' => false]);
-        foreach ($items as $item) {
-            FileHelper::removeDirectory($item);
-        }
+        try {
+            $items = FileHelper::findDirectories($directory, ['recursive' => false]);
+            foreach ($items as $item) {
+                @FileHelper::removeDirectory($item);
+            }
 
-        foreach (FileHelper::findFiles($directory, ['recursive' => false]) as $file) {
-            @unlink($file);
+            foreach (FileHelper::findFiles($directory, ['recursive' => false]) as $file) {
+                @unlink($file);
+            }
+        } catch (\Throwable $e) {
         }
     }
 }

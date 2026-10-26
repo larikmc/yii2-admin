@@ -383,6 +383,19 @@ $isDarkTheme = (isset($_COOKIE['admin-theme']) && $_COOKIE['admin-theme'] === 'd
                     ]
                 ) ?>
 
+                <?= Html::a(
+                    '<span class="material-symbols-rounded">cached</span>',
+                    ['/admin/site/clear-cache'],
+                    [
+                        'class' => 'toolbtn',
+                        'id' => 'clearCacheBtn',
+                        'title' => 'Очистить кеш (backend и frontend)',
+                        'aria-label' => 'Очистить кеш (backend и frontend)',
+                        'data-method' => 'post',
+                        'data-sz-clear-cache' => '',
+                    ]
+                ) ?>
+
                 <button class="toolbtn" id="themeButton" type="button" data-sz-theme-toggle title="<?= $isDarkTheme ? 'Светлая тема' : 'Темная тема' ?>" aria-label="<?= $isDarkTheme ? 'Светлая тема' : 'Темная тема' ?>">
                     <span class="material-symbols-rounded" id="themeIcon"><?= $isDarkTheme ? 'light_mode' : 'dark_mode' ?></span>
                 </button>
@@ -418,6 +431,14 @@ $isDarkTheme = (isset($_COOKIE['admin-theme']) && $_COOKIE['admin-theme'] === 'd
                             'Настройки профиля',
                             ['/admin/user/profile'],
                             ['class' => 'sz-pop-item']
+                        ) ?>
+                        <?= Html::a(
+                            'Очистить кеш',
+                            ['/admin/site/clear-cache'],
+                            [
+                                'class' => 'sz-pop-item',
+                                'data-method' => 'post',
+                            ]
                         ) ?>
                         <?= Html::beginForm(['/auth/logout'], 'post', ['class' => 'sz-logout-form', 'style' => 'margin:0;padding:0;']) ?>
                         <?= Html::submitButton(

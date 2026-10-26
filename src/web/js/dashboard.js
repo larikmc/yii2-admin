@@ -406,6 +406,10 @@ document.addEventListener('click', (e) => {
         closeAllPopovers();
         showToast(e.target.dataset.notice);
     }
+    const clearBtn = e.target.closest('[data-sz-clear-cache]');
+    if (clearBtn) {
+        clearBtn.classList.add('toolbtn--spin');
+    }
 });
 
 

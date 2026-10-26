@@ -2,6 +2,17 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.20] - 2026-10-26
+
+### Added & Enhanced
+- **Topbar Clear Cache Quick Action**: Added dedicated `cached` action button in the topbar header tools (`#clearCacheBtn`) and inside the user account profile dropdown (`#profilePop`).
+- **Comprehensive Backend & Frontend Cache Flush**:
+  - Automatically flushes all registered cache components across the application (`cache`, `frontendCache`, `backendCache`, `cacheFrontend`, `schemaCache`, and any component containing `cache` in its ID).
+  - Automatically refreshes the DB schema cache (`Yii::$app->db->schema->refresh()`).
+  - Recursively purges physical cache directories across all application environments (`@frontend/runtime/cache`, `@backend/runtime/cache`, `@common/runtime/cache`, `@console/runtime/cache`, `@runtime/cache`).
+- **Instant Visual Feedback**: Added `.toolbtn--spin` CSS animation and JavaScript click handler triggering a smooth rotation on click while the cache is purged, followed by toast notification feedback.
+- **Flexible HTTP Verbs**: Updated `SiteController` `VerbFilter` to support both `GET` and `POST` for `clear-cache` and `flush-cache`.
+
 ## [2.1.19] - 2026-10-26
 
 ### Added & Architecture

@@ -264,6 +264,10 @@ body.dark .sz-topbar__quicklink:hover {
     color: #fff;
 }
 
+.toolbtn--spin .material-symbols-rounded {
+    animation: sz-progress-spin 0.75s linear infinite;
+}
+
 .red-dot {
     position: absolute;
     right: 7px;
