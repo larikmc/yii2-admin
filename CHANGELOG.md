@@ -2,6 +2,15 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.25] - 2026-10-26
+
+### Fixed & Enhanced
+- **Modal Stacking Context & Backdrop Overlap Fix**:
+  - Fixed an issue where `.modal` elements placed inside `.sz-content` were trapped in its stacking context (`position: relative; z-index: 1`), causing the backdrop (`.modal-backdrop` at `z-index: 1050` on `body`) to render in front of the modal and block all mouse interactions.
+  - Added automatic DOM relocation (`document.body.appendChild(modal)`) on initialization and before open in both `dashboard.js` (global `show.bs.modal` listener) and `src/views/user/profile.php` (`setupKeyModal`).
+  - Added `style="z-index: 1060;"` and CSS `.modal { z-index: 1060 !important; }` / `.modal-backdrop { z-index: 1050 !important; }` in `style.css`.
+  - Added `<?= $this->blocks['modals'] ?? '' ?>` in `src/views/layouts/main.php` outside the `.app` container for top-level modal rendering.
+
 ## [2.1.24] - 2026-10-26
 
 ### Fixed & Enhanced

@@ -4576,6 +4576,13 @@ body.dark .demo-tab-description {
 /* ==========================================================================
    МОДАЛЬНОЕ ОКНО И ТОСТЫ
    ========================================================================== */
+.modal {
+    z-index: 1060 !important;
+}
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+
 .modal-backdrop-custom {
     position: fixed;
     inset: 0;

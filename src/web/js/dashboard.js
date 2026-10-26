@@ -412,4 +412,11 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// Automatically ensure modals are direct children of body to avoid stacking context z-index traps
+document.addEventListener('show.bs.modal', (e) => {
+    if (e.target && e.target.parentElement !== document.body) {
+        document.body.appendChild(e.target);
+    }
+});
+
 

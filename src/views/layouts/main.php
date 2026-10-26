@@ -519,6 +519,8 @@ $isDarkTheme = (isset($_COOKIE['admin-theme']) && $_COOKIE['admin-theme'] === 'd
 </main>
 </div>
 
+<?= $this->blocks['modals'] ?? '' ?>
+
 <?php $this->endBody() ?>
 </body>
 </html>

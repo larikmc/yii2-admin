@@ -445,7 +445,7 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
 
 <?php if (!empty($twoFactorKeyInfo)): ?>
     <!-- Модальное окно управления мастер-ключом 2FA -->
-    <div class="modal fade" id="twoFactorKeyModal" tabindex="-1" aria-labelledby="twoFactorKeyModalLabel" aria-hidden="true">
+    <div class="modal fade" id="twoFactorKeyModal" tabindex="-1" aria-labelledby="twoFactorKeyModalLabel" aria-hidden="true" style="z-index: 1060;">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="background: var(--sz-surface, #ffffff); border: 1px solid var(--sz-line, #e7edfb); border-radius: 14px; box-shadow: 0 20px 44px rgba(0,0,0,0.2);">
                 <div class="modal-header py-3 px-4" style="border-bottom: 1px solid var(--sz-line, #e7edfb);">
@@ -538,15 +538,27 @@ $profileJs = <<<JS
     function setupKeyModal() {
         var openBtn = document.getElementById('openTwoFactorKeyModalBtn');
         var modal = document.getElementById('twoFactorKeyModal');
-        if (!openBtn || !modal) return;
+        if (!modal) return;
+
+        function ensureInBody() {
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+        }
+
+        ensureInBody();
 
         function openModal(e) {
             if (e) e.preventDefault();
+            ensureInBody();
+
             if (window.bootstrap && window.bootstrap.Modal) {
                 var inst = window.bootstrap.Modal.getOrCreateInstance(modal);
                 inst.show();
                 return;
             }
+
+            modal.style.zIndex = '1060';
             modal.style.display = 'block';
             modal.classList.add('show');
             modal.removeAttribute('aria-hidden');
@@ -558,6 +570,7 @@ $profileJs = <<<JS
                 backdrop = document.createElement('div');
                 backdrop.id = 'twoFactorKeyModalBackdrop';
                 backdrop.className = 'modal-backdrop fade show';
+                backdrop.style.zIndex = '1050';
                 document.body.appendChild(backdrop);
                 backdrop.addEventListener('click', closeModal);
             }
@@ -569,7 +582,6 @@ $profileJs = <<<JS
                 var inst = window.bootstrap.Modal.getInstance(modal);
                 if (inst) {
                     inst.hide();
-                    return;
                 }
             }
             modal.classList.remove('show');
@@ -581,6 +593,9 @@ $profileJs = <<<JS
             if (backdrop && backdrop.parentNode) {
                 backdrop.parentNode.removeChild(backdrop);
             }
+            document.querySelectorAll('.modal-backdrop').forEach(function(b) {
+                if (b.parentNode) b.parentNode.removeChild(b);
+            });
         }
 
         openBtn.addEventListener('click', openModal);
