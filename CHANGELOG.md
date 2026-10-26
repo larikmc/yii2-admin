@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.11] - 2026-10-26
+
+### Added
+- **Unified Preset Filter Button Styling**: Extended the segmented capsule tray design (`.nav-pills-solid`, `.an-segments`) to statistics page filter buttons — `.stat-filter-presets` / `.stat-preset-btn` and `.karandash-filter-presets` / `.karandash-preset-btn`. Active state uses crisp white pill with soft blue shadow in light theme and `linear-gradient(125deg, #3189f7, #3466d8)` with ambient glow (`0 4px 14px rgba(49, 137, 247, 0.35)`) in dark theme, matching the Primary Action button.
+
 ## [2.1.10] - 2026-10-26
 
 ### Fixed

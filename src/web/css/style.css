@@ -4068,7 +4068,9 @@ body.dark .bg-secondary, body.dark .text-bg-secondary { background: #30425a !imp
 .nav-pills-solid,
 .sz-tabs__nav,
 .an-segments,
-.nav-tabs {
+.nav-tabs,
+.stat-filter-presets,
+.karandash-filter-presets {
     background: rgba(113, 157, 235, 0.1) !important;
     border-radius: 13px !important;
     display: inline-flex !important;
@@ -4093,7 +4095,11 @@ html.dark .sz-tabs__nav,
 body.dark .an-segments,
 html.dark .an-segments,
 body.dark .nav-tabs,
-html.dark .nav-tabs {
+html.dark .nav-tabs,
+body.dark .stat-filter-presets,
+html.dark .stat-filter-presets,
+body.dark .karandash-filter-presets,
+html.dark .karandash-filter-presets {
     background: #121c2e !important;
     border: 1px solid #23344d !important;
 }
@@ -4118,7 +4124,13 @@ html.dark .nav-tabs {
 .an-segments button,
 .nav-tabs .nav-link,
 .nav-tabs a,
-.nav-tabs button {
+.nav-tabs button,
+.stat-filter-presets a,
+.stat-filter-presets button,
+.stat-preset-btn,
+.karandash-filter-presets a,
+.karandash-filter-presets button,
+.karandash-preset-btn {
     border: 0 !important;
     outline: none !important;
     border-radius: 9px !important;
@@ -4156,7 +4168,9 @@ html.dark .nav-tabs {
 .an-segments button:not(.active):hover,
 .nav-tabs .nav-link:not(.active):hover,
 .nav-tabs a:not(.active):hover,
-.nav-tabs button:not(.active):hover {
+.nav-tabs button:not(.active):hover,
+.stat-preset-btn:not(.active):hover,
+.karandash-preset-btn:not(.active):hover {
     background: rgba(255, 255, 255, 0.6) !important;
     color: #0e214e !important;
     text-decoration: none !important;
@@ -4183,7 +4197,11 @@ html.dark .nav-tabs .nav-link,
 body.dark .nav-tabs a,
 html.dark .nav-tabs a,
 body.dark .nav-tabs button,
-html.dark .nav-tabs button {
+html.dark .nav-tabs button,
+body.dark .stat-preset-btn,
+html.dark .stat-preset-btn,
+body.dark .karandash-preset-btn,
+html.dark .karandash-preset-btn {
     color: #7997c4 !important;
 }
 
@@ -4208,7 +4226,11 @@ html.dark .nav-tabs .nav-link:not(.active):hover,
 body.dark .nav-tabs a:not(.active):hover,
 html.dark .nav-tabs a:not(.active):hover,
 body.dark .nav-tabs button:not(.active):hover,
-html.dark .nav-tabs button:not(.active):hover {
+html.dark .nav-tabs button:not(.active):hover,
+body.dark .stat-preset-btn:not(.active):hover,
+html.dark .stat-preset-btn:not(.active):hover,
+body.dark .karandash-preset-btn:not(.active):hover,
+html.dark .karandash-preset-btn:not(.active):hover {
     background: rgba(255, 255, 255, 0.06) !important;
     color: #dce8ff !important;
 }
@@ -4223,7 +4245,9 @@ html.dark .nav-tabs button:not(.active):hover {
 .an-segments button.active,
 .nav-tabs .nav-link.active,
 .nav-tabs a.active,
-.nav-tabs button.active {
+.nav-tabs button.active,
+.stat-preset-btn.active,
+.karandash-preset-btn.active {
     background: #ffffff !important;
     box-shadow: 0 3px 10px rgba(30, 64, 175, 0.12) !important;
     color: #1e40af !important;
@@ -4252,7 +4276,11 @@ html.dark .nav-tabs .nav-link.active,
 body.dark .nav-tabs a.active,
 html.dark .nav-tabs a.active,
 body.dark .nav-tabs button.active,
-html.dark .nav-tabs button.active {
+html.dark .nav-tabs button.active,
+body.dark .stat-preset-btn.active,
+html.dark .stat-preset-btn.active,
+body.dark .karandash-preset-btn.active,
+html.dark .karandash-preset-btn.active {
     background: linear-gradient(125deg, #3189f7, #3466d8) !important;
     color: #ffffff !important;
     box-shadow: 0 4px 14px rgba(49, 137, 247, 0.35) !important;
@@ -4265,7 +4293,11 @@ html.dark .sz-tabs__nav .nav-link.active:hover,
 body.dark .an-segments a.active:hover,
 html.dark .an-segments a.active:hover,
 body.dark .nav-tabs .nav-link.active:hover,
-html.dark .nav-tabs .nav-link.active:hover {
+html.dark .nav-tabs .nav-link.active:hover,
+body.dark .stat-preset-btn.active:hover,
+html.dark .stat-preset-btn.active:hover,
+body.dark .karandash-preset-btn.active:hover,
+html.dark .karandash-preset-btn.active:hover {
     background: linear-gradient(125deg, #3189f7, #3466d8) !important;
     color: #ffffff !important;
     box-shadow: 0 6px 20px rgba(49, 137, 247, 0.55) !important;
