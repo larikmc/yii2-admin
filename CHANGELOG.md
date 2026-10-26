@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.14] - 2026-10-26
+
+### Fixed
+- **Auth Routes Auto-Registration**: Registered wildcard auth URL rules (`admin/auth/<action>` and `auth/<action>`) in `Bootstrap::bootstrap($app)` for web applications and in `Module::init()`. This resolves `404 Not Found` for routes like `/admin/auth/request-password-reset`, `/admin/auth/reset-password`, `/admin/auth/two-factor`, etc., even when the admin module is not loaded during early request routing.
+
 ## [2.1.13] - 2026-10-26
 
 ### Fixed

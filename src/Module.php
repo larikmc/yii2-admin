@@ -75,12 +75,13 @@ class Module extends \yii\base\Module
         Yii::setAlias('@larikmc/admin/rbac', __DIR__ . '/rbac');
 
         if (Yii::$app->has('urlManager')) {
+            $moduleId = $this->id;
             Yii::$app->getUrlManager()->addRules([
-                'login' => 'admin/auth/auth/login',
-                'auth/invite' => 'admin/auth/auth/invite',
-                'auth/request-password-reset' => 'admin/auth/auth/request-password-reset',
-                'auth/reset-password' => 'admin/auth/auth/reset-password',
-                'auth/two-factor' => 'admin/auth/auth/two-factor',
+                'login' => $moduleId . '/auth/auth/login',
+                $moduleId . '/login' => $moduleId . '/auth/auth/login',
+                $moduleId . '/logout' => $moduleId . '/auth/auth/logout',
+                $moduleId . '/auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
+                'auth/<action:[\w\-]+>' => $moduleId . '/auth/auth/<action>',
             ], false);
         }
 

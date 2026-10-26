@@ -15,6 +15,15 @@ class Bootstrap implements BootstrapInterface
                     'class' => \larikmc\admin\commands\TwoFactorController::class,
                 ];
             }
+        } elseif ($app instanceof \yii\web\Application) {
+            if ($app->has('urlManager')) {
+                $app->getUrlManager()->addRules([
+                    'auth/<action:[\w\-]+>' => 'admin/auth/auth/<action>',
+                    'admin/auth/<action:[\w\-]+>' => 'admin/auth/auth/<action>',
+                    'admin/login' => 'admin/auth/auth/login',
+                    'admin/logout' => 'admin/auth/auth/logout',
+                ], false);
+            }
         }
     }
 }
