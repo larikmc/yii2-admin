@@ -430,7 +430,7 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
                                 <span class="d-none d-md-inline" style="font-family: monospace; font-size: 11px; opacity: 0.85;">(<?= Html::encode($twoFactorKeyInfo['keyMasked'] ?? '') ?>)</span>
                             </div>
                             <div style="display: flex; gap: 6px; align-items: center;">
-                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#twoFactorKeyModal" style="font-size: 11px; padding: 3px 8px;">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="openTwoFactorKeyModalBtn" data-bs-toggle="modal" data-bs-target="#twoFactorKeyModal" style="font-size: 11px; padding: 3px 8px;">
                                     <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: -2px;">tune</span>
                                     Управление ключом
                                 </button>
@@ -511,7 +511,7 @@ $avatarLetter = mb_strtoupper(mb_substr((string) ($user->username ?? $user->emai
 <?php endif; ?>
 
 <?php
-$qrJs = <<<JS
+$profileJs = <<<JS
 (function() {
     function renderQrIfNeeded() {
         var box = document.getElementById('twofaQrBox');
@@ -535,13 +535,86 @@ $qrJs = <<<JS
         }
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', renderQrIfNeeded);
-    } else {
+    function setupKeyModal() {
+        var openBtn = document.getElementById('openTwoFactorKeyModalBtn');
+        var modal = document.getElementById('twoFactorKeyModal');
+        if (!openBtn || !modal) return;
+
+        function openModal(e) {
+            if (e) e.preventDefault();
+            if (window.bootstrap && window.bootstrap.Modal) {
+                var inst = window.bootstrap.Modal.getOrCreateInstance(modal);
+                inst.show();
+                return;
+            }
+            modal.style.display = 'block';
+            modal.classList.add('show');
+            modal.removeAttribute('aria-hidden');
+            modal.setAttribute('aria-modal', 'true');
+            document.body.classList.add('modal-open');
+
+            var backdrop = document.getElementById('twoFactorKeyModalBackdrop');
+            if (!backdrop) {
+                backdrop = document.createElement('div');
+                backdrop.id = 'twoFactorKeyModalBackdrop';
+                backdrop.className = 'modal-backdrop fade show';
+                document.body.appendChild(backdrop);
+                backdrop.addEventListener('click', closeModal);
+            }
+        }
+
+        function closeModal(e) {
+            if (e) e.preventDefault();
+            if (window.bootstrap && window.bootstrap.Modal) {
+                var inst = window.bootstrap.Modal.getInstance(modal);
+                if (inst) {
+                    inst.hide();
+                    return;
+                }
+            }
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+            modal.removeAttribute('aria-modal');
+            document.body.classList.remove('modal-open');
+            var backdrop = document.getElementById('twoFactorKeyModalBackdrop');
+            if (backdrop && backdrop.parentNode) {
+                backdrop.parentNode.removeChild(backdrop);
+            }
+        }
+
+        openBtn.addEventListener('click', openModal);
+
+        var dismissBtns = modal.querySelectorAll('[data-bs-dismiss="modal"]');
+        dismissBtns.forEach(function(btn) {
+            btn.addEventListener('click', closeModal);
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal(e);
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                closeModal(e);
+            }
+        });
+    }
+
+    function init() {
         renderQrIfNeeded();
+        setupKeyModal();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
     }
 })();
 JS;
-$this->registerJs($qrJs, \yii\web\View::POS_READY);
+$this->registerJs($profileJs, \yii\web\View::POS_READY);
 ?>
 

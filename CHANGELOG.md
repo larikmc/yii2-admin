@@ -2,6 +2,15 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.24] - 2026-10-26
+
+### Fixed & Enhanced
+- **Bootstrap 5 JavaScript Bundle Dependency in AppAsset**:
+  - Added `'yii\bootstrap5\BootstrapPluginAsset'` to `$depends` in `AppAsset`. Previously, only `BootstrapAsset` (CSS) was registered, which prevented Bootstrap 5 interactive components (modals, dropdowns, collapses) from responding to `data-bs-*` attributes out-of-the-box.
+- **Fail-Safe Vanilla Modal Controller in User Profile**:
+  - Added a dedicated, zero-dependency modal controller in `src/views/user/profile.php` for `#twoFactorKeyModal`.
+  - Works seamlessly with native Bootstrap 5 `bootstrap.Modal` when present, and automatically provides vanilla DOM fallback handling (backdrop, Escape key, outside click, and dismiss buttons) even if Bootstrap JavaScript is not loaded or delayed.
+
 ## [2.1.23] - 2026-10-26
 
 ### Fixed & Enhanced
