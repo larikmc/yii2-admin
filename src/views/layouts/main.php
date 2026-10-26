@@ -484,7 +484,7 @@ $isDarkTheme = (isset($_COOKIE['admin-theme']) && $_COOKIE['admin-theme'] === 'd
             </div>
         <?php endif; ?>
 
-        <?= $content ?>
+        <?= ltrim((string) $content, "\xEF\xBB\xBF\r\n\t ") ?>
     </div>
 </main>
 </div>

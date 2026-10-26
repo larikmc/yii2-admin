@@ -2,6 +2,11 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.12] - 2026-10-26
+
+### Fixed
+- **Layout Spacing Robustness**: Sanitized `$content` in `main.php` layout by trimming leading UTF-8 BOM (`\xEF\xBB\xBF`) and whitespace. This prevents the flex container `.sz-content__inner` from generating an anonymous flex item that caused excessive gap (52px instead of 14px) above content/tabs.
+
 ## [2.1.11] - 2026-10-26
 
 ### Added
