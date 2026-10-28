@@ -11,6 +11,18 @@ class Module extends \yii\base\Module
     private const DEFAULT_GUEST_ALLOWED_PATHS = [
         'login',
         'logout',
+        'captcha',
+        'request-password-reset',
+        'reset-password',
+        'two-factor',
+        'invite',
+        'admin/login',
+        'admin/logout',
+        'admin/captcha',
+        'admin/request-password-reset',
+        'admin/reset-password',
+        'admin/two-factor',
+        'admin/invite',
         'auth/login',
         'auth/logout',
         'auth/captcha',
@@ -302,6 +314,13 @@ class Module extends \yii\base\Module
             'logout' => $moduleId . '/auth/auth/logout',
             $moduleId . '/login' => $moduleId . '/auth/auth/login',
             $moduleId . '/logout' => $moduleId . '/auth/auth/logout',
+
+            'request-password-reset' => $moduleId . '/auth/auth/request-password-reset',
+            'reset-password' => $moduleId . '/auth/auth/reset-password',
+            'captcha' => $moduleId . '/auth/auth/captcha',
+            $moduleId . '/request-password-reset' => $moduleId . '/auth/auth/request-password-reset',
+            $moduleId . '/reset-password' => $moduleId . '/auth/auth/reset-password',
+            $moduleId . '/captcha' => $moduleId . '/auth/auth/captcha',
 
             // Журнал безопасности
             'auth/security-log' => $moduleId . '/auth/auth/security-log',

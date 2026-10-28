@@ -8,7 +8,7 @@ use yii\web\IdentityInterface;
 
 class LoginForm extends Model
 {
-    public const CAPTCHA_ROUTE = '/auth/captcha';
+    public const CAPTCHA_ROUTE = '/admin/auth/auth/captcha';
     private const DUMMY_PASSWORD_HASH = '$2y$13$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';
 
     public $email;
@@ -17,6 +17,7 @@ class LoginForm extends Model
     public string $userClass;
     public int $rememberMeDuration = 2592000;
     public bool $allowFirstAdminRegistration = true;
+    public string $emailField = 'email';
 
     private $_user = null;
     private ?bool $_isFirstAdminScenario = null;
@@ -35,7 +36,7 @@ class LoginForm extends Model
 
             // CAPTCHA scenario
             ['verifyCode', 'required', 'on' => 'withCaptcha'],
-            ['verifyCode', 'captcha', 'on' => 'withCaptcha', 'captchaAction' => 'admin/auth/auth/captcha'],
+            ['verifyCode', 'captcha', 'on' => 'withCaptcha', 'captchaAction' => self::CAPTCHA_ROUTE],
         ];
     }
 
@@ -111,7 +112,13 @@ class LoginForm extends Model
 
         /** @var class-string<IdentityInterface> $userClass */
         $userClass = $this->userClass;
-        $this->_user = $userClass::findByEmail($email);
+        if (method_exists($userClass, 'findByEmail')) {
+            $this->_user = $userClass::findByEmail($email);
+        } elseif (is_subclass_of($userClass, \yii\db\ActiveRecord::class)) {
+            $field = $this->emailField ?: 'email';
+            $this->_user = $userClass::findOne([$field => $email, 'status' => 10])
+                ?? $userClass::findOne([$field => $email]);
+        }
 
         return $this->_user;
     }

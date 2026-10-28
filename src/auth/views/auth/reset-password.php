@@ -39,7 +39,7 @@ $this->title = 'Новый пароль';
         </div>
 
         <div class="auth-links text-center mt-3">
-            <?= Html::a('← Вернуться ко входу', ['/auth/login'], ['class' => 'auth-link']) ?>
+            <?= Html::a('← Вернуться ко входу', ['/login'], ['class' => 'auth-link']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

@@ -22,8 +22,13 @@ $blocked = !empty($remaining) && $remaining > 0;
         </div>
     </div>
 
-    <h1 class="auth-card__title"><?= Html::encode($this->title) ?></h1>
-    <p class="auth-card__subtitle">Введите данные для входа в панель управления</p>
+    <?php if ($model->isFirstAdminScenario()): ?>
+        <h1 class="auth-card__title">Первый администратор</h1>
+        <p class="auth-card__subtitle">В базе данных нет пользователей. Введите email и пароль для создания аккаунта.</p>
+    <?php else: ?>
+        <h1 class="auth-card__title"><?= Html::encode($this->title) ?></h1>
+        <p class="auth-card__subtitle">Введите данные для входа в панель управления</p>
+    <?php endif; ?>
 
     <?php foreach (Yii::$app->session->getAllFlashes() as $type => $msg): ?>
         <?php if (strpos((string)$type, 'auth.') === 0): ?>
@@ -92,15 +97,17 @@ $blocked = !empty($remaining) && $remaining > 0;
         <?php endif; ?>
 
         <div class="form-group mt-3">
-            <?= Html::submitButton('Войти в панель', [
+            <?= Html::submitButton($model->isFirstAdminScenario() ? 'Создать администратора и войти' : 'Войти в панель', [
                     'class' => 'btn auth-submit w-100',
                     'name'  => 'login-button',
             ]) ?>
         </div>
 
+        <?php if (!$model->isFirstAdminScenario()): ?>
         <div class="auth-links text-center mt-3">
-            <?= Html::a('Забыли пароль?', ['/auth/request-password-reset'], ['class' => 'auth-link']) ?>
+            <?= Html::a('Забыли пароль?', ['/request-password-reset'], ['class' => 'auth-link']) ?>
         </div>
+        <?php endif; ?>
 
         <?php ActiveForm::end(); ?>
         </div>

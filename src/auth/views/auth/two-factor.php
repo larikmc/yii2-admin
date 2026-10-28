@@ -56,7 +56,7 @@ $this->title = 'Двухфакторная аутентификация';
         </div>
 
         <div class="auth-links text-center mt-3">
-            <?= Html::a('← Отмена и возврат ко входу', ['/auth/login'], ['class' => 'auth-link']) ?>
+            <?= Html::a('← Отмена и возврат ко входу', ['/login'], ['class' => 'auth-link']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

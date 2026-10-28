@@ -23,7 +23,7 @@ class AuthController extends Controller
 
     protected function getAuthRoute(string $route): array
     {
-        return ['/auth/' . ltrim($route, '/')];
+        return ['/' . ltrim($route, '/')];
     }
 
     public function behaviors(): array
@@ -82,6 +82,7 @@ class AuthController extends Controller
 
         $model   = new LoginForm([
             'userClass' => $module->userClass,
+            'emailField' => $module->hasProperty('emailField') ? $module->emailField : 'email',
             'rememberMeDuration' => $module->rememberMeDuration,
             'allowFirstAdminRegistration' => (bool) ($module->allowFirstAdminRegistration ?? true),
         ]);
@@ -152,38 +153,44 @@ class AuthController extends Controller
         // ---------------------------------------------------------------------
         // 🔒 Lock checks (Email lock has priority; IP lock is secondary)
         // ---------------------------------------------------------------------
-        if ($hasEmail && $emailLockRaw !== false && is_numeric($emailLockRaw)) {
-            $lockTime = (int)$emailLockRaw;
-            if ($lockTime > $now) {
-                $remaining = $lockTime - $now;
-                return $this->render('login', [
-                    'model'     => $model,
-                    'remaining' => (int)$remaining,
-                ]);
-            }
-            $cache->delete($emailLockKey);
-        }
+        $isFirstAdmin = $model->isFirstAdminScenario();
 
-        if ($ipLockRaw !== false && is_numeric($ipLockRaw)) {
-            $lockTime = (int)$ipLockRaw;
-            if ($lockTime > $now) {
-                $remaining = $lockTime - $now;
-                return $this->render('login', [
-                    'model'     => $model,
-                    'remaining' => (int)$remaining,
-                ]);
+        if (!$isFirstAdmin) {
+            if ($hasEmail && $emailLockRaw !== false && is_numeric($emailLockRaw)) {
+                $lockTime = (int)$emailLockRaw;
+                if ($lockTime > $now) {
+                    $remaining = $lockTime - $now;
+                    return $this->render('login', [
+                        'model'     => $model,
+                        'remaining' => (int)$remaining,
+                    ]);
+                }
+                $cache->delete($emailLockKey);
             }
-            $cache->delete($ipLockKey);
+
+            if ($ipLockRaw !== false && is_numeric($ipLockRaw)) {
+                $lockTime = (int)$ipLockRaw;
+                if ($lockTime > $now) {
+                    $remaining = $lockTime - $now;
+                    return $this->render('login', [
+                        'model'     => $model,
+                        'remaining' => (int)$remaining,
+                    ]);
+                }
+                $cache->delete($ipLockKey);
+            }
         }
 
         // ---------------------------------------------------------------------
         // 🤖 CAPTCHA decision:
         // - If IP is noisy -> CAPTCHA
         // - If email is being attacked -> CAPTCHA
+        // - If setting up first admin -> NO CAPTCHA
         // ---------------------------------------------------------------------
-        $needCaptcha =
+        $needCaptcha = !$isFirstAdmin && (
             ($ipAttempts >= (int)$module->captchaAfterIpAttempts) ||
-            ($hasEmail && $emailAttempts >= (int)$module->captchaAfterEmailAttempts);
+            ($hasEmail && $emailAttempts >= (int)$module->captchaAfterEmailAttempts)
+        );
 
         if ($needCaptcha) {
             $model->scenario = 'withCaptcha';
@@ -206,7 +213,7 @@ class AuthController extends Controller
             $emailAttempts    = $hasEmail ? (int)($cache->get($emailAttemptsKey) ?? 0) : 0;
 
             // Re-check email lock right before validating login (race-safe)
-            if ($hasEmail) {
+            if (!$isFirstAdmin && $hasEmail) {
                 $emailLockRaw = $cache->get($emailLockKey);
                 if ($emailLockRaw !== false && is_numeric($emailLockRaw)) {
                     $lockTime = (int)$emailLockRaw;
@@ -328,70 +335,72 @@ class AuthController extends Controller
             }
 
             // -------------------------------------------------------------
-            // Increment attempts
+            // Increment attempts (skip when setting up first admin)
             // -------------------------------------------------------------
-            $ipAttempts++;
-            $cache->set($ipAttemptsKey, $ipAttempts, (int)$module->ipAttemptsTtl);
+            if (!$isFirstAdmin) {
+                $ipAttempts++;
+                $cache->set($ipAttemptsKey, $ipAttempts, (int)$module->ipAttemptsTtl);
 
-            if ($hasEmail) {
-                $emailAttempts++;
-                $cache->set($emailAttemptsKey, $emailAttempts, (int)$module->emailAttemptsTtl);
-            }
+                if ($hasEmail) {
+                    $emailAttempts++;
+                    $cache->set($emailAttemptsKey, $emailAttempts, (int)$module->emailAttemptsTtl);
+                }
 
-            // -------------------------------------------------------------
-            // LOCK policy + notify admin on EMAIL lock
-            // -------------------------------------------------------------
-            if ($hasEmail) {
-                $remainingEmailAttempts = max((int)$module->maxEmailAttempts - $emailAttempts, 0);
+                // -------------------------------------------------------------
+                // LOCK policy + notify admin on EMAIL lock
+                // -------------------------------------------------------------
+                if ($hasEmail) {
+                    $remainingEmailAttempts = max((int)$module->maxEmailAttempts - $emailAttempts, 0);
 
-                if ($remainingEmailAttempts <= 0) {
-                    $lockTime = time() + (int)$module->emailLockDuration;
-                    $cache->set($emailLockKey, $lockTime, (int)$module->emailLockDuration);
-                    Yii::warning(sprintf(
-                        'Сработала блокировка по email для %s с IP %s',
-                        $this->maskEmail($emailNorm),
-                        $ip
-                    ), self::LOG_CATEGORY);
+                    if ($remainingEmailAttempts <= 0) {
+                        $lockTime = time() + (int)$module->emailLockDuration;
+                        $cache->set($emailLockKey, $lockTime, (int)$module->emailLockDuration);
+                        Yii::warning(sprintf(
+                            'Сработала блокировка по email для %s с IP %s',
+                            $this->maskEmail($emailNorm),
+                            $ip
+                        ), self::LOG_CATEGORY);
 
-                    // 📧 notify admin once per emailLockDuration per attacked email
-                    $notifyKey = 'admin_lock_notify_' . md5($emailNorm);
-                    if (!$cache->get($notifyKey)) {
-                        $cache->set($notifyKey, 1, (int)$module->emailLockDuration);
+                        // 📧 notify admin once per emailLockDuration per attacked email
+                        $notifyKey = 'admin_lock_notify_' . md5($emailNorm);
+                        if (!$cache->get($notifyKey)) {
+                            $cache->set($notifyKey, 1, (int)$module->emailLockDuration);
 
-                        try {
-                            $adminEmail = Yii::$app->params['adminEmail'] ?? null;
-                            if ($adminEmail && Yii::$app->has('mailer')) {
-                                Yii::$app->mailer->compose()
-                                    ->setTo($adminEmail)
-                                    ->setFrom([
-                                            Yii::$app->params['supportEmail'] ?? 'no-reply@site.com' => Yii::$app->name
-                                    ])
-                                    ->setSubject('🔐 Блокировка входа по email')
-                                    ->setTextBody(
-                                        "Зафиксирована блокировка входа по email.\n\n" .
-                                        "Email: " . $this->maskEmail($emailNorm) . "\n" .
-                                        "IP: {$ip}\n" .
-                                        "Время блокировки до: " . date('Y-m-d H:i:s', $lockTime) . "\n" .
-                                        "Длительность: " . (int)((int)$module->emailLockDuration / 60) . " мин.\n\n" .
-                                        "Вероятная причина: подбор пароля (rotating IP/UA)."
-                                    )
-                                    ->send();
-                            } elseif ($adminEmail) {
-                                Yii::warning('Компонент mailer не настроен, уведомление администратору о блокировке не отправлено.', self::LOG_CATEGORY);
+                            try {
+                                $adminEmail = Yii::$app->params['adminEmail'] ?? null;
+                                if ($adminEmail && Yii::$app->has('mailer')) {
+                                    Yii::$app->mailer->compose()
+                                        ->setTo($adminEmail)
+                                        ->setFrom([
+                                                Yii::$app->params['supportEmail'] ?? 'no-reply@site.com' => Yii::$app->name
+                                        ])
+                                        ->setSubject('🔐 Блокировка входа по email')
+                                        ->setTextBody(
+                                            "Зафиксирована блокировка входа по email.\n\n" .
+                                            "Email: " . $this->maskEmail($emailNorm) . "\n" .
+                                            "IP: {$ip}\n" .
+                                            "Время блокировки до: " . date('Y-m-d H:i:s', $lockTime) . "\n" .
+                                            "Длительность: " . (int)((int)$module->emailLockDuration / 60) . " мин.\n\n" .
+                                            "Вероятная причина: подбор пароля (rotating IP/UA)."
+                                        )
+                                        ->send();
+                                } elseif ($adminEmail) {
+                                    Yii::warning('Компонент mailer не настроен, уведомление администратору о блокировке не отправлено.', self::LOG_CATEGORY);
+                                }
+                            } catch (\Throwable $e) {
+                                Yii::error('Не удалось отправить уведомление администратору о блокировке: ' . $e->getMessage(), self::LOG_CATEGORY);
                             }
-                        } catch (\Throwable $e) {
-                            Yii::error('Не удалось отправить уведомление администратору о блокировке: ' . $e->getMessage(), self::LOG_CATEGORY);
                         }
                     }
                 }
-            }
 
-            $remainingIpAttempts = max((int)$module->maxIpAttempts - $ipAttempts, 0);
+                $remainingIpAttempts = max((int)$module->maxIpAttempts - $ipAttempts, 0);
 
-            if ($remainingIpAttempts <= 0) {
-                $lockTime = time() + (int)$module->ipLockDuration;
-                $cache->set($ipLockKey, $lockTime, (int)$module->ipLockDuration);
-                Yii::warning("Сработала блокировка по IP {$ip}", self::LOG_CATEGORY);
+                if ($remainingIpAttempts <= 0) {
+                    $lockTime = time() + (int)$module->ipLockDuration;
+                    $cache->set($ipLockKey, $lockTime, (int)$module->ipLockDuration);
+                    Yii::warning("Сработала блокировка по IP {$ip}", self::LOG_CATEGORY);
+                }
             }
 
             $session->setFlash('auth.loginEmail', $model->email);

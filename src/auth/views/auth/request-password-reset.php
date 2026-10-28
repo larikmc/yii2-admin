@@ -61,14 +61,14 @@ $this->title = 'Восстановление пароля';
             </div>
 
             <div class="auth-links text-center mt-3">
-                <?= Html::a('← Вернуться ко входу', ['/auth/login'], ['class' => 'auth-link']) ?>
+                <?= Html::a('← Вернуться ко входу', ['/login'], ['class' => 'auth-link']) ?>
             </div>
 
             <?php ActiveForm::end(); ?>
         </div>
     <?php else: ?>
         <div class="auth-links text-center mt-4">
-            <?= Html::a('← Вернуться ко входу', ['/auth/login'], ['class' => 'auth-link']) ?>
+            <?= Html::a('← Вернуться ко входу', ['/login'], ['class' => 'auth-link']) ?>
         </div>
     <?php endif; ?>
 </div>

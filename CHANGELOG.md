@@ -2,6 +2,22 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.27] - 2026-10-28
+
+### Fixed & Enhanced
+- **Preserve Full Email Address on First Admin Setup**:
+  - Fixed an issue in `FirstAdminService` where configurations using `'usernameField' => 'email'` (or user tables without a separate `username` column) had the `email` attribute inadvertently overwritten by the username prefix (`strstr($email, '@', true)`).
+  - Ensured the `email` attribute is always preserved with the full validated email address and never overwritten.
+- **Robust User Model Lookup in LoginForm**:
+  - Added support for `emailField` configuration in `LoginForm` and provided fallback lookup via ActiveRecord `findOne()` when custom `findByEmail()` is not defined.
+  - Forwarded `emailField` from `Module` into `LoginForm` in `AuthController`.
+- **First Admin Scenario UI & Brute-Force Bypass**:
+  - Dynamically updated title, subtitle, and submit button in `views/auth/login.php` when entering credentials for an empty database installation.
+  - Excluded first administrator setup from brute-force attempt counters and lockouts.
+- **Unified Short Auth Routes & Guest Allowed Paths**:
+  - Added short routes (`/login`, `/logout`, `/captcha`, `/request-password-reset`, `/reset-password`, `/two-factor`, `/invite`) to `Module::DEFAULT_GUEST_ALLOWED_PATHS` and default urlManager rules.
+  - Updated all auth view templates to link to canonical clean routes (`['/login']`).
+
 ## [2.1.26] - 2026-10-26
 
 ### Fixed & Enhanced

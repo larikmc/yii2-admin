@@ -162,16 +162,17 @@ class FirstAdminService extends Component
             } else {
                 $user = new $class();
 
+                // 1. Email attribute MUST always receive the full validated email
                 if ($user->hasAttribute($this->emailField)) {
                     $user->setAttribute($this->emailField, $email);
                 }
 
-                // If table schema has 'username' column, always ensure it is populated (not null)
+                // 2. Separate username attribute: only set if table has a distinct username column
                 $defaultUsername = strstr($email, '@', true) ?: $email;
-                if ($user->hasAttribute('username')) {
-                    $user->setAttribute('username', $defaultUsername);
-                } elseif ($user->hasAttribute($this->usernameField)) {
+                if ($this->usernameField !== '' && $this->usernameField !== $this->emailField && $user->hasAttribute($this->usernameField)) {
                     $user->setAttribute($this->usernameField, $defaultUsername);
+                } elseif ($user->hasAttribute('username') && $this->emailField !== 'username') {
+                    $user->setAttribute('username', $defaultUsername);
                 }
 
                 if ($user->hasAttribute($this->statusField)) {
