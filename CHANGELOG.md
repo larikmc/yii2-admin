@@ -2,6 +2,12 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.28] - 2026-10-29
+
+### Fixed
+- **Missing SystemRbacHelper Import in Menu Config**:
+  - Added missing `use larikmc\admin\rbac\helpers\SystemRbacHelper;` in `src/config/menu.php` for `canAccessUiKit` check in default secondary menu.
+
 ## [2.1.27] - 2026-10-28
 
 ### Fixed & Enhanced

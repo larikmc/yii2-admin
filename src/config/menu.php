@@ -1,5 +1,7 @@
 <?php
 
+use larikmc\admin\rbac\helpers\SystemRbacHelper;
+
 return [
     'primary' => [
         [
