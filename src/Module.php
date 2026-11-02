@@ -113,6 +113,13 @@ class Module extends \yii\base\Module
             }
         }
 
+        if (class_exists('kartik\date\DatePicker')) {
+            Yii::$container->set('kartik\date\DatePicker', [
+                'pickerIcon' => '<span class="material-symbols-rounded kv-dp-icon">calendar_today</span>',
+                'removeIcon' => '<span class="material-symbols-rounded kv-dp-icon">close</span>',
+            ]);
+        }
+
         if ($this->guardUnknownAdminRoutesForGuests) {
             Yii::$app->on(\yii\base\Application::EVENT_BEFORE_REQUEST, function (): void {
                 $this->guardGuestRequest();
@@ -357,8 +364,8 @@ class Module extends \yii\base\Module
             'user/profile' => $moduleId . '/user/profile',
             $moduleId . '/profile' => $moduleId . '/user/profile',
             $moduleId . '/user/profile' => $moduleId . '/user/profile',
-            'user/<action:[\w\-]+>' => $moduleId . '/user/<action>',
-            $moduleId . '/user/<action:[\w\-]+>' => $moduleId . '/user/<action>',
+            'user/<action:(confirm-email|verify-email-code|cancel-email-change|resend-email-change|enable-2fa|confirm-2fa|disable-2fa|regenerate-backup-codes|regenerate-two-factor-key)>' => $moduleId . '/user/<action>',
+            $moduleId . '/user/<action:(confirm-email|verify-email-code|cancel-email-change|resend-email-change|enable-2fa|confirm-2fa|disable-2fa|regenerate-backup-codes|regenerate-two-factor-key)>' => $moduleId . '/user/<action>',
 
             // Управление кешем
             'clear-cache' => $moduleId . '/site/clear-cache',

@@ -3378,6 +3378,30 @@ body.dark .form-control::placeholder {
     line-height: 1;
 }
 
+.input-group.date .kv-date-picker,
+.input-group.date .kv-date-remove {
+    cursor: pointer;
+    user-select: none;
+}
+
+.input-group.date .kv-date-picker:hover {
+    color: var(--primary, #3182ce);
+}
+
+.input-group.date .kv-date-remove:hover {
+    color: var(--danger, #ef4444);
+}
+
+body.dark .input-group.date .kv-date-picker:hover,
+html.dark .input-group.date .kv-date-picker:hover {
+    color: #60a5fa !important;
+}
+
+body.dark .input-group.date .kv-date-remove:hover,
+html.dark .input-group.date .kv-date-remove:hover {
+    color: #f87171 !important;
+}
+
 /* Dark Theme for DatePicker Addons */
 body.dark .input-group.date .input-group-text,
 body.dark .input-group.date .input-group-addon,
