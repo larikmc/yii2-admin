@@ -2,6 +2,26 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.29] - 2026-11-24
+
+### Fixed & Enhanced
+- **Compact Segmented Action Column**:
+  - Refined `.btn-group-action` and standard Yii2 GridView `ActionColumn` buttons into a sleek unified pill matching prototype design (`29x28px`, `15px` icons, smooth borders).
+  - Explicitly bounded icon sizes (`15px`) preventing Google Material Symbols or SVGs from blowing up or overflowing table cells.
+  - Added clean hover states with soft blue highlight for view/edit and soft red for delete actions in both light and dark themes.
+- **Restored "Живой пример" Image Popup Viewer**:
+  - Restored full image popup demo on `/admin/ui-kit`: both thumbnail and the "Живой пример" link/button now trigger the fullscreen image viewer modal (`data-image-viewer="true"`).
+  - Bundled local asset fallback so preview works 100% offline without external CDN dependencies.
+- **Unified Top-Right Modal Toast Notifications & Instant AJAX Cache Purge**:
+  - Upgraded `window.showToast(message, type, duration)` (and alias `window.showAdminToast`) to render modern card notifications in the top-right corner with icon, title, text, animated progress bar, and close button.
+  - Added seamless AJAX handling for topbar cache clear button (`[data-sz-clear-cache]`), spinning the button during flush and popping up the instant success toast upon completion.
+  - Increased flash toast display duration to 3500ms for comfortable reading.
+- **Universal Standard Bootstrap 5 Out-of-the-Box Styling**:
+  - Ensured native Bootstrap 5 classes (`.table`, `.table-hover`, `.table-striped`, `.btn`, `.btn-*`, `.badge`, `.card`, `.pagination`, `.modal`, `.alert`) look modern and polished in light and dark themes with zero required custom wrapper classes.
+- **Modern UI-Kit Revamp**:
+  - Added interactive Light/Dark theme switcher in UI-Kit hero header with real-time preview and cookie sync.
+  - Added design tokens swatches with click-to-copy, segmented fixed-position toggles (Вкл / Откл), soft status badges, and interactive queue simulator.
+
 ## [2.1.28] - 2026-10-29
 
 ### Fixed

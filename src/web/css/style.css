@@ -1566,51 +1566,89 @@ html.dark .grid-view .table thead tr.filters td {
 }
 
 .grid-view .action-column,
+.grid-view table tbody tr > td.action-column,
+.grid-view table thead th.action-column,
+.grid-view table thead tr.filters td.action-column,
+.grid-view table thead th:has(> .action-column),
+.grid-view table tbody tr > td:has(> .action-column),
 .grid-view table tbody tr > td:last-child {
-    white-space: nowrap;
-    width: 132px;
-    min-width: 132px;
-    text-align: center;
-    font-size: 0;
+    white-space: nowrap !important;
+    width: 1% !important;
+    min-width: 96px !important;
+    max-width: 110px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 0 !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+}
+
+.grid-view table thead th.action-column {
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.grid-view th:has(input[type="checkbox"]),
+.grid-view td:has(input[type="checkbox"]),
+.grid-view th.select-on-check-all,
+.grid-view td:has(input[name="selection[]"]),
+.grid-view th:has(input[name="selection_all"]) {
+    width: 1% !important;
+    min-width: 40px !important;
+    max-width: 46px !important;
+    text-align: center !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    vertical-align: middle !important;
+}
+.grid-view th:has(input[type="checkbox"]) input,
+.grid-view td:has(input[type="checkbox"]) input {
+    margin: 0 auto !important;
+    display: block !important;
 }
 
 .grid-view .action-column a,
 .grid-view a.sz-row-action,
+.grid-view table tbody tr > td.action-column a,
 .grid-view table tbody tr > td:last-child a:has(svg),
 .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded),
 .grid-view table tbody tr > td:last-child a:has(.icon) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-    width: 33px;
-    height: 30px;
-    margin: 0;
-    padding: 0;
-    border: 1px solid #d7e5fa;
-    border-right: 0;
-    border-radius: 0;
-    background: #fff;
-    color: #4b76b5;
-    text-decoration: none;
-    box-shadow: none;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    width: 29px !important;
+    height: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #d7e5fa !important;
+    border-right: 0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    color: #4b76b5 !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
 }
 
 .grid-view .action-column a .material-symbols-rounded,
 .grid-view a.sz-row-action .material-symbols-rounded,
+.grid-view table tbody tr > td.action-column a .material-symbols-rounded,
 .grid-view .action-column a .icon,
-.grid-view a.sz-row-action .icon {
-    font-size: 16px;
-    line-height: 1;
-}
-
+.grid-view a.sz-row-action .icon,
 .grid-view .action-column a svg,
 .grid-view a.sz-row-action svg,
-.grid-view table tbody tr > td:last-child a svg {
+.grid-view table tbody tr > td.action-column a svg,
+.grid-view table tbody tr > td:last-child a svg,
+.grid-view table tbody tr > td:last-child a .material-symbols-rounded {
     width: 15px !important;
     height: 15px !important;
+    font-size: 15px !important;
+    line-height: 15px !important;
     max-width: 15px !important;
     max-height: 15px !important;
     display: inline-block !important;
@@ -1620,97 +1658,101 @@ html.dark .grid-view .table thead tr.filters td {
 
 .grid-view .action-column a:first-child,
 .grid-view a.sz-row-action:first-child,
+.grid-view table tbody tr > td.action-column a:first-of-type,
 .grid-view table tbody tr > td:last-child a:has(svg):first-of-type,
 .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):first-of-type,
 .grid-view table tbody tr > td:last-child a:has(.icon):first-of-type {
-    border-top-left-radius: 9px;
-    border-bottom-left-radius: 9px;
+    border-top-left-radius: 9px !important;
+    border-bottom-left-radius: 9px !important;
 }
 
 .grid-view .action-column a:last-child,
 .grid-view a.sz-row-action:last-child,
+.grid-view table tbody tr > td.action-column a:last-of-type,
 .grid-view table tbody tr > td:last-child a:has(svg):last-of-type,
 .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):last-of-type,
 .grid-view table tbody tr > td:last-child a:has(.icon):last-of-type {
-    border-right: 1px solid #d7e5fa;
-    border-top-right-radius: 9px;
-    border-bottom-right-radius: 9px;
+    border-right: 1px solid #d7e5fa !important;
+    border-top-right-radius: 9px !important;
+    border-bottom-right-radius: 9px !important;
 }
 
 .grid-view .action-column a:only-child,
 .grid-view a.sz-row-action:only-child,
+.grid-view table tbody tr > td.action-column a:only-of-type,
 .grid-view table tbody tr > td:last-child a:has(svg):only-of-type,
 .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):only-of-type,
 .grid-view table tbody tr > td:last-child a:has(.icon):only-of-type {
-    border-right: 1px solid #d7e5fa;
-    border-radius: 9px;
+    border: 1px solid #d7e5fa !important;
+    border-radius: 9px !important;
 }
 
 .grid-view .action-column a:hover,
 .grid-view a.sz-row-action:hover,
+.grid-view table tbody tr > td.action-column a:hover,
 .grid-view table tbody tr > td:last-child a:has(svg):hover,
 .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):hover,
 .grid-view table tbody tr > td:last-child a:has(.icon):hover {
-    background: #e9f3ff;
-    color: #1f63c5;
-}
-
-.grid-view .action-column a[data-method="post"],
-.grid-view .action-column a[data-confirm],
-.grid-view a.sz-row-action[data-method="post"],
-.grid-view a.sz-row-action[data-confirm],
-.grid-view a.sz-row-action.del,
-.grid-view table tbody tr > td:last-child a[data-method="post"],
-.grid-view table tbody tr > td:last-child a[data-confirm],
-.grid-view table tbody tr > td:last-child a.del {
-    color: #4b76b5;
-    background: #fff;
-    border-color: #d7e5fa;
+    background: #e9f3ff !important;
+    color: #1f63c5 !important;
 }
 
 .grid-view .action-column a[data-method="post"]:hover,
 .grid-view .action-column a[data-confirm]:hover,
+.grid-view .action-column a.del:hover,
 .grid-view a.sz-row-action[data-method="post"]:hover,
 .grid-view a.sz-row-action[data-confirm]:hover,
 .grid-view a.sz-row-action.del:hover,
+.grid-view table tbody tr > td.action-column a[data-method="post"]:hover,
+.grid-view table tbody tr > td.action-column a[data-confirm]:hover,
+.grid-view table tbody tr > td.action-column a.del:hover,
 .grid-view table tbody tr > td:last-child a[data-method="post"]:hover,
 .grid-view table tbody tr > td:last-child a[data-confirm]:hover,
 .grid-view table tbody tr > td:last-child a.del:hover {
-    background: #ffebef;
-    color: #ce3157;
+    background: #ffebef !important;
+    color: #ce3157 !important;
 }
 
 body.dark .grid-view .action-column a,
 body.dark .grid-view a.sz-row-action,
+body.dark .grid-view table tbody tr > td.action-column a,
 body.dark .grid-view table tbody tr > td:last-child a:has(svg),
 body.dark .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded),
-body.dark .grid-view table tbody tr > td:last-child a:has(.icon) {
-    border-color: #405573;
-    background: #25354e;
-    color: #aec5e9;
-    box-shadow: none;
+body.dark .grid-view table tbody tr > td:last-child a:has(.icon),
+html.dark .grid-view .action-column a,
+html.dark .grid-view a.sz-row-action,
+html.dark .grid-view table tbody tr > td.action-column a {
+    border-color: #3b506d !important;
+    background: #19263a !important;
+    color: #9cbfee !important;
+    box-shadow: none !important;
 }
 
 body.dark .grid-view .action-column a:last-child,
 body.dark .grid-view a.sz-row-action:last-child,
-body.dark .grid-view .action-column a:only-child,
-body.dark .grid-view a.sz-row-action:only-child,
+body.dark .grid-view table tbody tr > td.action-column a:last-of-type,
 body.dark .grid-view table tbody tr > td:last-child a:has(svg):last-of-type,
 body.dark .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):last-of-type,
 body.dark .grid-view table tbody tr > td:last-child a:has(.icon):last-of-type,
 body.dark .grid-view table tbody tr > td:last-child a:has(svg):only-of-type,
 body.dark .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):only-of-type,
-body.dark .grid-view table tbody tr > td:last-child a:has(.icon):only-of-type {
-    border-right-color: #405573;
+body.dark .grid-view table tbody tr > td:last-child a:has(.icon):only-of-type,
+html.dark .grid-view .action-column a:last-child,
+html.dark .grid-view table tbody tr > td.action-column a:last-of-type {
+    border-right-color: #3b506d !important;
 }
 
 body.dark .grid-view .action-column a:hover,
 body.dark .grid-view a.sz-row-action:hover,
+body.dark .grid-view table tbody tr > td.action-column a:hover,
 body.dark .grid-view table tbody tr > td:last-child a:has(svg):hover,
 body.dark .grid-view table tbody tr > td:last-child a:has(.material-symbols-rounded):hover,
-body.dark .grid-view table tbody tr > td:last-child a:has(.icon):hover {
-    background: #30496e;
-    color: #ffffff;
+body.dark .grid-view table tbody tr > td:last-child a:has(.icon):hover,
+html.dark .grid-view .action-column a:hover,
+html.dark .grid-view a.sz-row-action:hover,
+html.dark .grid-view table tbody tr > td.action-column a:hover {
+    background: #2a3d58 !important;
+    color: #e2eeff !important;
 }
 
 body.dark .grid-view .action-column a[data-method="post"]:hover,
@@ -1718,11 +1760,17 @@ body.dark .grid-view .action-column a[data-confirm]:hover,
 body.dark .grid-view a.sz-row-action[data-method="post"]:hover,
 body.dark .grid-view a.sz-row-action[data-confirm]:hover,
 body.dark .grid-view a.sz-row-action.del:hover,
+body.dark .grid-view table tbody tr > td.action-column a[data-method="post"]:hover,
+body.dark .grid-view table tbody tr > td.action-column a[data-confirm]:hover,
+body.dark .grid-view table tbody tr > td.action-column a.del:hover,
 body.dark .grid-view table tbody tr > td:last-child a[data-method="post"]:hover,
 body.dark .grid-view table tbody tr > td:last-child a[data-confirm]:hover,
-body.dark .grid-view table tbody tr > td:last-child a.del:hover {
-    background: #63354c;
-    color: #ffd2dc;
+body.dark .grid-view table tbody tr > td:last-child a.del:hover,
+html.dark .grid-view .action-column a[data-method="post"]:hover,
+html.dark .grid-view .action-column a[data-confirm]:hover,
+html.dark .grid-view .action-column a.del:hover {
+    background: #54222f !important;
+    color: #ffa4b2 !important;
 }
 
 @media (max-width: 900px) {
@@ -1752,20 +1800,20 @@ body.dark .grid-view table tbody tr > td:last-child a.del:hover {
 }
 
 .grid-view .action-column .glyphicon {
-    font-size: 15px;
+    font-size: 15px !important;
 }
 
 .grid-view .action-column .material-symbols-rounded {
-    font-size: 18px;
-    line-height: 1;
+    font-size: 15px !important;
+    line-height: 15px !important;
 }
 
 .grid-view tbody td.action-column {
     display: table-cell;
     white-space: nowrap;
-    text-align: right;
-    padding-left: 10px;
-    padding-right: 10px;
+    text-align: center !important;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 .grid-view tbody td.action-column::before {
@@ -3824,13 +3872,19 @@ body.dark .table td small {
     color: #7997c4 !important;
 }
 
-/* Action buttons in grid */
+/* Action buttons in grid (.btn-group-action) */
 .btn-group-action {
     display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     border: 1px solid #d7e5fa !important;
     border-radius: 9px !important;
     overflow: hidden !important;
     vertical-align: middle !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(35, 75, 140, 0.05) !important;
+    height: 28px !important;
+    margin: 0 auto !important;
 }
 
 .btn-group-action button,
@@ -3840,22 +3894,41 @@ body.dark .table td small {
     border-radius: 0 !important;
     background: transparent !important;
     color: #4b76b5 !important;
-    width: 33px !important;
-    height: 30px !important;
+    width: 29px !important;
+    height: 28px !important;
     padding: 0 !important;
     margin: 0 !important;
-    display: grid !important;
-    place-items: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     cursor: pointer !important;
     text-decoration: none !important;
     box-shadow: none !important;
     transform: none !important;
     filter: none !important;
+    box-sizing: border-box !important;
+    transition: background 0.15s ease, color 0.15s ease !important;
 }
 
 .btn-group-action button:last-child,
 .btn-group-action a:last-child {
     border-right: 0 !important;
+}
+
+.btn-group-action .material-symbols-rounded,
+.btn-group-action .icon,
+.btn-group-action button .material-symbols-rounded,
+.btn-group-action a .material-symbols-rounded,
+.btn-group-action button svg,
+.btn-group-action a svg {
+    font-size: 15px !important;
+    width: 15px !important;
+    height: 15px !important;
+    line-height: 15px !important;
+    max-width: 15px !important;
+    max-height: 15px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
 }
 
 .btn-group-action button:hover,
@@ -3865,30 +3938,47 @@ body.dark .table td small {
 }
 
 .btn-group-action button.del:hover,
-.btn-group-action a.del:hover {
+.btn-group-action a.del:hover,
+.btn-group-action a[data-method="post"]:hover,
+.btn-group-action a[data-confirm]:hover,
+.btn-group-action button[data-modal="delete"]:hover {
     background: #ffebef !important;
     color: #ce3157 !important;
 }
 
-body.dark .btn-group-action {
-    border-color: #405573 !important;
+body.dark .btn-group-action,
+html.dark .btn-group-action {
+    border-color: #3b506d !important;
+    background: #19263a !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
 }
 
 body.dark .btn-group-action button,
-body.dark .btn-group-action a {
-    border-color: #405573 !important;
-    color: #aec5e9 !important;
+body.dark .btn-group-action a,
+html.dark .btn-group-action button,
+html.dark .btn-group-action a {
+    border-color: #3b506d !important;
+    color: #9cbfee !important;
+    background: transparent !important;
 }
 
 body.dark .btn-group-action button:hover,
-body.dark .btn-group-action a:hover {
-    background: #30496e !important;
+body.dark .btn-group-action a:hover,
+html.dark .btn-group-action button:hover,
+html.dark .btn-group-action a:hover {
+    background: #2a3d58 !important;
+    color: #e2eeff !important;
 }
 
 body.dark .btn-group-action button.del:hover,
-body.dark .btn-group-action a.del:hover {
-    background: #63354c !important;
-    color: #ffd2dc !important;
+body.dark .btn-group-action a.del:hover,
+body.dark .btn-group-action a[data-method="post"]:hover,
+body.dark .btn-group-action a[data-confirm]:hover,
+body.dark .btn-group-action button[data-modal="delete"]:hover,
+html.dark .btn-group-action button.del:hover,
+html.dark .btn-group-action a.del:hover {
+    background: #54222f !important;
+    color: #ffa4b2 !important;
 }
 
 /* Grid pagination matching prototype */

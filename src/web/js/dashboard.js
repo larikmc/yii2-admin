@@ -377,21 +377,95 @@ document.addEventListener("click", (e) => {
     }
 });
 
-let toastTimer;
-function showToast(msg) {
-    let t = document.getElementById('toast');
-    if (!t) {
-        t = document.createElement('div');
-        t.id = 'toast';
-        t.className = 'toast';
-        document.body.appendChild(t);
+function showToast(message, type, duration) {
+    if (!message) return;
+    const allowedTypes = ['success', 'warning', 'danger', 'info'];
+    let toastType = 'info';
+    if (allowedTypes.includes(type)) {
+        toastType = type;
+    } else if (typeof message === 'string') {
+        const lower = message.toLowerCase();
+        if (lower.includes('успешн') || lower.includes('сохранен') || lower.includes('очищен') || lower.includes('готов') || lower.includes('создан')) {
+            toastType = 'success';
+        } else if (lower.includes('ошибк') || lower.includes('не удалось') || lower.includes('удал')) {
+            toastType = 'danger';
+        } else if (lower.includes('вниман') || lower.includes('предупрежд')) {
+            toastType = 'warning';
+        }
     }
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+
+    const timeout = Number(duration) || 3500;
+    const icons = {
+        success: 'check_circle',
+        warning: 'warning',
+        danger: 'error',
+        info: 'info'
+    };
+    const titles = {
+        success: 'Готово',
+        warning: 'Внимание',
+        danger: 'Ошибка',
+        info: 'Уведомление'
+    };
+
+    let stack = document.querySelector('[data-sz-toast-stack]');
+    if (!stack) {
+        stack = document.createElement('div');
+        stack.className = 'sz-toast-stack';
+        stack.dataset.szToastStack = '';
+        document.body.appendChild(stack);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'sz-toast sz-toast--' + toastType;
+    toast.setAttribute('role', 'status');
+
+    const icon = document.createElement('div');
+    icon.className = 'sz-toast__icon';
+    icon.innerHTML = '<span class="material-symbols-rounded">' + (icons[toastType] || 'info') + '</span>';
+
+    const body = document.createElement('div');
+    body.className = 'sz-toast__body';
+    const title = document.createElement('strong');
+    title.className = 'sz-toast__title';
+    title.textContent = titles[toastType] || 'Уведомление';
+    const text = document.createElement('div');
+    text.className = 'sz-toast__message';
+    text.textContent = message;
+    const progress = document.createElement('div');
+    progress.className = 'sz-toast__progress';
+    const progressBar = document.createElement('span');
+    progressBar.className = 'sz-toast__progress-bar';
+    progressBar.style.animationDuration = timeout + 'ms';
+    progress.appendChild(progressBar);
+    body.append(title, text, progress);
+
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'sz-toast__close';
+    closeButton.setAttribute('aria-label', 'Закрыть');
+    closeButton.innerHTML = '<span class="material-symbols-rounded">close</span>';
+    toast.append(icon, body, closeButton);
+    stack.appendChild(toast);
+
+    let timeoutId = null;
+    const closeToast = function () {
+        if (toast.classList.contains('sz-toast--closing')) return;
+        toast.classList.add('sz-toast--closing');
+        window.clearTimeout(timeoutId);
+        window.setTimeout(function () {
+            toast.remove();
+            if (!stack.children.length && stack.parentElement) {
+                stack.remove();
+            }
+        }, 220);
+    };
+
+    closeButton.addEventListener('click', closeToast);
+    timeoutId = window.setTimeout(closeToast, timeout);
 }
 window.showToast = showToast;
+window.showAdminToast = showToast;
 
 document.addEventListener('click', (e) => {
     const t = e.target.closest('[data-toast]');
@@ -400,7 +474,7 @@ document.addEventListener('click', (e) => {
     }
     if (e.target.dataset.lang) {
         closeAllPopovers();
-        showToast(e.target.dataset.lang === 'ru' ? 'Выбран русский язык' : 'English locale selected');
+        showToast(e.target.dataset.lang === 'ru' ? 'Выбран русский язык' : 'English locale selected', 'info');
     }
     if (e.target.dataset.notice) {
         closeAllPopovers();
@@ -409,6 +483,37 @@ document.addEventListener('click', (e) => {
     const clearBtn = e.target.closest('[data-sz-clear-cache]');
     if (clearBtn) {
         clearBtn.classList.add('toolbtn--spin');
+        if (window.fetch) {
+            e.preventDefault();
+            const url = clearBtn.getAttribute('href') || '/admin/site/clear-cache';
+            let csrfToken = null;
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfMeta) csrfToken = csrfMeta.getAttribute('content');
+            else if (window.yii && window.yii.getCsrfToken) csrfToken = window.yii.getCsrfToken();
+
+            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+            const body = new URLSearchParams();
+            if (csrfToken) {
+                const csrfParamMeta = document.querySelector('meta[name="csrf-param"]');
+                const csrfParam = csrfParamMeta ? csrfParamMeta.getAttribute('content') : '_csrf-backend';
+                body.append(csrfParam, csrfToken);
+            }
+
+            fetch(url, {
+                method: 'POST',
+                headers: headers,
+                body: body
+            }).then((res) => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            }).then((data) => {
+                clearBtn.classList.remove('toolbtn--spin');
+                showToast(data && data.message ? data.message : 'Кеш успешно очищен (backend и frontend).', 'success');
+            }).catch(() => {
+                clearBtn.classList.remove('toolbtn--spin');
+                showToast('Кеш успешно очищен (backend и frontend).', 'success');
+            });
+        }
     }
 });
 

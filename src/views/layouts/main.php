@@ -28,6 +28,26 @@ $topbarActions = $this->params['topbarActions'] ?? [];
 $breadcrumbs = $this->params['breadcrumbs'] ?? [];
 $breadcrumbItems = [];
 
+if (!empty($breadcrumbs) && !$isDashboard) {
+    $hasHome = false;
+    foreach ($breadcrumbs as $b) {
+        if (is_array($b)) {
+            $bLabel = $b['label'] ?? '';
+            $bUrl = $b['url'] ?? null;
+            if ($bLabel === 'Главная' || $bUrl === ['/admin/site/index'] || $bUrl === '/admin' || $bUrl === ['/admin']) {
+                $hasHome = true;
+                break;
+            }
+        } elseif ($b === 'Главная') {
+            $hasHome = true;
+            break;
+        }
+    }
+    if (!$hasHome) {
+        $breadcrumbItems[] = Html::a('Главная', ['/admin/site/index'], ['class' => 'sz-breadcrumbs__link']);
+    }
+}
+
 foreach ($breadcrumbs as $breadcrumb) {
     if (is_array($breadcrumb)) {
         $label = ArrayHelper::getValue($breadcrumb, 'label', '');
@@ -41,7 +61,9 @@ foreach ($breadcrumbs as $breadcrumb) {
     $breadcrumbItems[] = Html::tag('span', Html::encode((string) $breadcrumb), ['class' => 'sz-breadcrumbs__current']);
 }
 
-$breadcrumbTrail = implode('<span class="sz-breadcrumbs__sep">/</span>', $breadcrumbItems);
+$breadcrumbTrail = !empty($breadcrumbItems)
+    ? implode('<span class="sz-breadcrumbs__sep">/</span>', $breadcrumbItems)
+    : '';
 $userName = $identity->username ?? $identity->email ?? 'Администратор';
 $userEmail = $identity->email ?? null;
 
@@ -363,6 +385,9 @@ $isDarkTheme = (isset($_COOKIE['admin-theme']) && $_COOKIE['admin-theme'] === 'd
         <div class="sz-content__inner">
             <header class="topbar">
                 <div class="welcome">
+                    <?php if ($breadcrumbTrail !== ''): ?>
+                        <nav class="sz-breadcrumbs" aria-label="breadcrumb"><?= $breadcrumbTrail ?></nav>
+                    <?php endif; ?>
                     <h1 id="topTitle"><?= Html::encode($pageTitle) ?></h1>
                     <?php $pageSubtitle = $this->params['pageSubtitle'] ?? ($isDashboard ? 'Панель управления контент-платформой' : null); ?>
                 <?php if ($pageSubtitle): ?>
@@ -480,7 +505,7 @@ $isDarkTheme = (isset($_COOKIE['admin-theme']) && $_COOKIE['admin-theme'] === 'd
                     ?>
                     <?php foreach ((array) $message as $m): ?>
                         <?php if (!is_scalar($m) || trim((string) $m) === '') continue; ?>
-                        <div class="sz-toast sz-toast--<?= Html::encode($toastType) ?>" role="status" data-sz-toast data-duration="2000">
+                        <div class="sz-toast sz-toast--<?= Html::encode($toastType) ?>" role="status" data-sz-toast data-duration="3500">
                             <div class="sz-toast__icon">
                                 <span class="material-symbols-rounded">
                                     <?php
