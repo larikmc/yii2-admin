@@ -2,6 +2,17 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.30] - 2026-11-24
+
+### Fixed & Restored
+- **Restored UI-Kit Block Surfaces & Backgrounds**:
+  - Enforced solid background and crisp borders for .ui-kit-hero and .ui-kit-section (#ffffff in Light theme, #17243c in Dark theme) with soft elevation shadow.
+  - Added --surface variable aliases in :root and ody.dark so any surface referencing ar(--surface) never falls back to transparent.
+- **Restored Elegant Capsule Toggles (.ui-kit-toggle-item)**:
+  - Returned the rounded capsule pill layout for switches with pulsing dot status indicators and segmented [ Вкл | Откл ] controls in both light and dark themes.
+- **Restored Rich Job Queue Simulator (.sz-progress-job)**:
+  - Returned the original 18px gradient pill progress bar (linear-gradient(90deg, #427ff3, #7260ef)), step counter, and spinning sync status card.
+
 ## [2.1.29] - 2026-11-24
 
 ### Fixed & Enhanced

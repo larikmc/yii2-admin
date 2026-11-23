@@ -10,22 +10,23 @@ $this->params['breadcrumbs'] = [
 $this->params['pageSubtitle'] = 'Дизайн-система панели управления · Спецификация компонентов · Светлая и тёмная темы';
 
 $module = Yii::$app->getModule('admin');
-$placeholder = $module ? $module->getLazyloadPlaceholderUrl($this) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 106 106'%3E%3Crect width='106' height='106' fill='%23f1f5fa'/%3E%3C/svg%3E";
+$placeholder = $module ? $module->getLazyloadPlaceholderUrl($this) : '/img/load.svg';
 $asset = \larikmc\admin\assets\AppAsset::register($this);
-$demoLocalImg = $asset->baseUrl . '/img/template.jpg';
 $demoPlaceholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 106 106'%3E%3Crect width='106' height='106' fill='%23f1f5fa'/%3E%3Cpath d='M35 70l14-16 11 12 11-14 15 18H35z' fill='%23cad8eb'/%3E%3Ccircle cx='45' cy='42' r='6' fill='%23cad8eb'/%3E%3C/svg%3E";
+$demoLocalImg = $asset->baseUrl . '/img/template.jpg';
+$demoOriginal = $demoLocalImg;
 ?>
 
 <div id="uiKitPage" class="ui-kit-wrapper">
 
   <!-- =========================================================================
-       HERO: ШАПКА UI-KIT С ПЕРЕКЛЮЧАТЕЛЕМ ТЕМ (LIGHT / DARK)
+       HERO: ШАПКА UI-KIT С ИНТЕРАКТИВНЫМ ПЕРЕКЛЮЧАТЕЛЕМ ТЕМ (LIGHT / DARK)
        ========================================================================= -->
   <div class="sz-panel ui-kit-hero">
     <div class="ui-kit-hero__header">
       <div class="ui-kit-hero__titles">
         <div class="ui-kit-badges">
-          <span class="badge text-bg-primary">Design System v2.1</span>
+          <span class="badge text-bg-primary">Design System v2.0</span>
           <span class="badge text-bg-secondary">Bootstrap 5.3</span>
           <span class="badge badge-soft-success">2 Темы оформления</span>
         </div>
@@ -61,14 +62,15 @@ $demoPlaceholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'
     <div class="ui-kit-quicknav">
       <span class="ui-kit-quicknav__label">Разделы:</span>
       <div class="ui-kit-quicknav__links">
-        <a href="#sec-media" class="ui-kit-nav-pill">Медиа & Popup</a>
         <a href="#sec-tokens" class="ui-kit-nav-pill">Токены & Цвета</a>
+        <a href="#sec-typography" class="ui-kit-nav-pill">Типографика</a>
         <a href="#sec-buttons" class="ui-kit-nav-pill">Кнопки</a>
         <a href="#sec-toggles" class="ui-kit-nav-pill">Переключатели</a>
         <a href="#sec-badges" class="ui-kit-nav-pill">Бейджи</a>
         <a href="#sec-tabs" class="ui-kit-nav-pill">Вкладки</a>
         <a href="#sec-forms" class="ui-kit-nav-pill">Формы</a>
         <a href="#sec-table" class="ui-kit-nav-pill">Таблица (GridView)</a>
+        <a href="#sec-media" class="ui-kit-nav-pill">Медиа & Popup</a>
         <a href="#sec-jobs" class="ui-kit-nav-pill">Очереди</a>
         <a href="#sec-feedback" class="ui-kit-nav-pill">Алерты & Модалки</a>
       </div>
@@ -76,78 +78,7 @@ $demoPlaceholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'
   </div>
 
   <!-- =========================================================================
-       СЕКЦИЯ 1: МЕДИА, POPUP + LAZYLOAD (ЖИВОЙ ПРИМЕР)
-       ========================================================================= -->
-  <div id="sec-media" class="sz-panel ui-kit-section">
-    <div class="ui-kit-section__head">
-      <div>
-        <span class="sz-eyebrow">Images & Viewer</span>
-        <h2>Popup + lazyload (Изображения)</h2>
-        <p class="text-muted">
-          Миниатюра грузится через <code>data-src</code>, а полноэкранный popup открывает оригинал из <code>data-image-full</code>.
-        </p>
-      </div>
-      <span class="badge badge-soft-primary">image-viewer-admin.js</span>
-    </div>
-
-    <!-- Живой пример с кликабельной миниатюрой и ссылкой -->
-    <div class="sz-thumb-preview-wrap">
-      <a class="sz-thumb sz-thumb--lg" href="<?= Html::encode($demoLocalImg) ?>" data-pjax="0" data-image-viewer="true" data-image-full="<?= Html::encode($demoLocalImg) ?>" data-image-title="Демо popup: оригинальное изображение">
-        <img class="sz-thumb__img" src="<?= Html::encode($demoLocalImg) ?>" alt="Миниатюра">
-      </a>
-      <div>
-        <strong style="display:block;font-size:15px;margin-bottom:4px;">
-          <a href="<?= Html::encode($demoLocalImg) ?>" data-pjax="0" data-image-viewer="true" data-image-full="<?= Html::encode($demoLocalImg) ?>" data-image-title="Демо popup: оригинальное изображение" style="color:var(--sz-text);text-decoration:none;cursor:pointer;">
-            Живой пример <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;color:var(--sz-primary);">open_in_new</span>
-          </a>
-        </strong>
-        <div style="color:var(--sz-muted);font-size:12.5px;">
-          <a href="<?= Html::encode($demoLocalImg) ?>" data-pjax="0" data-image-viewer="true" data-image-full="<?= Html::encode($demoLocalImg) ?>" data-image-title="Демо popup: оригинальное изображение" class="text-primary text-decoration-none">
-            Нажмите на миниатюру или сюда, чтобы открыть popup.
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Сетка паттернов кода (HTML и Yii/PHP) -->
-    <div class="row g-3" style="margin-top:4px;">
-      <div class="col-lg-6">
-        <div class="sz-code-block-title">HTML-паттерн</div>
-        <pre class="sz-code-block"><code>&lt;a class="sz-thumb sz-thumb--lg" href="/admin/assets/.../img/template.jpg"
-   data-pjax="0" data-image-viewer="true"
-   data-image-full="/admin/assets/.../img/template.jpg"
-   data-image-title="Демо popup: оригинальное изображение"&gt;
-    &lt;img class="sz-thumb__img" src="/img/load.svg"
-         data-src="/admin/assets/.../img/template.jpg" alt="Миниатюра"&gt;
-&lt;/a&gt;</code></pre>
-      </div>
-      <div class="col-lg-6">
-        <div class="sz-code-block-title">Yii/PHP-паттерн</div>
-        <pre class="sz-code-block"><code>$placeholder = Yii::$app-&gt;getModule('admin')-&gt;getLazyloadPlaceholderUrl($this);
-
-echo Html::a(
-    Html::img($placeholder, [
-        'data-src' =&gt; $thumbUrl,
-        'class' =&gt; 'sz-thumb__img',
-        'loading' =&gt; 'lazy',
-        'decoding' =&gt; 'async',
-        'alt' =&gt; '',
-    ]),
-    $originalUrl,
-    [
-        'data-pjax' =&gt; '0',
-        'data-image-viewer' =&gt; true,
-        'data-image-full' =&gt; $originalUrl,
-        'data-image-title' =&gt; 'Оригинал #' . $model-&gt;id,
-        'class' =&gt; 'sz-thumb sz-thumb--lg',
-    ]
-);</code></pre>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================================================
-       СЕКЦИЯ 2: ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ
+       СЕКЦИЯ 1: ЦВЕТОВАЯ ПАЛИТРА И ДИЗАЙН-ТОКЕНЫ
        ========================================================================= -->
   <div id="sec-tokens" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
@@ -172,95 +103,175 @@ echo Html::a(
         </div>
       </div>
 
+      <!-- Accent -->
+      <div class="ui-kit-swatch-card" data-copy="var(--sz-accent)">
+        <div class="ui-kit-swatch-color" style="background:#c97342;"></div>
+        <div class="ui-kit-swatch-info">
+          <strong>Warm Accent</strong>
+          <code>--sz-accent</code>
+          <small>#c97342 · Вторичный тёплый акцент, лейблы</small>
+        </div>
+      </div>
+
       <!-- Success -->
       <div class="ui-kit-swatch-card" data-copy="var(--sz-success)">
         <div class="ui-kit-swatch-color" style="background:#079b70;"></div>
         <div class="ui-kit-swatch-info">
-          <strong>Success Color</strong>
+          <strong>Success / Active</strong>
           <code>--sz-success</code>
-          <small>#079b70 · Успешные операции, бейджи, кнопки</small>
+          <small>#079b70 · Статус «Вкл», сохранение, успешные логи</small>
         </div>
       </div>
 
       <!-- Danger -->
       <div class="ui-kit-swatch-card" data-copy="var(--sz-danger)">
-        <div class="ui-kit-swatch-color" style="background:#dc3545;"></div>
+        <div class="ui-kit-swatch-color" style="background:#e24e6c;"></div>
         <div class="ui-kit-swatch-info">
           <strong>Danger / Error</strong>
           <code>--sz-danger</code>
-          <small>#dc3545 · Удаление, предупреждения, ошибки</small>
+          <small>#e24e6c · Удаление, статус «Откл», блокировки</small>
         </div>
       </div>
 
       <!-- Warning -->
       <div class="ui-kit-swatch-card" data-copy="var(--sz-warning)">
-        <div class="ui-kit-swatch-color" style="background:#f59e0b;"></div>
+        <div class="ui-kit-swatch-color" style="background:#eea63c;"></div>
         <div class="ui-kit-swatch-info">
-          <strong>Warning Color</strong>
+          <strong>Warning</strong>
           <code>--sz-warning</code>
-          <small>#f59e0b · Ожидание, модерация, уведомления</small>
+          <small>#eea63c · Ожидание, модерация, системные лимиты</small>
         </div>
       </div>
 
       <!-- Info -->
       <div class="ui-kit-swatch-card" data-copy="var(--sz-info)">
-        <div class="ui-kit-swatch-color" style="background:#0ea5e9;"></div>
+        <div class="ui-kit-swatch-color" style="background:#2865be;"></div>
         <div class="ui-kit-swatch-info">
-          <strong>Info Accent</strong>
+          <strong>Info / Neutral</strong>
           <code>--sz-info</code>
-          <small>#0ea5e9 · Подсказки, справочная информация</small>
+          <small>#2865be · Информирование, справка, статистика</small>
         </div>
       </div>
 
-      <!-- Surface Background -->
-      <div class="ui-kit-swatch-card" data-copy="var(--surface)">
-        <div class="ui-kit-swatch-color" style="background:#ffffff;border:1px solid #d7e5fa;"></div>
+      <!-- Surface Dynamic -->
+      <div class="ui-kit-swatch-card" data-copy="var(--sz-surface)">
+        <div class="ui-kit-swatch-color ui-kit-swatch-color--dynamic" style="background:var(--sz-surface);border:1px solid var(--sz-line);"></div>
         <div class="ui-kit-swatch-info">
-          <strong>Surface / Panel</strong>
-          <code>--surface</code>
-          <small>#ffffff / #162235 (dark)</small>
+          <strong>Card Surface</strong>
+          <code>--sz-surface</code>
+          <small>Динамический фон карточек и типовых панелей</small>
         </div>
       </div>
 
-      <!-- Stroke / Border -->
-      <div class="ui-kit-swatch-card" data-copy="var(--stroke)">
-        <div class="ui-kit-swatch-color" style="background:#e7edfb;"></div>
+      <!-- Canvas Background -->
+      <div class="ui-kit-swatch-card" data-copy="var(--sz-bg)">
+        <div class="ui-kit-swatch-color ui-kit-swatch-color--dynamic" style="background:var(--sz-bg);border:1px solid var(--sz-line);"></div>
         <div class="ui-kit-swatch-info">
-          <strong>Stroke / Border</strong>
-          <code>--stroke</code>
-          <small>#e7edfb / #2a3c54 (dark)</small>
+          <strong>Canvas Background</strong>
+          <code>--sz-bg</code>
+          <small>Базовый фон страницы и подложек layout</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Архитектурные слои (Surface hierarchy) -->
+    <div class="ui-kit-surface-layers">
+      <div class="ui-kit-surface-layer ui-kit-surface-layer--canvas">
+        <span class="ui-kit-layer-tag">Layer 0 · Canvas</span>
+        <strong>Фон приложения (--sz-bg)</strong>
+        <p>Мягкий холст layout со световыми градиентами в светлой теме и глубоким матовым индиго в тёмной.</p>
+      </div>
+      <div class="ui-kit-surface-layer ui-kit-surface-layer--panel">
+        <span class="ui-kit-layer-tag">Layer 1 · Panel (.sz-panel)</span>
+        <strong>Основная панель контента</strong>
+        <p>Радиус 22px, деликатная тень, контрастный фон, адаптирующийся под тему.</p>
+      </div>
+      <div class="ui-kit-surface-layer ui-kit-surface-layer--surface">
+        <span class="ui-kit-layer-tag">Layer 2 · Surface (.sz-surface)</span>
+        <strong>Внутренняя плашка для группировки</strong>
+        <p>Используется для фильтров, параметров форм, виджетов и акцентных блоков.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       СЕКЦИЯ 2: ТИПОГРАФИКА И ИЕРАРХИЯ
+       ========================================================================= -->
+  <div id="sec-typography" class="sz-panel ui-kit-section">
+    <div class="ui-kit-section__head">
+      <div>
+        <span class="sz-eyebrow">Typography</span>
+        <h2>Типографика и текстовая иерархия</h2>
+        <p class="text-muted">
+          Шрифт Inter с оптимизированным оптическим выравниванием, читабельностью на экранах любой плотности и строгим контрастом в обеих темах.
+        </p>
+      </div>
+    </div>
+
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <div class="ui-kit-type-sample">
+          <div class="ui-kit-type-row">
+            <span class="ui-kit-type-meta">H1 · 26px / 750</span>
+            <h1 style="margin:0;font-size:26px;font-weight:750;">Заголовок первого уровня H1</h1>
+          </div>
+          <div class="ui-kit-type-row">
+            <span class="ui-kit-type-meta">H2 · 20px / 750</span>
+            <h2 style="margin:0;font-size:20px;font-weight:750;">Заголовок секции H2</h2>
+          </div>
+          <div class="ui-kit-type-row">
+            <span class="ui-kit-type-meta">H3 · 16px / 700</span>
+            <h3 style="margin:0;font-size:16px;font-weight:700;">Заголовок подраздела H3</h3>
+          </div>
+          <div class="ui-kit-type-row">
+            <span class="ui-kit-type-meta">H4 · 14px / 650</span>
+            <h4 style="margin:0;font-size:14px;font-weight:650;">Микро-заголовок карточки H4</h4>
+          </div>
+          <div class="ui-kit-type-row">
+            <span class="ui-kit-type-meta">Lead text</span>
+            <p class="lead" style="margin:0;font-size:15px;">Вводный абзац для ключевых описаний и пояснительных секций страниц.</p>
+          </div>
+          <div class="ui-kit-type-row">
+            <span class="ui-kit-type-meta">Body / Muted</span>
+            <p style="margin:0;">Стандартный текст интерфейса с естественным интерлиньяжем. <span class="text-muted">Вспомогательный приглушённый текст (.text-muted) для метаданных и подписей.</span></p>
+          </div>
         </div>
       </div>
 
-      <!-- Text / Foreground -->
-      <div class="ui-kit-swatch-card" data-copy="var(--text)">
-        <div class="ui-kit-swatch-color" style="background:#13233a;"></div>
-        <div class="ui-kit-swatch-info">
-          <strong>Text / Primary</strong>
-          <code>--text</code>
-          <small>#13233a / #eef4ff (dark)</small>
+      <div class="col-lg-5">
+        <div class="sz-surface">
+          <span class="sz-eyebrow">Text Elements</span>
+          <h4 style="margin-top:4px;">Элементы разметки</h4>
+          <p style="font-size:13px;margin-bottom:12px;">Примеры инлайн-тегов и акцентов:</p>
+          <ul style="list-style:none;padding:0;margin:0;display:grid;gap:8px;font-size:13px;">
+            <li>Надзаголовок: <span class="sz-eyebrow">Section Eyebrow</span></li>
+            <li>Инлайн-код: <code>$model->save(false)</code></li>
+            <li>Клавиатура: <kbd>Ctrl</kbd> + <kbd>S</kbd> для сохранения</li>
+            <li>Выделение: <mark>Ключевое совпадение</mark> в поиске</li>
+            <li>Хлебные крошки: <span class="sz-breadcrumbs__current">Главная / Каталог / Запись</span></li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       СЕКЦИЯ 3: КНОПКИ И ГРУППА ДЕЙСТВИЙ (ActionColumn)
+       СЕКЦИЯ 3: КНОПКИ И СОСТОЯНИЯ СВЕЧЕНИЯ (.btn .btn-*)
        ========================================================================= -->
   <div id="sec-buttons" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
       <div>
-        <span class="sz-eyebrow">Buttons & States</span>
-        <h2>Кнопки, размеры и компактные действия в таблицах</h2>
+        <span class="sz-eyebrow">Interactive Controls</span>
+        <h2>Кнопки и состояния свечения (.btn .btn-*)</h2>
         <p class="text-muted">
-          Сплошные кнопки со свечением, контурные варианты и монолитная группа действий <code>.btn-group-action</code>.
+          Primary светится фирменным синим ореолом всегда; Success, Danger и Warning загораются при наведении; контурные кнопки дают лёгкий интерактивный отклик.
         </p>
       </div>
-      <span class="badge text-bg-secondary">.btn / .btn-group-action</span>
     </div>
 
-    <div class="ui-kit-group-wrapper">
-      <div class="ui-kit-component-label">Сплошные кнопки со свечением (Solid Buttons)</div>
+    <!-- Сплошные кнопки -->
+    <div class="ui-kit-component-row">
+      <div class="ui-kit-component-label">Сплошные кнопки (Solid)</div>
       <div class="ui-kit-btn-group">
         <button class="btn btn-primary" type="button" data-toast="Основное действие выполнено (Primary)">
           <span class="material-symbols-rounded">check</span> Primary Action
@@ -281,11 +292,14 @@ echo Html::a(
           <span class="material-symbols-rounded">info</span> Info Action
         </button>
         <button class="btn btn-primary" type="button" disabled>
-          Disabled State
+          <span class="material-symbols-rounded">block</span> Disabled
         </button>
       </div>
+    </div>
 
-      <div class="ui-kit-component-label" style="margin-top:20px;">Контурные кнопки (Outline)</div>
+    <!-- Контурные кнопки -->
+    <div class="ui-kit-component-row">
+      <div class="ui-kit-component-label">Контурные кнопки (Outline)</div>
       <div class="ui-kit-btn-group">
         <button class="btn btn-outline-primary" type="button" data-toast="Outline Primary выбран">
           <span class="material-symbols-rounded">edit</span> Outline Primary
@@ -293,18 +307,21 @@ echo Html::a(
         <button class="btn btn-outline-secondary" type="button" data-toast="Outline Secondary выбран">
           <span class="material-symbols-rounded">refresh</span> Outline Secondary
         </button>
-        <button class="btn btn-outline-success" type="button" data-toast="Outline Success">
-          <span class="material-symbols-rounded">check_circle</span> Outline Success
-        </button>
         <button class="btn btn-outline-danger" type="button" data-modal="delete">
           <span class="material-symbols-rounded">delete_outline</span> Outline Danger
         </button>
+        <button class="btn btn-outline-primary" type="button" disabled>
+          Outline Disabled
+        </button>
       </div>
+    </div>
 
-      <div class="ui-kit-component-label" style="margin-top:20px;">Размеры и компактная группа действий в таблицах</div>
+    <!-- Размеры и микро-действия -->
+    <div class="ui-kit-component-row">
+      <div class="ui-kit-component-label">Размеры и действия в таблицах</div>
       <div class="ui-kit-btn-group align-items-center">
         <button class="btn btn-primary btn-lg" type="button" data-toast="Большая кнопка (btn-lg)">
-          <span class="material-symbols-rounded">rocket_launch</span> Large (btn-lg)
+          <span class="material-symbols-rounded">rocket_launch</span> Large Button (btn-lg)
         </button>
         <button class="btn btn-primary" type="button" data-toast="Стандартная кнопка (default)">
           Default Button
@@ -316,8 +333,8 @@ echo Html::a(
           Micro (btn-xs)
         </button>
 
-        <!-- Компактная монолитная группа действий (exact match screenshot) -->
-        <div class="btn-group-action" title="Компактная группа действий в строке таблицы">
+        <!-- Action column group -->
+        <div class="btn-group-action" title="Группа действий в строке таблицы">
           <button type="button" title="Просмотр" data-toast="Просмотр записи"><span class="material-symbols-rounded">visibility</span></button>
           <button type="button" title="Редактировать" data-toast="Редактирование записи"><span class="material-symbols-rounded">edit</span></button>
           <button type="button" class="del" title="Удалить" data-modal="delete"><span class="material-symbols-rounded">delete</span></button>
@@ -332,198 +349,254 @@ echo Html::a(
   <div id="sec-toggles" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
       <div>
-        <span class="sz-eyebrow">Interactive Controls</span>
-        <h2>Сегментированные переключатели (Фиксированные позиции)</h2>
+        <span class="sz-eyebrow">Status Switches</span>
+        <h2>Сегментированные переключатели статуса [ Вкл | Откл ]</h2>
         <p class="text-muted">
-          Кнопки <code>Вкл</code> (зелёный) и <code>Откл</code> (красный) всегда остаются на своих местах слева и справа.
+          Фиксированное расположение кнопок: «Вкл» всегда слева, «Откл» всегда справа (не меняются местами). Индикатор статуса снабжён живой пульсацией активности.
         </p>
       </div>
-      <span class="badge text-bg-secondary">Fixed Layout</span>
+      <span class="badge badge-soft-success">Гарантированный порядок</span>
     </div>
 
-    <div class="ui-kit-toggles-list">
-      <div class="ui-kit-toggle-card" data-toggle-title="Яндекс РТБ">
-        <div class="ui-kit-toggle-info">
-          <span class="ui-kit-toggle-dot is-active"></span>
+    <!-- Демо-сетка интерактивных переключателей как в рекламном модуле -->
+    <div class="ui-kit-toggles-grid">
+      <!-- Переключатель 1 -->
+      <div class="ui-kit-toggle-item" data-toggle-box="yandex">
+        <div class="ui-kit-toggle-label">
+          <span class="ui-kit-status-dot is-active"></span>
           <strong>Яндекс РТБ</strong>
-          <small class="text-muted">Загрузка контекстных объявлений</small>
         </div>
-        <div class="ui-kit-segmented-toggle">
-          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on is-active">Вкл</button>
-          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off">Откл</button>
+        <div class="ui-kit-segmented-control" role="group">
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on is-active" data-seg-val="1">Вкл</button>
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off" data-seg-val="0">Откл</button>
         </div>
       </div>
 
-      <div class="ui-kit-toggle-card" data-toggle-title="Digital Caramel">
-        <div class="ui-kit-toggle-info">
-          <span class="ui-kit-toggle-dot is-active"></span>
+      <!-- Переключатель 2 -->
+      <div class="ui-kit-toggle-item" data-toggle-box="caramel">
+        <div class="ui-kit-toggle-label">
+          <span class="ui-kit-status-dot is-active"></span>
           <strong>Digital Caramel</strong>
-          <small class="text-muted">Монетизация медийного трафика</small>
         </div>
-        <div class="ui-kit-segmented-toggle">
-          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on is-active">Вкл</button>
-          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off">Откл</button>
+        <div class="ui-kit-segmented-control" role="group">
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on is-active" data-seg-val="1">Вкл</button>
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off" data-seg-val="0">Откл</button>
         </div>
       </div>
 
-      <div class="ui-kit-toggle-card" data-toggle-title="Adfinity (авто-встраивание)">
-        <div class="ui-kit-toggle-info">
-          <span class="ui-kit-toggle-dot is-active"></span>
+      <!-- Переключатель 3 -->
+      <div class="ui-kit-toggle-item" data-toggle-box="adfinity">
+        <div class="ui-kit-toggle-label">
+          <span class="ui-kit-status-dot is-active"></span>
           <strong>Adfinity (авто-встраивание)</strong>
-          <small class="text-muted">Автоматические баннерные форматы</small>
         </div>
-        <div class="ui-kit-segmented-toggle">
-          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on is-active">Вкл</button>
-          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off">Откл</button>
+        <div class="ui-kit-segmented-control" role="group">
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on is-active" data-seg-val="1">Вкл</button>
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off" data-seg-val="0">Откл</button>
         </div>
       </div>
 
-      <div class="ui-kit-toggle-card" data-toggle-title="MPS / Mediascope">
-        <div class="ui-kit-toggle-info">
-          <span class="ui-kit-toggle-dot"></span>
+      <!-- Переключатель 4 -->
+      <div class="ui-kit-toggle-item" data-toggle-box="mps">
+        <div class="ui-kit-toggle-label">
+          <span class="ui-kit-status-dot is-active"></span>
           <strong>MPS / Mediascope</strong>
-          <small class="text-muted">Счётчик внешней верификации</small>
         </div>
-        <div class="ui-kit-segmented-toggle">
-          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on">Вкл</button>
-          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off is-active">Откл</button>
+        <div class="ui-kit-segmented-control" role="group">
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on is-active" data-seg-val="1">Вкл</button>
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off" data-seg-val="0">Откл</button>
+        </div>
+      </div>
+
+      <!-- Переключатель 5 -->
+      <div class="ui-kit-toggle-item" data-toggle-box="seo-throttle">
+        <div class="ui-kit-toggle-label">
+          <span class="ui-kit-status-dot"></span>
+          <strong>SEO Throttle</strong>
+        </div>
+        <div class="ui-kit-segmented-control" role="group">
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on" data-seg-val="1">Вкл</button>
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off is-active" data-seg-val="0">Откл</button>
+        </div>
+      </div>
+
+      <!-- Переключатель 6 -->
+      <div class="ui-kit-toggle-item" data-toggle-box="optimizer">
+        <div class="ui-kit-toggle-label">
+          <span class="ui-kit-status-dot is-active"></span>
+          <strong>Оптимизация изображений</strong>
+        </div>
+        <div class="ui-kit-segmented-control" role="group">
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--on is-active" data-seg-val="1">Вкл</button>
+          <button type="button" class="ui-kit-seg-btn ui-kit-seg-btn--off" data-seg-val="0">Откл</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       СЕКЦИЯ 5: БЕЙДЖИ И СТАТУСЫ (BADGES)
+       СЕКЦИЯ 5: БЕЙДЖИ, СТАТУСЫ И ПУЛЬСИРУЮЩИЕ ИНДИКАТОРЫ
        ========================================================================= -->
   <div id="sec-badges" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
       <div>
         <span class="sz-eyebrow">Status Indicators</span>
-        <h2>Бейджи и метки состояний</h2>
+        <h2>Бейджи и индикаторы состояния (.badge)</h2>
         <p class="text-muted">
-          Сплошные контрастные бейджи Bootstrap 5 и мягкие фирменные пилюли для статусов записей.
+          Сплошные и пастельные бейджи с высоким коэффициентом контрастности для фильтров, таблиц и списков записей.
         </p>
       </div>
-      <span class="badge text-bg-secondary">.badge / .badge-soft-*</span>
     </div>
 
-    <div class="ui-kit-group-wrapper">
-      <div class="ui-kit-component-label">Стандартные сплошные бейджи (Bootstrap 5)</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-        <span class="badge text-bg-primary">Primary</span>
-        <span class="badge text-bg-secondary">Secondary</span>
-        <span class="badge text-bg-success">Опубликовано</span>
-        <span class="badge text-bg-danger">Удалено</span>
-        <span class="badge text-bg-warning">На проверке</span>
-        <span class="badge text-bg-info">Информация</span>
-        <span class="badge text-bg-dark">Dark Badge</span>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="sz-surface">
+          <h4 style="font-size:14px;margin-bottom:12px;">Стандартные бейджи (Bootstrap 5)</h4>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span class="badge text-bg-success"><span class="material-symbols-rounded" style="font-size:13px;">check_circle</span> Опубликовано</span>
+            <span class="badge text-bg-warning"><span class="material-symbols-rounded" style="font-size:13px;">pending</span> На проверке</span>
+            <span class="badge text-bg-secondary"><span class="material-symbols-rounded" style="font-size:13px;">edit_note</span> Черновик</span>
+            <span class="badge text-bg-danger"><span class="material-symbols-rounded" style="font-size:13px;">error</span> Ошибка / Jail</span>
+            <span class="badge text-bg-primary"><span class="material-symbols-rounded" style="font-size:13px;">star</span> Главная</span>
+            <span class="badge text-bg-info"><span class="material-symbols-rounded" style="font-size:13px;">info</span> Справка</span>
+          </div>
+        </div>
       </div>
 
-      <div class="ui-kit-component-label" style="margin-top:20px;">Мягкие статусные бейджи (Soft Badges)</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-        <span class="badge badge-soft-success"><span class="ui-kit-dot is-active"></span> Активен</span>
-        <span class="badge badge-soft-warning"><span class="ui-kit-dot is-pending"></span> Ожидание</span>
-        <span class="badge badge-soft-danger"><span class="ui-kit-dot is-danger"></span> Заблокирован</span>
-        <span class="badge badge-soft-primary"><span class="ui-kit-dot is-primary"></span> В процессе</span>
-        <span class="badge badge-soft-secondary">Черновик</span>
+      <div class="col-md-6">
+        <div class="sz-surface">
+          <h4 style="font-size:14px;margin-bottom:12px;">Пастельные бейджи (Soft Badges)</h4>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span class="badge badge-soft-success">● Активен</span>
+            <span class="badge badge-soft-warning">● В обработке</span>
+            <span class="badge badge-soft-danger">● Отключен</span>
+            <span class="badge badge-soft-primary">● Администратор</span>
+            <span class="badge badge-soft-info">● 142 запроса</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       СЕКЦИЯ 6: СЕГМЕНТИРОВАННЫЕ ВКЛАДКИ (AdminTabs)
+       СЕКЦИЯ 6: СЕГМЕНТИРОВАННЫЕ ВКЛАДКИ РАЗДЕЛОВ (AdminTabs)
        ========================================================================= -->
   <div id="sec-tabs" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
       <div>
-        <span class="sz-eyebrow">Navigation</span>
-        <h2>Сегментированные вкладки разделов (AdminTabs)</h2>
+        <span class="sz-eyebrow">Navigation Tabs</span>
+        <h2>Вкладки разделов (.nav-pills-solid)</h2>
         <p class="text-muted">
-          Монолитный стиль сегментов <code>.nav-pills-solid</code> для фильтрации таблиц, переключения графиков и подразделов.
+          Сегментированные переключатели для многовкладочных страниц (как в Посещаемости сайтов, Антиботе и Рекламе).
         </p>
       </div>
-      <span class="badge text-bg-secondary">.nav-pills-solid</span>
     </div>
 
-    <ul class="nav-pills-solid" id="demoTabs" role="tablist">
+    <ul class="nav-pills-solid" id="demoTabs">
       <li><button class="nav-link active" data-tab="0" type="button"><span class="material-symbols-rounded">dashboard</span> Обзор системы</button></li>
-      <li><button class="nav-link" data-tab="1" type="button"><span class="material-symbols-rounded">history</span> История очередей</button></li>
-      <li><button class="nav-link" data-tab="2" type="button"><span class="material-symbols-rounded">tune</span> Параметры кеша</button></li>
-      <li><button class="nav-link" data-tab="3" type="button"><span class="material-symbols-rounded">security</span> Безопасность</button></li>
+      <li><button class="nav-link" data-tab="1" type="button"><span class="material-symbols-rounded">history</span> Журнал аудита</button></li>
+      <li><button class="nav-link" data-tab="2" type="button"><span class="material-symbols-rounded">settings</span> Конфигурация</button></li>
     </ul>
-    <div id="demoTabContent" class="demo-tab-description">
-      <strong>Обзор системы:</strong> Сводные показатели активности контент-платформы, нагрузка на сервер, статус рекламных сетей и антибот-фильтров.
+
+    <div id="demoTabContent" class="sz-surface demo-tab-pane">
+      <div id="tabPane0" class="tab-pane-content is-active">
+        <h4 style="margin:0 0 6px;">Обзор компонентов системы</h4>
+        <p class="text-muted" style="margin:0;">Оперативная статистика, активность сессий и статус модулей панели управления в реальном времени.</p>
+      </div>
+      <div id="tabPane1" class="tab-pane-content" hidden>
+        <h4 style="margin:0 0 6px;">Журнал аудита и безопасности</h4>
+        <p class="text-muted" style="margin:0;">События входа администраторов, фиксация изменений прав доступа RBAC и блокировок Антибота.</p>
+      </div>
+      <div id="tabPane2" class="tab-pane-content" hidden>
+        <h4 style="margin:0 0 6px;">Параметры и системные триггеры</h4>
+        <p class="text-muted" style="margin:0;">Глобальные настройки кеширования, интеграции с поисковыми роботами и управление токенами.</p>
+      </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       СЕКЦИЯ 7: ФОРМЫ И ЭЛЕМЕНТЫ ВВОДА (Form Controls)
+       СЕКЦИЯ 7: ФОРМЫ РЕДАКТИРОВАНИЯ (ActiveForm)
        ========================================================================= -->
   <div id="sec-forms" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
       <div>
-        <span class="sz-eyebrow">Input Controls</span>
-        <h2>Формы, поля ввода и валидация</h2>
+        <span class="sz-eyebrow">Form Controls</span>
+        <h2>Элементы форм и валидация (ActiveForm)</h2>
         <p class="text-muted">
-          Стилизованные инпуты, выпадающие списки Select2/Bootstrap, переключатели и плавающие подсказки.
+          Унифицированные поля ввода с высотой 42px, выразительным фокусом, встроенными индикаторами валидации и плавной тенью.
         </p>
       </div>
-      <span class="badge text-bg-secondary">.form-control</span>
     </div>
 
     <form id="demoForm" class="row g-3">
       <div class="col-md-6">
-        <label for="demoInputText" class="form-label">Заголовок страницы или материала</label>
-        <input type="text" class="form-control" id="demoInputText" placeholder="Например: Праздничные поздравления" value="Современный дизайн админки">
+        <label class="form-label" for="inpTitle">Заголовок материала <span class="text-danger">*</span></label>
+        <input class="form-control is-valid" id="inpTitle" value="Весенние раскраски для малышей" required placeholder="Введите заголовок">
+        <div class="valid-feedback" style="display:block;font-size:11.5px;">✓ Заголовок проверен и доступен</div>
       </div>
-      <div class="col-md-6">
-        <label for="demoSelect" class="form-label">Категория публикации</label>
-        <select class="form-select" id="demoSelect">
-          <option value="1">Поздравления и пожелания</option>
-          <option value="2">Раскраски и картинки</option>
-          <option value="3">Детские загадки</option>
-          <option value="4">Мультфильмы и сказки</option>
+
+      <div class="col-md-3">
+        <label class="form-label" for="inpStatus">Статус публикации</label>
+        <select class="form-select" id="inpStatus">
+          <option selected>Опубликовано</option>
+          <option>На проверке</option>
+          <option>Черновик</option>
         </select>
       </div>
-      <div class="col-12">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="demoSwitch" checked>
-          <label class="form-check-label" for="demoSwitch">Опубликовать сразу после сохранения</label>
+
+      <div class="col-md-3">
+        <label class="form-label" for="inpDate">Дата публикации</label>
+        <div class="input-group date">
+          <span class="input-group-text"><span class="material-symbols-rounded" style="font-size:16px;">calendar_today</span></span>
+          <input class="form-control" id="inpDate" type="date" value="2026-11-24">
         </div>
       </div>
-      <div class="col-12" style="display:flex;gap:10px;">
-        <button type="submit" class="btn btn-primary">
-          <span class="material-symbols-rounded">save</span> Сохранить изменения
-        </button>
-        <button type="reset" class="btn btn-secondary">
-          Сбросить
-        </button>
+
+      <div class="col-12">
+        <label class="form-label" for="inpText">Краткое описание (мета-тег description)</label>
+        <textarea class="form-control" id="inpText" rows="3" placeholder="Введите краткое описание...">Коллекция детских раскрасок формата А4 для печати и онлайн-рисования.</textarea>
+        <div class="d-flex justify-content-between mt-1">
+          <span class="text-muted" style="font-size:11.5px;">Рекомендуемая длина: 140–160 символов</span>
+          <span class="text-muted" style="font-size:11.5px;" id="charCount">74 / 160</span>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-check form-switch" style="padding-top:6px;">
+          <input class="form-check-input" type="checkbox" id="swMainPage" checked>
+          <label class="form-check-label" for="swMainPage" style="font-size:13px;font-weight:600;">Выводить в рекомендованные на главной странице</label>
+        </div>
+      </div>
+
+      <div class="col-md-6 text-end">
+        <button class="btn btn-secondary me-2" type="reset">Сбросить</button>
+        <button class="btn btn-primary" type="submit"><span class="material-symbols-rounded">save</span> Сохранить запись</button>
       </div>
     </form>
   </div>
 
   <!-- =========================================================================
-       СЕКЦИЯ 8: ИНТЕРАКТИВНАЯ ТАБЛИЦА (Yii2 GridView)
+       СЕКЦИЯ 8: ТАБЛИЦА ЗАПИСЕЙ (Yii2 GridView)
        ========================================================================= -->
   <div id="sec-table" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
       <div>
         <span class="sz-eyebrow">Data Grid</span>
-        <h2>Таблица записей (Yii2 GridView)</h2>
+        <h2>Интерактивная таблица записей (GridView)</h2>
         <p class="text-muted">
-          Стандартная таблица <code>.table</code> с компактными действиями <code>.btn-group-action</code>, пагинацией и поиском.
+          Разметка <code>.table</code> с подсветкой при наведении, миниатюрами, фильтрами поиска, пагинацией и группой быстрых действий.
         </p>
       </div>
-      <button class="btn btn-primary btn-sm" type="button" data-modal="create">
+      <button class="btn btn-primary" type="button" data-modal="form">
         <span class="material-symbols-rounded">add</span> Добавить запись
       </button>
     </div>
 
-    <!-- Тулбар: поиск и фильтрация -->
+    <!-- Тулбар фильтрации таблицы -->
     <div class="ui-kit-table-toolbar">
       <div class="ui-kit-table-search">
         <span class="material-symbols-rounded ui-kit-search-icon">search</span>
-        <input class="form-control" id="tableSearch" type="search" placeholder="Поиск по названию, автору или ID...">
+        <input class="form-control" id="tableSearch" type="search" placeholder="Поиск по названию, автору или #ID...">
       </div>
       <div class="ui-kit-table-filter">
         <select class="form-select" id="tableFilter">
@@ -535,154 +608,227 @@ echo Html::a(
       </div>
     </div>
 
-    <!-- Таблица записей -->
+    <!-- Контейнер таблицы -->
     <div class="table-responsive">
       <table class="table table-hover align-middle">
         <thead>
           <tr>
             <th style="width:75px">ID</th>
-            <th style="width:48px;text-align:center;">Фото</th>
+            <th style="width:70px">Превью</th>
             <th>Название материала</th>
             <th>Автор</th>
             <th>Статус</th>
-            <th>Дата создания</th>
-            <th class="action-column">ДЕЙСТВИЯ</th>
+            <th>Дата</th>
+            <th style="width:125px;text-align:center;">Действия</th>
           </tr>
         </thead>
-        <tbody id="demoTableBody">
-          <!-- Заполняется динамически через JS -->
-        </tbody>
+        <tbody id="demoTableBody"></tbody>
       </table>
     </div>
 
-    <!-- Подвал таблицы: сводка и пагинация -->
+    <!-- Пагинация таблицы -->
     <div class="ui-kit-table-footer">
-      <div class="text-muted" id="tableSummary">Показано 1–5 из 8 записей</div>
-      <ul class="pagination mb-0" id="tablePagination">
-        <!-- Пагинация заполняется динамически через JS -->
-      </ul>
+      <span class="sz-table-summary" id="tableSummary">Показано 1–5 из 8 записей</span>
+      <ul class="pagination" id="tablePagination"></ul>
     </div>
   </div>
 
   <!-- =========================================================================
-       СЕКЦИЯ 9: СИМУЛЯТОР ОЧЕРЕДЕЙ ЗАДАЧ (sz-progress-job)
+       СЕКЦИЯ 9: МЕДИА, POPUP + LAZYLOAD
+       ========================================================================= -->
+  <div id="sec-media" class="sz-panel ui-kit-section">
+    <div class="ui-kit-section__head">
+      <div>
+        <span class="sz-eyebrow">Media & Viewer</span>
+        <h2>Изображения: Popup-просмотрщик и Lazyload</h2>
+        <p class="text-muted">
+          Миниатюра подгружается через <code>data-src</code>, а клик открывает оригинальное изображение высокого разрешения в полноэкранном модальном окне.
+        </p>
+      </div>
+    </div>
+
+    <!-- Живой пример с кликабельной миниатюрой -->
+    <div class="sz-thumb-preview-wrap">
+      <a class="sz-thumb sz-thumb--lg" href="<?= Html::encode($demoOriginal) ?>" data-pjax="0" data-image-viewer="true" data-image-full="<?= Html::encode($demoOriginal) ?>" data-image-title="Демо popup: оригинальное изображение">
+        <img class="sz-thumb__img" src="<?= $placeholder ?>" data-src="<?= Html::encode($demoOriginal) ?>" alt="Миниатюра" loading="lazy" decoding="async">
+      </a>
+      <div>
+        <strong style="display:block;color:var(--sz-text);font-size:14.5px;margin-bottom:3px;">
+          <a href="<?= Html::encode($demoOriginal) ?>" data-pjax="0" data-image-viewer="true" data-image-full="<?= Html::encode($demoOriginal) ?>" data-image-title="Демо popup: оригинальное изображение" style="color:var(--sz-text);text-decoration:none;cursor:pointer;">
+            Живой пример <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;color:var(--sz-primary);">open_in_new</span>
+          </a>
+        </strong>
+        <div style="color:var(--sz-muted);font-size:12.5px;">
+          Нажмите на миниатюру или на ссылку 
+          <a href="<?= Html::encode($demoOriginal) ?>" data-pjax="0" data-image-viewer="true" data-image-full="<?= Html::encode($demoOriginal) ?>" data-image-title="Демо popup: оригинальное изображение" class="text-primary text-decoration-none">«Живой пример»</a>, чтобы открыть полноразмерный popup.
+        </div>
+      </div>
+    </div>
+
+    <!-- Сетка паттернов кода (HTML и Yii/PHP) -->
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="sz-code-block-title">HTML-паттерн</div>
+        <pre class="sz-code-block"><code>&lt;a class="sz-thumb sz-thumb--lg" href="/img/full.jpg"
+   data-pjax="0" data-image-viewer="true"
+   data-image-full="/img/full.jpg"
+   data-image-title="Оригинальное изображение"&gt;
+    &lt;img class="sz-thumb__img" src="/img/load.svg"
+         data-src="/img/thumb.jpg" alt="Миниатюра"&gt;
+&lt;/a&gt;</code></pre>
+      </div>
+      <div class="col-lg-6">
+        <div class="sz-code-block-title">Yii/PHP-паттерн</div>
+        <pre class="sz-code-block"><code>$placeholder = Yii::$app-&gt;getModule('admin')-&gt;getLazyloadPlaceholderUrl($this);
+
+echo Html::a(
+    Html::img($placeholder, [
+        'data-src' =&gt; $thumbUrl,
+        'class' =&gt; 'sz-thumb__img',
+        'loading' =&gt; 'lazy',
+    ]),
+    $originalUrl,
+    [
+        'data-pjax' =&gt; '0',
+        'data-image-viewer' =&gt; true,
+        'data-image-full' =&gt; $originalUrl,
+        'class' =&gt; 'sz-thumb sz-thumb--lg',
+    ]
+);</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       СЕКЦИЯ 10: ОЧЕРЕДИ ЗАДАЧ (.sz-progress-job)
        ========================================================================= -->
   <div id="sec-jobs" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
       <div>
-        <span class="sz-eyebrow">Async Tasks</span>
-        <h2>Фоновые очереди и прогресс-бары (.sz-progress-job)</h2>
+        <span class="sz-eyebrow">Async Jobs</span>
+        <h2>Очереди фоновых задач (.sz-progress-job)</h2>
         <p class="text-muted">
-          Индикатор выполнения пакетных задач: оптимизация изображений, пересчёт поисковых индексов, генерация карт сайта.
+          Сквиркл-индикатор с вращающейся иконкой <code>#sync</code>, прогресс-баром и динамическим текстовым отчётом шагов.
         </p>
       </div>
-      <span class="badge text-bg-secondary">Live Progress</span>
     </div>
 
-    <div class="sz-progress-job">
-      <div class="sz-progress-job__header">
-        <div class="sz-progress-job__info">
-          <div class="sz-progress-job__icon" data-job-icon>
-            <span class="material-symbols-rounded">sync</span>
-          </div>
-          <div>
-            <strong style="display:block;font-size:14px;color:var(--sz-text);" data-job-text>Ожидание запуска фоновой очереди...</strong>
-            <small class="text-muted" data-job-step>Шаг 0 из 5</small>
-          </div>
-        </div>
-        <div class="sz-progress-job__meta" data-job-meta>0%</div>
+    <div class="sz-progress-job" data-job>
+      <div class="sz-progress-job__status" data-job-status>
+        <span class="sz-progress-job__icon" data-job-icon>
+          <span class="material-symbols-rounded">sync</span>
+        </span>
+        <span class="sz-progress-job__text" data-job-text>Ожидание запуска фоновой очереди...</span>
       </div>
-      <div class="progress" style="height:10px;border-radius:99px;background:var(--stroke);">
-        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width:0%" data-job-bar></div>
+      <div class="sz-progress-job__bar-wrap">
+        <div class="sz-progress-job__bar" data-job-bar style="width:0%">0%</div>
       </div>
-      <div style="display:flex;gap:10px;margin-top:14px;">
-        <button class="btn btn-primary btn-sm" type="button" data-job-run>
-          <span class="material-symbols-rounded">play_arrow</span> Запустить обработку
+      <div class="d-flex justify-content-between text-muted" style="font-size:12px;">
+        <span data-job-step>Шаг 0 из 5</span>
+        <span data-job-meta>0%</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <button class="btn btn-primary" type="button" data-job-run>
+          <span class="material-symbols-rounded">play_arrow</span> Запустить очередь
         </button>
-        <button class="btn btn-secondary btn-sm" type="button" data-job-reset>
-          Сброс
+        <button class="btn btn-secondary" type="button" data-job-reset>
+          <span class="material-symbols-rounded">restart_alt</span> Сбросить
         </button>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       СЕКЦИЯ 10: УВЕДОМЛЕНИЯ, АЛЕРТЫ И МОДАЛЬНЫЕ ОКНА
+       СЕКЦИЯ 11: АЛЕРТЫ, TOAST-УВЕДОМЛЕНИЯ И МОДАЛЬНЫЕ ОКНА
        ========================================================================= -->
   <div id="sec-feedback" class="sz-panel ui-kit-section">
     <div class="ui-kit-section__head">
       <div>
-        <span class="sz-eyebrow">Feedback & Dialogs</span>
-        <h2>Уведомления, всплывающие карточки и модальные окна</h2>
+        <span class="sz-eyebrow">Feedback & Modals</span>
+        <h2>Системные алерты, Toasts и диалоговые окна</h2>
         <p class="text-muted">
-          Информационные сообщения Bootstrap 5 и карточки уведомлений в правом верхнем углу (с анимацией и таймером).
+          Контекстные уведомления и интерактивные модальные диалоги с размытием фона и плавной анимацией.
         </p>
       </div>
-      <span class="badge text-bg-secondary">showToast()</span>
     </div>
 
-    <div class="row g-3">
-      <div class="col-lg-6">
-        <div class="alert alert-success d-flex align-items-center" role="alert">
-          <span class="material-symbols-rounded me-2" style="font-size:22px;">check_circle</span>
-          <div><strong>Успешно:</strong> Операция синхронизации данных завершена без ошибок.</div>
-        </div>
-        <div class="alert alert-warning d-flex align-items-center" role="alert">
-          <span class="material-symbols-rounded me-2" style="font-size:22px;">warning</span>
-          <div><strong>Внимание:</strong> Обнаружены неразобранные дубликаты текстов поздравлений.</div>
-        </div>
-        <div class="alert alert-danger d-flex align-items-center" role="alert">
-          <span class="material-symbols-rounded me-2" style="font-size:22px;">error</span>
-          <div><strong>Ошибка:</strong> Не удалось обновить токен доступа к стороннему сервису.</div>
+    <!-- Алерты -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-0" role="alert">
+          <span class="material-symbols-rounded">check_circle</span>
+          <div>Операция успешно выполнена: конфигурация обновлена.</div>
         </div>
       </div>
-
-      <div class="col-lg-6">
-        <div class="card p-3" style="background:var(--sz-surface);border:1px solid var(--stroke);border-radius:14px;">
-          <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">Интерактивный вызов всплывающих карточек (Toasts)</h4>
-          <p class="text-muted" style="font-size:13px;margin-bottom:14px;">
-            Нажмите кнопки ниже, чтобы протестировать карточки в правом верхнем углу экрана:
-          </p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button type="button" class="btn btn-success btn-sm" data-toast="Кеш успешно очищен (backend и frontend).">
-              <span class="material-symbols-rounded">check</span> Очистка кеша (Success)
-            </button>
-            <button type="button" class="btn btn-warning btn-sm" data-toast="Внимание: превышен лимит обращений к API">
-              <span class="material-symbols-rounded">warning</span> Предупреждение (Warning)
-            </button>
-            <button type="button" class="btn btn-danger btn-sm" data-toast="Ошибка: не удалось связаться с сервером базы данных">
-              <span class="material-symbols-rounded">error</span> Ошибка (Danger)
-            </button>
-            <button type="button" class="btn btn-info btn-sm" data-toast="Информационное уведомление системы">
-              <span class="material-symbols-rounded">info</span> Инфо (Info)
-            </button>
-          </div>
+      <div class="col-md-6">
+        <div class="alert alert-danger d-flex align-items-center gap-2 mb-0" role="alert">
+          <span class="material-symbols-rounded">error</span>
+          <div>Обнаружен конфликт доступа: проверьте права роли RBAC.</div>
         </div>
+      </div>
+      <div class="col-md-6">
+        <div class="alert alert-warning d-flex align-items-center gap-2 mb-0" role="alert">
+          <span class="material-symbols-rounded">warning</span>
+          <div>Лимит запросов исчерпан: включён режим замедления SEO.</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="alert alert-info d-flex align-items-center gap-2 mb-0" role="alert">
+          <span class="material-symbols-rounded">info</span>
+          <div>Справка: кэш фронтенда обновляется автоматически.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Кнопки вызова Toasts -->
+    <div class="sz-surface">
+      <h4 style="font-size:14px;margin-bottom:10px;">Проверка всплывающих уведомлений (Toast)</h4>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-success btn-sm" type="button" data-toast="Успех: Данные успешно сохранены в базе данных">
+          Toast: Успех
+        </button>
+        <button class="btn btn-danger btn-sm" type="button" data-toast="Ошибка: Не удалось подключиться к удаленному API">
+          Toast: Ошибка
+        </button>
+        <button class="btn btn-warning btn-sm" type="button" data-toast="Внимание: Требуется подтверждение email">
+          Toast: Предупреждение
+        </button>
+        <button class="btn btn-info btn-sm" type="button" data-toast="Информация: Выполнена фоновая синхронизация индексов">
+          Toast: Информация
+        </button>
       </div>
     </div>
   </div>
 
 </div>
 
-<!-- ДЕМО МОДАЛЬНОЕ ОКНО ДЛЯ УДАЛЕНИЯ / СОЗДАНИЯ -->
-<div class="modal fade" id="demoModal" tabindex="-1" aria-labelledby="demoModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="border-radius:16px;border:1px solid var(--stroke);background:var(--surface);">
-      <div class="modal-header" style="border-bottom:1px solid var(--stroke);">
-        <h5 class="modal-title" id="demoModalLabel" style="font-size:16px;font-weight:700;">Подтверждение</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="demoModalBody" style="font-size:14px;color:var(--sz-text);">
-        Вы действительно хотите выполнить это действие?
-      </div>
-      <div class="modal-footer" style="border-top:1px solid var(--stroke);">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Отмена</button>
-        <button type="button" class="btn btn-danger btn-sm" id="demoModalConfirm">Подтвердить</button>
-      </div>
+<!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ / УДАЛЕНИЯ -->
+<div class="modal-backdrop-custom" id="customModal" hidden>
+  <div class="modal-dialog-custom">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h3 style="margin:0;font-size:17px;font-weight:750;" id="modalTitle">Заголовок</h3>
+      <button type="button" id="modalCloseX" style="border:0;background:transparent;color:var(--sz-muted);font-size:20px;cursor:pointer;line-height:1;">✕</button>
     </div>
+    <p style="font-size:13px;color:var(--sz-muted);line-height:1.55;margin:0 0 16px;" id="modalText">Текст модального окна.</p>
+    <form id="modalForm">
+      <div id="modalField" hidden style="margin-bottom:14px;">
+        <label class="form-label">Название записи <span class="text-danger">*</span></label>
+        <input class="form-control" id="modalInput" placeholder="Введите название материала...">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button type="button" class="btn btn-secondary" id="modalCancel">Отмена</button>
+        <button type="submit" class="btn btn-primary" id="modalConfirm">Подтвердить</button>
+      </div>
+    </form>
   </div>
 </div>
 
+<!-- ВСПЛЫВАЮЩИЙ TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- =========================================================================
+     СТИЛИ СТРАНИЦЫ UI-KIT (АДАПТИВНЫЕ ТОКЕНЫ, ПЕРЕКЛЮЧАТЕЛЬ ТЕМ, КАРТОЧКИ)
+     ========================================================================= -->
 <?php
 $this->registerCss(<<<'CSS'
 /* Обертка страницы UI-Kit */
@@ -692,334 +838,579 @@ $this->registerCss(<<<'CSS'
   gap: 20px;
 }
 
-/* Hero карточка с переключателем темы */
+/* Hero-баннер UI-Kit */
 .ui-kit-hero {
-  padding: 24px !important;
-  background: var(--surface) !important;
-  border-radius: 16px !important;
-  border: 1px solid var(--stroke) !important;
-  box-shadow: 0 4px 20px rgba(18, 38, 77, 0.05) !important;
+  border-radius: var(--sz-radius-lg, 24px);
+  padding: 28px 32px;
+  background: #ffffff !important;
+  border: 1px solid var(--stroke, #e7edfb) !important;
+  box-shadow: 0 10px 30px rgba(20, 50, 120, 0.05) !important;
+  position: relative;
 }
+
+body.dark .ui-kit-hero,
+html.dark .ui-kit-hero {
+  background: #17243c !important;
+  border-color: #2c3f5d !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+}
+
 .ui-kit-hero__header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
+  gap: 24px;
   flex-wrap: wrap;
 }
+
 .ui-kit-hero__titles {
-  max-width: 640px;
+  max-width: 680px;
 }
+
 .ui-kit-badges {
   display: flex;
   gap: 8px;
-  align-items: center;
   margin-bottom: 12px;
+  flex-wrap: wrap;
 }
+
 .ui-kit-hero__h1 {
   font-size: 26px;
   font-weight: 800;
-  color: var(--sz-text);
   margin: 0 0 8px 0;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.4px;
+  color: var(--sz-text);
 }
+
 .ui-kit-hero__lead {
   font-size: 14px;
-  line-height: 1.55;
   color: var(--sz-muted);
+  line-height: 1.6;
   margin: 0;
 }
 
-/* Карточка переключателя темы */
+/* Интерактивная карточка переключения тем */
 .ui-kit-theme-card {
-  background: var(--sz-surface, rgba(240, 244, 252, 0.5));
-  border: 1px solid var(--stroke);
-  border-radius: 14px;
+  background: var(--sz-bg-soft, rgba(255, 255, 255, 0.7));
+  border: 1px solid var(--sz-line);
+  border-radius: 18px;
   padding: 14px 18px;
+  min-width: 250px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 240px;
+  box-shadow: 0 4px 16px rgba(25, 45, 90, 0.04);
 }
+
 body.dark .ui-kit-theme-card {
-  background: rgba(22, 34, 53, 0.6);
+  background: #17243c;
+  border-color: #354766;
 }
+
 .ui-kit-theme-card__label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--sz-text);
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sz-muted);
 }
+
 .ui-kit-theme-card__label .material-symbols-rounded {
-  font-size: 18px;
+  font-size: 16px;
   color: var(--sz-primary);
 }
+
 .ui-kit-theme-toggle {
-  display: flex;
-  gap: 6px;
-  background: rgba(0, 0, 0, 0.04);
-  padding: 4px;
-  border-radius: 10px;
-  border: 1px solid var(--stroke);
-}
-body.dark .ui-kit-theme-toggle {
-  background: rgba(0, 0, 0, 0.25);
-}
-.ui-kit-theme-btn {
-  flex: 1;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  padding: 4px;
+  background: rgba(113, 157, 235, 0.12);
+  border-radius: 12px;
+  gap: 4px;
+  border: 1px solid var(--sz-line);
+}
+
+body.dark .ui-kit-theme-toggle {
+  background: #111a2c;
+  border-color: #273750;
+}
+
+.ui-kit-theme-btn {
   border: 0;
-  border-radius: 8px;
-  padding: 7px 12px;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 9px;
   font-size: 12.5px;
   font-weight: 650;
-  background: transparent;
   color: var(--sz-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
+  flex: 1;
+  justify-content: center;
 }
+
 .ui-kit-theme-btn .material-symbols-rounded {
   font-size: 16px;
 }
+
 .ui-kit-theme-btn:hover {
   color: var(--sz-text);
 }
+
 .ui-kit-theme-btn.is-active {
   background: #ffffff;
   color: var(--sz-primary);
-  box-shadow: 0 2px 8px rgba(25, 45, 90, 0.12);
+  font-weight: 750;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.15);
 }
+
 body.dark .ui-kit-theme-btn.is-active {
-  background: #253956;
-  color: #60a5fa;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(125deg, #3189f7, #2465d6);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(49, 137, 247, 0.35);
 }
+
 .ui-kit-theme-status {
   font-size: 11.5px;
   color: var(--sz-muted);
+  text-align: center;
 }
+
 .ui-kit-theme-status strong {
   color: var(--sz-text);
 }
 
-/* Быстрая навигация */
+/* Навигационные пиллы по разделам */
 .ui-kit-quicknav {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sz-line);
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--stroke);
   flex-wrap: wrap;
 }
+
 .ui-kit-quicknav__label {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 750;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.5px;
   color: var(--sz-muted);
 }
+
 .ui-kit-quicknav__links {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
+
 .ui-kit-nav-pill {
-  display: inline-flex;
-  align-items: center;
   padding: 4px 11px;
-  border-radius: 20px;
-  background: var(--sz-surface, #f0f4fa);
-  color: var(--sz-text);
+  border-radius: 999px;
+  background: var(--sz-bg-soft, rgba(255, 255, 255, 0.6));
+  border: 1px solid var(--sz-line);
+  color: var(--sz-muted);
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
-  border: 1px solid var(--stroke);
   transition: all 0.15s ease;
 }
+
 .ui-kit-nav-pill:hover {
-  background: var(--sz-primary);
-  color: #fff;
+  background: var(--sz-primary-soft, rgba(49, 137, 247, 0.1));
+  color: var(--sz-primary);
   border-color: var(--sz-primary);
+  transform: translateY(-1px);
 }
 
 /* Секции UI-Kit */
+/* Секции UI-Kit с гарантированным сплошным фоном в обеих темах */
 .ui-kit-section {
-  padding: 24px !important;
-  border-radius: 16px !important;
-  border: 1px solid var(--stroke) !important;
-  background: var(--surface) !important;
+  background: #ffffff !important;
+  border: 1px solid var(--stroke, #e7edfb) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(20, 50, 120, 0.05) !important;
+  margin-bottom: 0 !important;
+  scroll-margin-top: 75px;
 }
+
+body.dark .ui-kit-section,
+html.dark .ui-kit-section {
+  background: #17243c !important;
+  border-color: #2c3f5d !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+}
+
 .ui-kit-section__head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   gap: 16px;
+  flex-wrap: wrap;
 }
+
 .ui-kit-section__head h2 {
-  font-size: 20px;
-  font-weight: 800;
-  margin: 2px 0 4px 0;
+  font-size: 18.5px;
+  font-weight: 780;
+  margin: 3px 0 6px 0;
+  letter-spacing: -0.3px;
   color: var(--sz-text);
 }
-.ui-kit-component-label {
-  font-size: 12px;
-  font-weight: 750;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--sz-muted);
-  margin-bottom: 10px;
+
+.ui-kit-section__head p {
+  font-size: 13px;
+  margin: 0;
+  max-width: 720px;
 }
 
 /* Палитра токенов */
 .ui-kit-swatches-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
 }
+
 .ui-kit-swatch-card {
+  background: var(--sz-surface-strong, #ffffff);
+  border: 1px solid var(--sz-line);
+  border-radius: 14px;
+  padding: 12px;
   display: flex;
-  align-items: center;
   gap: 12px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--stroke);
-  background: var(--sz-surface, rgba(240, 244, 252, 0.4));
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(30, 50, 90, 0.03);
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
+
+body.dark .ui-kit-swatch-card {
+  background: #17243c;
+  border-color: #314460;
+}
+
 .ui-kit-swatch-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(30, 50, 90, 0.08);
   border-color: var(--sz-primary);
 }
+
 .ui-kit-swatch-color {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
+
 .ui-kit-swatch-info {
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  gap: 2px;
+  overflow: hidden;
 }
+
 .ui-kit-swatch-info strong {
   font-size: 13px;
   color: var(--sz-text);
 }
+
 .ui-kit-swatch-info code {
   font-size: 11px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.ui-kit-swatch-info small {
+  font-size: 11px;
+  color: var(--sz-muted);
+  line-height: 1.3;
+}
+
+/* Архитектурные слои */
+.ui-kit-surface-layers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .ui-kit-surface-layers {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ui-kit-surface-layer {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--sz-line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ui-kit-surface-layer--canvas {
+  background: var(--sz-bg);
+}
+
+.ui-kit-surface-layer--panel {
+  background: var(--sz-surface);
+}
+
+.ui-kit-surface-layer--surface {
+  background: var(--sz-surface-strong, #ffffff);
+}
+
+body.dark .ui-kit-surface-layer--surface {
+  background: #203352;
+}
+
+.ui-kit-layer-tag {
+  font-size: 10.5px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--sz-primary);
 }
-.ui-kit-swatch-info small {
-  font-size: 10.5px;
+
+.ui-kit-surface-layer strong {
+  font-size: 13.5px;
+  color: var(--sz-text);
+}
+
+.ui-kit-surface-layer p {
+  font-size: 12px;
+  color: var(--sz-muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Типографические строки */
+.ui-kit-type-sample {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ui-kit-type-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--sz-line);
+}
+
+.ui-kit-type-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.ui-kit-type-meta {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--sz-muted);
 }
 
 /* Кнопки */
-.ui-kit-btn-group {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+.ui-kit-component-row {
+  margin-bottom: 18px;
 }
 
-/* Сегментированные переключатели */
-.ui-kit-toggles-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 12px;
+.ui-kit-component-row:last-child {
+  margin-bottom: 0;
 }
-.ui-kit-toggle-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid var(--stroke);
-  background: var(--sz-surface, rgba(240, 244, 252, 0.4));
-}
-.ui-kit-toggle-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.ui-kit-toggle-info strong {
-  font-size: 13.5px;
-  color: var(--sz-text);
-  display: block;
-}
-.ui-kit-toggle-info small {
-  display: block;
-  font-size: 11px;
-}
-.ui-kit-toggle-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #cbd5e1;
-  flex-shrink: 0;
-}
-.ui-kit-toggle-dot.is-active {
-  background: #079b70;
-  box-shadow: 0 0 6px rgba(7, 155, 112, 0.5);
-}
-.ui-kit-segmented-toggle {
-  display: inline-flex;
-  border: 1px solid var(--stroke);
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--surface);
-}
-.ui-kit-seg-btn {
-  border: 0;
-  padding: 4px 12px;
+
+.ui-kit-component-label {
   font-size: 12px;
   font-weight: 700;
+  color: var(--sz-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ui-kit-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Сегментированные переключатели статуса */
+.ui-kit-toggles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 14px;
+}
+
+.ui-kit-toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--sz-surface-strong, #ffffff);
+  border: 1px solid var(--sz-line);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(25, 45, 90, 0.03);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+body.dark .ui-kit-toggle-item {
+  background: #17243c;
+  border-color: #314460;
+}
+
+.ui-kit-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--sz-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Пульсирующая точка статуса */
+.ui-kit-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #94a3b8;
+  flex-shrink: 0;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.ui-kit-status-dot.is-active {
+  background: #079b70;
+  box-shadow: 0 0 0 3px rgba(7, 155, 112, 0.18);
+  animation: uiKitDotPulse 2s infinite ease-in-out;
+}
+
+@keyframes uiKitDotPulse {
+  0% { box-shadow: 0 0 0 2px rgba(7, 155, 112, 0.25); }
+  50% { box-shadow: 0 0 0 5px rgba(7, 155, 112, 0.08); }
+  100% { box-shadow: 0 0 0 2px rgba(7, 155, 112, 0.25); }
+}
+
+/* Сегментный контрол [ Вкл | Откл ] */
+.ui-kit-segmented-control {
+  display: inline-flex;
+  padding: 2px;
+  background: rgba(113, 157, 235, 0.12);
+  border-radius: 999px;
+  border: 1px solid var(--sz-line);
+  flex-shrink: 0;
+}
+
+body.dark .ui-kit-segmented-control {
+  background: #111a2c;
+  border-color: #263852;
+}
+
+.ui-kit-seg-btn {
+  border: 0;
   background: transparent;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 650;
   color: var(--sz-muted);
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.ui-kit-seg-btn--on.is-active {
-  background: #079b70;
-  color: #fff;
-}
-.ui-kit-seg-btn--off.is-active {
-  background: #dc3545;
-  color: #fff;
+
+.ui-kit-seg-btn:hover {
+  color: var(--sz-text);
 }
 
-/* Таблица & Тулбар */
+/* Активное состояние "Вкл" */
+.ui-kit-seg-btn--on.is-active {
+  background: #079b70;
+  color: #ffffff;
+  font-weight: 750;
+  box-shadow: 0 2px 6px rgba(7, 155, 112, 0.35);
+}
+
+/* Активное состояние "Откл" */
+.ui-kit-seg-btn--off.is-active {
+  background: #e24e6c;
+  color: #ffffff;
+  font-weight: 750;
+  box-shadow: 0 2px 6px rgba(226, 78, 108, 0.35);
+}
+
+/* Пастельные бейджи */
+.badge-soft-success { background: rgba(7, 155, 112, 0.12) !important; color: #079b70 !important; }
+.badge-soft-warning { background: rgba(238, 166, 60, 0.14) !important; color: #c48016 !important; }
+.badge-soft-danger  { background: rgba(226, 78, 108, 0.12) !important; color: #e24e6c !important; }
+.badge-soft-primary { background: rgba(49, 137, 247, 0.12) !important; color: #3189f7 !important; }
+.badge-soft-info    { background: rgba(40, 101, 190, 0.12) !important; color: #2865be !important; }
+
+body.dark .badge-soft-success { background: rgba(7, 155, 112, 0.22) !important; color: #4ae0b1 !important; }
+body.dark .badge-soft-warning { background: rgba(238, 166, 60, 0.22) !important; color: #ffc46a !important; }
+body.dark .badge-soft-danger  { background: rgba(226, 78, 108, 0.22) !important; color: #ff849d !important; }
+body.dark .badge-soft-primary { background: rgba(49, 137, 247, 0.22) !important; color: #87bbff !important; }
+body.dark .badge-soft-info    { background: rgba(40, 101, 190, 0.22) !important; color: #8cb8f8 !important; }
+
+/* Вкладки */
+.demo-tab-pane {
+  margin-top: 10px;
+}
+
+.tab-pane-content {
+  display: none;
+}
+
+.tab-pane-content.is-active {
+  display: block;
+}
+
+/* Таблица тулбар */
 .ui-kit-table-toolbar {
   display: flex;
   gap: 12px;
   margin-bottom: 14px;
-  justify-content: space-between;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
+
 .ui-kit-table-search {
-  position: relative;
-  max-width: 340px;
+  max-width: 360px;
   flex: 1;
+  position: relative;
 }
+
 .ui-kit-search-icon {
   position: absolute;
-  left: 10px;
+  left: 11px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--sz-muted);
   font-size: 18px;
   pointer-events: none;
 }
+
 .ui-kit-table-search input {
-  padding-left: 34px;
+  padding-left: 36px !important;
 }
+
+.ui-kit-table-filter {
+  width: 180px;
+}
+
 .ui-kit-table-footer {
   display: flex;
   justify-content: space-between;
@@ -1028,99 +1419,68 @@ body.dark .ui-kit-theme-btn.is-active {
   flex-wrap: wrap;
   gap: 10px;
 }
-
-/* Точки статуса в бейджах */
-.ui-kit-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  margin-right: 5px;
-  vertical-align: middle;
-}
-.ui-kit-dot.is-active { background: #079b70; }
-.ui-kit-dot.is-pending { background: #f59e0b; }
-.ui-kit-dot.is-danger { background: #dc3545; }
-.ui-kit-dot.is-primary { background: #3189f7; }
-
-/* Блок кода */
-.sz-code-block {
-  background: #141c2b;
-  color: #e2e8f0;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 12px;
-  line-height: 1.5;
-  overflow-x: auto;
-  margin: 0;
-}
-.sz-code-block-title {
-  font-size: 12px;
-  font-weight: 750;
-  color: var(--sz-muted);
-  margin-bottom: 6px;
-  text-transform: uppercase;
-}
-
-/* Превью изображений */
-.sz-thumb-preview-wrap {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background: var(--sz-surface, rgba(240, 244, 252, 0.4));
-  border: 1px solid var(--stroke);
-  border-radius: 12px;
-  margin-bottom: 16px;
-}
 CSS);
+?>
 
+<!-- =========================================================================
+     JAVASCRIPT: ИНТЕРАКТИВНОЕ ПЕРЕКЛЮЧЕНИЕ ТЕМ, ТАБЛИЦА, СЕГМЕНТЫ, ЗАДАЧИ
+     ========================================================================= -->
+<?php
 $this->registerJs(<<<'JS'
 (function () {
+  'use strict';
+
   const $ = id => document.getElementById(id);
-  const safe = str => String(str).replace(/[&<>"']/g, s => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[s]));
+  const safe = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   // =========================================================================
-  // ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ (LIGHT / DARK)
+  // 1. ИНТЕРАКТИВНОЕ ПЕРЕКЛЮЧЕНИЕ ТЕМЫ (LIGHT / DARK)
   // =========================================================================
   const btnLight = $('btnThemeLight');
   const btnDark = $('btnThemeDark');
-  const currentThemeLabel = $('currentThemeLabel');
+  const labelStatus = $('currentThemeLabel');
 
-  function updateThemeUI(isDark) {
+  function syncThemeUi(isDark) {
     if (btnLight && btnDark) {
       btnLight.classList.toggle('is-active', !isDark);
       btnDark.classList.toggle('is-active', isDark);
     }
-    if (currentThemeLabel) {
-      currentThemeLabel.textContent = isDark ? 'Тёмная' : 'Светлая';
+    if (labelStatus) {
+      labelStatus.textContent = isDark ? 'Тёмная' : 'Светлая';
     }
-  }
 
-  function setTheme(mode) {
-    const isDark = mode === 'dark';
-    document.body.classList.toggle('dark', isDark);
-    document.documentElement.classList.toggle('dark', isDark);
-    document.cookie = `admin-theme=${mode}; path=/; max-age=31536000`;
-    try { localStorage.setItem('admin-theme', mode); } catch (e) {}
-
+    // Синхронизируем также кнопку в topbar layout
     const topbarThemeBtn = document.querySelector('[data-sz-theme-toggle]');
     if (topbarThemeBtn) {
       const icon = topbarThemeBtn.querySelector('.material-symbols-rounded, .icon');
       if (icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
       topbarThemeBtn.setAttribute('title', isDark ? 'Светлая тема' : 'Темная тема');
+      topbarThemeBtn.setAttribute('aria-label', isDark ? 'Светлая тема' : 'Темная тема');
     }
-    updateThemeUI(isDark);
   }
 
-  const initialDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark');
-  updateThemeUI(initialDark);
+  function setTheme(theme) {
+    const isDark = (theme === 'dark');
+    document.documentElement.classList.toggle('dark', isDark);
+    document.body.classList.toggle('dark', isDark);
+
+    try {
+      localStorage.setItem('admin-theme', theme);
+      document.cookie = 'admin-theme=' + theme + '; path=/; max-age=31536000; SameSite=Lax';
+    } catch (e) {}
+
+    syncThemeUi(isDark);
+  }
+
+  // Начальная инициализация состояния темы
+  const isCurrentDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+  syncThemeUi(isCurrentDark);
 
   if (btnLight) {
     btnLight.addEventListener('click', () => {
       setTheme('light');
       if (typeof window.showToast === 'function') {
-        window.showToast('Включена светлая тема оформления', 'info');
+        window.showToast('Включена светлая тема оформления');
       }
     });
   }
@@ -1129,31 +1489,42 @@ $this->registerJs(<<<'JS'
     btnDark.addEventListener('click', () => {
       setTheme('dark');
       if (typeof window.showToast === 'function') {
-        window.showToast('Включена тёмная тема оформления', 'info');
+        window.showToast('Включена тёмная тема оформления');
       }
     });
   }
 
-  // =========================================================================
-  // СЕГМЕНТИРОВАННЫЕ ПЕРЕКЛЮЧАТЕЛИ (ВКЛ / ОТКЛ)
-  // =========================================================================
-  document.querySelectorAll('.ui-kit-toggle-card').forEach(card => {
-    const title = card.dataset.toggleTitle || 'Переключатель';
-    const dot = card.querySelector('.ui-kit-toggle-dot');
-    const btnOn = card.querySelector('.ui-kit-seg-btn--on');
-    const btnOff = card.querySelector('.ui-kit-seg-btn--off');
+  // Слушаем клик по topbar кнопке, чтобы обновить UI-Kit переключатель
+  const topbarThemeBtn = document.querySelector('[data-sz-theme-toggle]');
+  if (topbarThemeBtn) {
+    topbarThemeBtn.addEventListener('click', () => {
+      setTimeout(() => {
+        const isDarkNow = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+        syncThemeUi(isDarkNow);
+      }, 50);
+    });
+  }
 
-    const updateState = isOn => {
-      if (dot) dot.classList.toggle('is-active', isOn);
+  // =========================================================================
+  // 2. СЕГМЕНТИРОВАННЫЕ ПЕРЕКЛЮЧАТЕЛИ СТАТУСА [ ВКЛ | ОТКЛ ]
+  // =========================================================================
+  document.querySelectorAll('[data-toggle-box]').forEach(box => {
+    const title = box.querySelector('.ui-kit-toggle-label strong')?.textContent || 'Параметр';
+    const dot = box.querySelector('.ui-kit-status-dot');
+    const btnOn = box.querySelector('.ui-kit-seg-btn--on');
+    const btnOff = box.querySelector('.ui-kit-seg-btn--off');
+
+    function updateState(isOn) {
       if (btnOn) btnOn.classList.toggle('is-active', isOn);
       if (btnOff) btnOff.classList.toggle('is-active', !isOn);
-    };
+      if (dot) dot.classList.toggle('is-active', isOn);
+    }
 
     if (btnOn) {
       btnOn.addEventListener('click', () => {
         updateState(true);
         if (typeof window.showToast === 'function') {
-          window.showToast(`${title}: статус изменён на «Вкл»`, 'success');
+          window.showToast(title + ': статус изменён на «Вкл»');
         }
       });
     }
@@ -1162,23 +1533,22 @@ $this->registerJs(<<<'JS'
       btnOff.addEventListener('click', () => {
         updateState(false);
         if (typeof window.showToast === 'function') {
-          window.showToast(`${title}: статус изменён на «Откл»`, 'warning');
+          window.showToast(title + ': статус изменён на «Откл»');
         }
       });
     }
   });
 
   // =========================================================================
-  // КОПИРОВАНИЕ ДИЗАЙН-ТОКЕНОВ
+  // 3. КОПИРОВАНИЕ ТОКЕНОВ ПРИ КЛИКЕ НА SWATCH
   // =========================================================================
-  document.querySelectorAll('.ui-kit-swatch-card').forEach(card => {
+  document.querySelectorAll('[data-copy]').forEach(card => {
     card.addEventListener('click', () => {
       const val = card.dataset.copy;
-      if (!val) return;
       if (navigator.clipboard) {
         navigator.clipboard.writeText(val).then(() => {
           if (typeof window.showToast === 'function') {
-            window.showToast(`Скопировано: ${val}`, 'info');
+            window.showToast('Скопировано: ' + val);
           }
         });
       }
@@ -1186,54 +1556,46 @@ $this->registerJs(<<<'JS'
   });
 
   // =========================================================================
-  // ВКЛАДКИ (AdminTabs)
+  // 4. ТАБЫ РАЗДЕЛОВ (AdminTabs)
   // =========================================================================
   const demoTabs = $('demoTabs');
-  const demoTabContent = $('demoTabContent');
-  const tabDescriptions = [
-    '<strong>Обзор системы:</strong> Сводные показатели активности контент-платформы, нагрузка на сервер, статус рекламных сетей и антибот-фильтров.',
-    '<strong>История очередей:</strong> Логирование фоновых воркеров, обработка очередей изображений и синхронизация SEO-тегов.',
-    '<strong>Параметры кеша:</strong> Управление многоуровневым файловым и Redis-хранилищем с мгновенным сбросом схемы.',
-    '<strong>Безопасность:</strong> Двухфакторная аутентификация TOTP, управление ролями RBAC и журнал входов администраторов.'
-  ];
-
-  if (demoTabs && demoTabContent) {
+  if (demoTabs) {
     demoTabs.addEventListener('click', e => {
-      const btn = e.target.closest('.nav-link');
+      const btn = e.target.closest('[data-tab]');
       if (!btn) return;
-      demoTabs.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const idx = Number(btn.dataset.tab) || 0;
-      demoTabContent.innerHTML = tabDescriptions[idx] || '';
-      if (typeof window.showToast === 'function') {
-        window.showToast(`Переключена вкладка: ${btn.textContent.trim()}`, 'info');
+      const idx = Number(btn.dataset.tab);
+      demoTabs.querySelectorAll('.nav-link').forEach(b => b.classList.toggle('active', b === btn));
+      for (let i = 0; i < 3; i++) {
+        const pane = $('tabPane' + i);
+        if (pane) {
+          pane.hidden = (i !== idx);
+          pane.classList.toggle('is-active', i === idx);
+        }
       }
     });
   }
 
   // =========================================================================
-  // ТАБЛИЦА С ДАННЫМИ И КОМПАКТНЫМИ ДЕЙСТВИЯМИ
+  // 5. ДЕМО-ТАБЛИЦА GRIDVIEW (ПОИСК, ФИЛЬТР, ПАГИНАЦИЯ)
   // =========================================================================
   const demoRows = [
-    [15622, 'Поздравления с днем рождения мужчине', 'Николай', 'published', '10.10.2026'],
-    [15621, 'Раскраска космонавт на Луне', 'Редактор', 'published', '10.10.2026'],
-    [15620, 'Осенние открытки с листьями', 'Ольга', 'pending', '09.10.2026'],
-    [15619, 'Загадки про лесных животных', 'Иван', 'draft', '09.10.2026'],
+    [15621, 'Весенние раскраски для детей', 'Редактор', 'published', '10.10.2026'],
+    [15620, 'Космические приключения: марсоход', 'Ольга', 'pending', '10.10.2026'],
+    [15619, 'Осенний пейзаж и деревья', 'Редактор', 'draft', '09.10.2026'],
     [15618, 'Архитектура старого города', 'Николай', 'published', '08.10.2026'],
     [15617, 'Сказочный лес и грибы', 'Ольга', 'published', '07.10.2026'],
-    [15616, 'Новогодние поздравления коллегам', 'Редактор', 'pending', '06.10.2026'],
-    [15615, 'Цветы и садовые растения', 'Николай', 'draft', '05.10.2026']
+    [15616, 'Новогодние открытки 2027', 'Редактор', 'pending', '06.10.2026'],
+    [15615, 'Цветы и садовые растения', 'Николай', 'draft', '05.10.2026'],
+    [15614, 'Путешествия по городам мира', 'Ольга', 'published', '04.10.2026']
   ];
 
   const statusBadges = {
-    published: ['Опубликовано', 'badge-soft-success'],
-    draft: ['Черновик', 'badge-soft-secondary'],
-    pending: ['На проверке', 'badge-soft-warning']
+    published: ['Опубликовано', 'text-bg-success'],
+    draft: ['Черновик', 'text-bg-secondary'],
+    pending: ['На проверке', 'text-bg-warning']
   };
 
   let tablePage = 1;
-  const perPage = 5;
-
   function renderTable() {
     const searchInput = $('tableSearch');
     const filterSelect = $('tableFilter');
@@ -1242,36 +1604,30 @@ $this->registerJs(<<<'JS'
 
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
     const filter = filterSelect ? filterSelect.value : 'all';
-
-    const filtered = demoRows.filter(r => {
-      const matchText = (r[1] + ' ' + r[2] + ' ' + r[0]).toLowerCase().includes(query);
-      const matchFilter = filter === 'all' || r[3] === filter;
-      return matchText && matchFilter;
-    });
-
+    const filtered = demoRows.filter(r => (r[1] + ' ' + r[2] + ' ' + r[0]).toLowerCase().includes(query) && (filter === 'all' || r[3] === filter));
+    const perPage = 5;
     const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
     tablePage = Math.min(tablePage, totalPages);
 
     const currentRows = filtered.slice((tablePage - 1) * perPage, tablePage * perPage);
-
     tableBody.innerHTML = currentRows.map(row => {
-      const b = statusBadges[row[3]] || ['Черновик', 'badge-soft-secondary'];
+      const b = statusBadges[row[3]] || ['Черновик', 'text-bg-secondary'];
       return `
         <tr>
           <td><strong style="color:var(--sz-primary);">#${row[0]}</strong></td>
-          <td style="text-align:center;">
-            <div class="sz-thumb" style="width:34px;height:34px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.03);border:1px solid var(--stroke);">
-              <span class="material-symbols-rounded" style="color:var(--sz-muted);font-size:18px;">image</span>
+          <td>
+            <div class="sz-thumb" style="width:36px;height:36px;border-radius:8px;">
+              <span class="material-symbols-rounded" style="color:var(--sz-muted);font-size:20px;display:grid;place-items:center;width:100%;height:100%;">image</span>
             </div>
           </td>
           <td>
-            <strong style="color:var(--sz-text);display:block;">${safe(row[1])}</strong>
+            <strong>${safe(row[1])}</strong>
             <small class="text-muted">/catalog/item-${row[0]}</small>
           </td>
           <td>${safe(row[2])}</td>
           <td><span class="badge ${b[1]}">${b[0]}</span></td>
           <td>${row[4]}</td>
-          <td class="action-column">
+          <td style="text-align:center;">
             <div class="btn-group-action">
               <button type="button" title="Просмотр" data-toast="Просмотр материала #${row[0]}"><span class="material-symbols-rounded">visibility</span></button>
               <button type="button" title="Редактировать" data-toast="Редактирование #${row[0]}"><span class="material-symbols-rounded">edit</span></button>
@@ -1301,20 +1657,92 @@ $this->registerJs(<<<'JS'
   if (tableSearch) tableSearch.addEventListener('input', () => { tablePage = 1; renderTable(); });
   const tableFilter = $('tableFilter');
   if (tableFilter) tableFilter.addEventListener('change', () => { tablePage = 1; renderTable(); });
+
   const tablePagination = $('tablePagination');
   if (tablePagination) {
     tablePagination.addEventListener('click', e => {
       const btn = e.target.closest('[data-page]');
-      if (btn) {
-        tablePage = Number(btn.dataset.page);
-        renderTable();
-      }
+      if (btn) { tablePage = Number(btn.dataset.page); renderTable(); }
     });
   }
   renderTable();
 
+  // Подсчёт символов в textarea
+  const inpText = $('inpText');
+  const charCount = $('charCount');
+  if (inpText && charCount) {
+    inpText.addEventListener('input', () => {
+      charCount.textContent = inpText.value.length + ' / 160';
+    });
+  }
+
   // =========================================================================
-  // СИМУЛЯТОР ФОНОВЫХ ОЧЕРЕДЕЙ .sz-progress-job
+  // 6. МОДАЛЬНОЕ ОКНО (BOOTSTRAP MODAL)
+  // =========================================================================
+  let modalAction = '';
+  function openModal(type) {
+    modalAction = type;
+    const isDelete = (type === 'delete');
+    const modalTitle = $('modalTitle');
+    const modalText = $('modalText');
+    const modalField = $('modalField');
+    const modalConfirm = $('modalConfirm');
+    const customModal = $('customModal');
+
+    if (modalTitle) modalTitle.textContent = isDelete ? 'Подтверждение удаления' : 'Создание нового материала';
+    if (modalText) modalText.textContent = isDelete ? 'Вы действительно хотите удалить эту запись? Действие необратимо.' : 'Заполните параметры нового материала:';
+    if (modalField) modalField.hidden = isDelete;
+    if (modalConfirm) {
+      modalConfirm.textContent = isDelete ? 'Удалить' : 'Сохранить';
+      modalConfirm.className = isDelete ? 'btn btn-danger' : 'btn btn-primary';
+    }
+    if (customModal) customModal.hidden = false;
+  }
+
+  function closeModal() {
+    const customModal = $('customModal');
+    if (customModal) customModal.hidden = true;
+    const modalInput = $('modalInput');
+    if (modalInput) modalInput.value = '';
+  }
+
+  const modalCancel = $('modalCancel');
+  if (modalCancel) modalCancel.addEventListener('click', closeModal);
+  const modalCloseX = $('modalCloseX');
+  if (modalCloseX) modalCloseX.addEventListener('click', closeModal);
+
+  const modalForm = $('modalForm');
+  if (modalForm) {
+    modalForm.addEventListener('submit', e => {
+      e.preventDefault();
+      closeModal();
+      if (typeof window.showToast === 'function') {
+        window.showToast(modalAction === 'delete' ? 'Запись успешно удалена (демо)' : 'Запись успешно сохранена (демо)');
+      }
+    });
+  }
+
+  const demoForm = $('demoForm');
+  if (demoForm) {
+    demoForm.addEventListener('submit', e => {
+      e.preventDefault();
+      if (typeof window.showToast === 'function') {
+        window.showToast('Форма успешно валидирована и сохранена');
+      }
+    });
+  }
+
+  document.addEventListener('click', e => {
+    const m = e.target.closest('[data-modal]');
+    if (m) openModal(m.dataset.modal);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // =========================================================================
+  // 7. СИМУЛЯТОР ОЧЕРЕДЕЙ ЗАДАЧ .sz-progress-job
   // =========================================================================
   const jobIcon = document.querySelector('[data-job-icon]');
   const jobText = document.querySelector('[data-job-text]');
@@ -1338,14 +1766,14 @@ $this->registerJs(<<<'JS'
         jobIcon.classList.add('is-spinning');
         jobIcon.innerHTML = '<span class="material-symbols-rounded">sync</span>';
       }
-      if (jobText) jobText.textContent = 'Выполняется фоновая обработка очереди...';
+      if (jobText) jobText.textContent = 'Выполняется фоновая обработка задачи...';
       if (jobRun) jobRun.disabled = true;
     } else if (state === 'done') {
       if (jobIcon) {
         jobIcon.classList.remove('is-spinning');
         jobIcon.innerHTML = '<span class="material-symbols-rounded" style="color:#079b70">check</span>';
       }
-      if (jobText) jobText.textContent = 'Фоновая задача успешно выполнена (100%).';
+      if (jobText) jobText.textContent = 'Фоновая задача успешно выполнена.';
       if (jobRun) jobRun.disabled = false;
     } else {
       if (jobIcon) {
@@ -1359,7 +1787,8 @@ $this->registerJs(<<<'JS'
 
   if (jobRun) {
     jobRun.addEventListener('click', () => {
-      if (jobProgress === 5) jobProgress = 0;
+      if (jobProgress === 5) return;
+      jobProgress = 0;
       updateJob('running');
       jobTimer = setInterval(() => {
         jobProgress++;
@@ -1367,12 +1796,12 @@ $this->registerJs(<<<'JS'
           clearInterval(jobTimer);
           updateJob('done');
           if (typeof window.showToast === 'function') {
-            window.showToast('Очередь задач успешно завершена (100%)', 'success');
+            window.showToast('Очередь задач успешно завершена (100%)');
           }
         } else {
           updateJob('running');
         }
-      }, 600);
+      }, 700);
     });
   }
 
@@ -1381,64 +1810,6 @@ $this->registerJs(<<<'JS'
       clearInterval(jobTimer);
       jobProgress = 0;
       updateJob('idle');
-    });
-  }
-
-  // =========================================================================
-  // МОДАЛЬНОЕ ОКНО
-  // =========================================================================
-  let modalInstance = null;
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('[data-modal]');
-    if (!btn) return;
-    const modalEl = $('demoModal');
-    if (!modalEl || typeof bootstrap === 'undefined') return;
-
-    const type = btn.dataset.modal;
-    const label = $('demoModalLabel');
-    const body = $('demoModalBody');
-    const confirmBtn = $('demoModalConfirm');
-
-    if (type === 'delete') {
-      if (label) label.textContent = 'Подтверждение удаления';
-      if (body) body.textContent = 'Вы действительно хотите удалить эту запись из базы данных? Это действие необратимо.';
-      if (confirmBtn) {
-        confirmBtn.className = 'btn btn-danger btn-sm';
-        confirmBtn.textContent = 'Удалить';
-      }
-    } else {
-      if (label) label.textContent = 'Создание новой записи';
-      if (body) body.textContent = 'Заполните параметры нового материала в каталоге.';
-      if (confirmBtn) {
-        confirmBtn.className = 'btn btn-primary btn-sm';
-        confirmBtn.textContent = 'Создать';
-      }
-    }
-
-    if (!modalInstance) {
-      modalInstance = new bootstrap.Modal(modalEl);
-    }
-    modalInstance.show();
-  });
-
-  const confirmBtn = $('demoModalConfirm');
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', () => {
-      if (modalInstance) modalInstance.hide();
-      if (typeof window.showToast === 'function') {
-        window.showToast('Действие успешно подтверждено', 'success');
-      }
-    });
-  }
-
-  // Демо форма сабмит
-  const demoForm = $('demoForm');
-  if (demoForm) {
-    demoForm.addEventListener('submit', e => {
-      e.preventDefault();
-      if (typeof window.showToast === 'function') {
-        window.showToast('Форма успешно валидирована и сохранена', 'success');
-      }
     });
   }
 })();

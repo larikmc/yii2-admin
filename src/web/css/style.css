@@ -23,6 +23,7 @@
     /* Aliases for prototype compatibility */
     --bg: #eaf3ff;
     --panel: #ffffff;
+    --surface: #ffffff;
     --ink: #0a1d4c;
     --text: #14294d;
     --muted: #7b93be;
@@ -48,6 +49,7 @@ body.dark {
     --sz-bg: #121d32;
     --sz-bg-soft: #1d2c46;
     --sz-surface: #1d2c46;
+    --surface: #17243c;
     --sz-surface-strong: #243756;
     --sz-line: #334863;
     --sz-line-strong: #3c5272;
@@ -5224,4 +5226,21 @@ html.dark .karandash-chart-canvas g[aria-label*="Cursor"] line,
 html.dark [id^="chart"] g[aria-label*="Cursor"] line,
 html.dark .sz-chart g[aria-label*="Cursor"] line {
     stroke: rgba(160, 185, 230, 0.35) !important;
+}
+/* UI-Kit surfaces guaranteed */
+.ui-kit-hero,
+.ui-kit-section {
+    background: #ffffff !important;
+    border: 1px solid var(--stroke, #e7edfb) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 30px rgba(20, 50, 120, 0.05) !important;
+}
+
+body.dark .ui-kit-hero,
+body.dark .ui-kit-section,
+html.dark .ui-kit-hero,
+html.dark .ui-kit-section {
+    background: #17243c !important;
+    border-color: #2c3f5d !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
 }
