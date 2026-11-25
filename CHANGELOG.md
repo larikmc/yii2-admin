@@ -2,6 +2,13 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.32] - 2026-11-25
+
+### Fixed & Enhanced
+- **High-Contrast Muted Design Tokens (--sz-muted)**:
+  - Increased light theme contrast for --sz-muted and --muted from #7b93be to #546c96, guaranteeing WCAG AA compliance (> 4.5:1 contrast ratio) against white surfaces.
+  - Subtitles, labels, hints, and helper texts across all admin pages and embedded modules are now crisp, legible, and easy to read without losing the refined slate-blue aesthetic.
+
 ## [2.1.31] - 2026-11-25
 
 ### Fixed & Enhanced
