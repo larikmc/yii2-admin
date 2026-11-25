@@ -2,6 +2,15 @@
 
 All notable changes to `larikmc/yii2-admin` will be documented in this file.
 
+## [2.1.31] - 2026-11-25
+
+### Fixed & Enhanced
+- **Modernized System Alert Styling (Light & Dark Glass Design)**:
+  - Replaced harsh and dark Bootstrap 5.3 default alert palettes (`*-text-emphasis` / `*-bg-subtle`) with sleek, airy semi-transparent pastel backgrounds and crisp borders matching the admin design system.
+  - Implemented comprehensive coverage for all alert types (`.alert-success`, `.alert-warning`, `.alert-info`, `.alert-danger`, `.alert-primary`, `.alert-secondary`, `.alert-light`, `.alert-dark`).
+  - Added modern glassmorphism features: `backdrop-filter: blur(8px)`, smooth `14px` border-radius, soft elevation shadow, and vertically centered `material-symbols-rounded` icons.
+  - Added dedicated high-contrast vibrant glow variants for dark mode (`html.dark .alert-*` and `body.dark .alert-*`) and styled dark close buttons (`.btn-close`).
+
 ## [2.1.30] - 2026-11-24
 
 ### Fixed & Restored

@@ -2677,25 +2677,149 @@ body.dark .sz-error-card .btn-outline-secondary:hover {
     color: inherit;
 }
 
-/* General alert enhancements matching dark / light theme */
-.alert.alert-danger,
-.sz-error-page__alert {
-    border-radius: 12px;
+/* ==========================================================================
+   Alert Styling (Light & Dark matching admin glass design system)
+   ========================================================================== */
+.alert {
+    border-radius: 14px;
     padding: 14px 18px;
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 1.5;
-    background-color: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #991b1b;
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: 0 4px 16px rgba(18, 29, 50, 0.03);
+    backdrop-filter: blur(8px);
 }
 
-html.dark .alert.alert-danger,
-body.dark .alert.alert-danger,
+.alert .material-symbols-rounded {
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.alert .alert-link {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* Light Theme Alerts */
+.alert-primary {
+    background-color: rgba(49, 137, 247, 0.08);
+    border-color: rgba(49, 137, 247, 0.22);
+    color: #1c6ecc;
+}
+
+.alert-secondary {
+    background-color: rgba(123, 147, 190, 0.10);
+    border-color: rgba(123, 147, 190, 0.24);
+    color: #3d567f;
+}
+
+.alert-success {
+    background-color: rgba(7, 155, 112, 0.08);
+    border-color: rgba(7, 155, 112, 0.22);
+    color: #067252;
+}
+
+.alert-warning {
+    background-color: rgba(238, 166, 60, 0.10);
+    border-color: rgba(238, 166, 60, 0.26);
+    color: #a86208;
+}
+
+.alert-danger,
+.sz-error-page__alert {
+    background-color: rgba(226, 78, 108, 0.08);
+    border-color: rgba(226, 78, 108, 0.22);
+    color: #b82845;
+}
+
+.alert-info {
+    background-color: rgba(40, 101, 190, 0.08);
+    border-color: rgba(40, 101, 190, 0.22);
+    color: #1b5fb8;
+}
+
+.alert-light {
+    background-color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(40, 52, 82, 0.12);
+    color: #14294d;
+}
+
+.alert-dark {
+    background-color: rgba(20, 41, 77, 0.08);
+    border-color: rgba(20, 41, 77, 0.20);
+    color: #14294d;
+}
+
+/* Dark Theme Alerts */
+html.dark .alert,
+body.dark .alert {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+html.dark .alert .btn-close,
+body.dark .alert .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+html.dark .alert-primary,
+body.dark .alert-primary {
+    background-color: rgba(49, 137, 247, 0.15) !important;
+    border-color: rgba(49, 137, 247, 0.30) !important;
+    color: #9bc3fa !important;
+}
+
+html.dark .alert-secondary,
+body.dark .alert-secondary {
+    background-color: rgba(160, 178, 214, 0.12) !important;
+    border-color: rgba(160, 178, 214, 0.24) !important;
+    color: #c5d8ff !important;
+}
+
+html.dark .alert-success,
+body.dark .alert-success {
+    background-color: rgba(7, 155, 112, 0.15) !important;
+    border-color: rgba(7, 155, 112, 0.32) !important;
+    color: #5eead4 !important;
+}
+
+html.dark .alert-warning,
+body.dark .alert-warning {
+    background-color: rgba(238, 166, 60, 0.15) !important;
+    border-color: rgba(238, 166, 60, 0.32) !important;
+    color: #fde047 !important;
+}
+
+html.dark .alert-danger,
+body.dark .alert-danger,
 html.dark .sz-error-page__alert,
 body.dark .sz-error-page__alert {
-    background-color: rgba(239, 68, 68, 0.12) !important;
-    border-color: rgba(239, 68, 68, 0.28) !important;
+    background-color: rgba(226, 78, 108, 0.15) !important;
+    border-color: rgba(226, 78, 108, 0.32) !important;
     color: #fca5a5 !important;
+}
+
+html.dark .alert-info,
+body.dark .alert-info {
+    background-color: rgba(40, 101, 190, 0.18) !important;
+    border-color: rgba(40, 101, 190, 0.34) !important;
+    color: #93c5fd !important;
+}
+
+html.dark .alert-light,
+body.dark .alert-light {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #eff4ff !important;
+}
+
+html.dark .alert-dark,
+body.dark .alert-dark {
+    background-color: rgba(10, 18, 32, 0.50) !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+    color: #dce8ff !important;
 }
 
 /* Legacy .sz-error-page support */
@@ -4782,14 +4906,6 @@ button#collapse:hover,
 
 .sz-sidebar-menu-btn {
     display: none !important;
-}
-
-/* Alert styles for dark theme */
-body.dark .alert-secondary,
-html.dark .alert-secondary {
-    background: #1c2b44 !important;
-    border-color: #354660 !important;
-    color: #c5d8ff !important;
 }
 
 body.dark .sz-panel .table-responsive,
